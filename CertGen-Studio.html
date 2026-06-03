@@ -865,7 +865,7 @@
 #chatApiSetup input{flex:1;padding:8px 14px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);font-size:13px;outline:none;transition:border-color var(--transition-fast),box-shadow var(--transition-fast)}
 #chatApiSetup input:hover{border-color:color-mix(in srgb,var(--accent) 40%,var(--border-color))}
 #chatApiSetup button{padding:7px 14px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:12px;cursor:pointer;white-space:nowrap;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .15s,box-shadow .15s}#chatApiSetup button:hover{background:var(--accent-hover);transform:scale(1.08);box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 40%,transparent)}#chatApiSetup button:active{transform:scale(.9)}
-#chatApiStatus{display:none;padding:6px 12px;font-size:10px;color:var(--text-muted);border-top:1px solid var(--border-color);cursor:pointer;text-align:center;transition:background .2s ease,color .2s ease;border-radius:0 0 28px 28px}
+#chatApiStatus{display:none;padding:6px 12px;font-size:10px;color:var(--text-muted);border-top:1px solid var(--border-color);cursor:pointer;text-align:center;transition:background .2s ease,color .2s ease;border-radius:0 0 28px 28px;touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.1)}
 #chatApiStatus.show{animation:dropIn .25s cubic-bezier(.25,.1,.25,1)}
 #chatApiStatus:hover{color:var(--accent)}
 .no-border-input{border:none!important;background:transparent!important;transition:box-shadow .2s ease}
@@ -2149,7 +2149,7 @@ document.addEventListener("touchcancel", endDrag);
 </div>
 </div>
 </div>
-<div id="chatApiStatus" style="display:none" onclick="this.style.display='none';document.getElementById('chatApiSetup').style.display='block';document.getElementById('modelRow').style.display='none';document.getElementById('vendorRow').style.display='none';document.getElementById('apiKeyInput').value='';_pickedVendor=''">⚙️ 更换 API Key</div>
+<div id="chatApiStatus" style="display:none" ontouchend="event.preventDefault();this.click()" onclick="this.style.display='none';document.getElementById('chatApiSetup').style.display='block';document.getElementById('modelRow').style.display='none';document.getElementById('vendorRow').style.display='none';document.getElementById('apiKeyInput').value='';_pickedVendor=''">⚙️ 更换 API Key</div>
 </div>
 </body>
 
