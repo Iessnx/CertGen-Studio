@@ -865,7 +865,7 @@
 #chatApiSetup input{flex:1;padding:8px 14px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);font-size:13px;outline:none;transition:border-color var(--transition-fast),box-shadow var(--transition-fast)}
 #chatApiSetup input:hover{border-color:color-mix(in srgb,var(--accent) 40%,var(--border-color))}
 #chatApiSetup button{padding:7px 14px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:12px;cursor:pointer;white-space:nowrap;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .15s,box-shadow .15s}#chatApiSetup button:hover{background:var(--accent-hover);transform:scale(1.08);box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 40%,transparent)}#chatApiSetup button:active{transform:scale(.9)}
-#chatApiStatus{display:none;padding:6px 12px;font-size:10px;color:var(--text-muted);border-top:1px solid var(--border-color);cursor:pointer;text-align:center;transition:background .2s ease,color .2s ease;border-radius:0 0 28px 28px}
+#chatApiStatus{display:none;padding:6px 12px;font-size:10px;color:var(--text-muted);border-top:1px solid var(--border-color);cursor:pointer;text-align:center;transition:background .2s ease,color .2s ease;border-radius:0 0 28px 28px;touch-action:manipulation}
 #chatApiStatus.show{animation:dropIn .25s cubic-bezier(.25,.1,.25,1)}
 #chatApiStatus:hover{color:var(--accent)}
 .no-border-input{border:none!important;background:transparent!important;transition:box-shadow .2s ease}
@@ -2290,7 +2290,7 @@ var hdr=document.getElementById('chatHeader');
 bub.addEventListener('mousedown',function(e){dragType='bubble';dsx=e.clientX;dsy=e.clientY;var r=bub.getBoundingClientRect();dsl=r.left;dst=r.top;bub.style.cursor='grabbing';e.preventDefault()});
 bub.addEventListener('touchstart',function(e){if(e.touches.length===1){dragType='bubble';dsx=e.touches[0].clientX;dsy=e.touches[0].clientY;var r=bub.getBoundingClientRect();dsl=r.left;dst=r.top}},{passive:false});
 pan.addEventListener('mousedown',function(e){if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('textarea'))return;if(e.target.closest('.chat-msg'))return;dragType='panel';dsx=e.clientX;dsy=e.clientY;var r=pan.getBoundingClientRect();dsl=r.left;dst=r.top;document.body.style.cursor='grabbing';e.preventDefault()});
-pan.addEventListener('touchstart',function(e){if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('textarea')||e.touches.length!==1)return;dragType='panel';dsx=e.touches[0].clientX;dsy=e.touches[0].clientY;var r=pan.getBoundingClientRect();dsl=r.left;dst=r.top;e.preventDefault()},{passive:false});
+pan.addEventListener('touchstart',function(e){if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('textarea')||e.target.closest('#chatApiStatus')||e.target.closest('#chatApiSetup')||e.touches.length!==1)return;dragType='panel';dsx=e.touches[0].clientX;dsy=e.touches[0].clientY;var r=pan.getBoundingClientRect();dsl=r.left;dst=r.top;e.preventDefault()},{passive:false});
 
 var _raf=null;
 document.addEventListener('mousemove',function(e){
