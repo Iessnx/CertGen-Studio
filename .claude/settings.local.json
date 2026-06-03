@@ -4,7 +4,14 @@
       "Bash(gh auth *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://github.com --connect-timeout 10)",
+      "Bash(ssh-keyscan github.com)",
+      "Bash(ssh -T -o ConnectTimeout=5 git@github.com)",
+      "Bash(git remote *)",
+      "Bash(GIT_TERMINAL_PROMPT=0 git -c http.extraHeader=\"Host: github.com\" push origin main)",
+      "Bash(git revert *)",
+      "Bash(python3)"
     ]
   }
 }

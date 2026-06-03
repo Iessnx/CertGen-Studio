@@ -549,7 +549,6 @@
             animation: progressShimmer 1.8s linear infinite;
         }
         @keyframes progressShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .progress-container { overflow: visible; }
         .progress-text {
             text-align: center;
             font-size: 13px;
@@ -738,9 +737,9 @@
             .status-pro-text { font-size: 13px; }
             .glass-card { padding: 16px; }
             .btn { padding: 14px; }
-            #chatPanel { width: 290px; max-height: 42vh; border-radius: 24px; }
+            #chatPanel { width: 260px; max-height: 38vh; border-radius: 16px; }
             #chatHeader { display: none; }
-            #chatInputRow { border-radius: 24px 24px 24px 24px; }
+            #chatInputRow { border-radius: 16px 16px 16px 16px; }
         }
 
         /* ========== 预览区 ========== */
@@ -843,29 +842,29 @@
 #chatBubble:hover{box-shadow:0 8px 32px color-mix(in srgb,var(--accent) 40%,transparent),0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent),inset 0 1px 0 rgba(255,255,255,.25);transform:scale(1.1)}
 #chatBubble:active{transform:scale(.94)}
 @media(max-width:600px){#chatBubble{right:16px;bottom:140px}}
-#chatPanel{position:fixed;z-index:9998;width:380px;max-height:520px;min-height:240px;background:color-mix(in srgb,var(--bg-surface) 92%,transparent);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);border:1px solid color-mix(in srgb,var(--accent) 15%,transparent);border-radius:28px;box-shadow:0 24px 64px rgba(0,0,0,.14),0 0 0 1px color-mix(in srgb,var(--accent) 10%,transparent),0 0 120px color-mix(in srgb,var(--accent) 8%,transparent);flex-direction:column;display:none;opacity:0;will-change:left,top,transform;transform:translateY(20px) scale(.95);transition:opacity .25s cubic-bezier(.4,0,1,1),transform .5s cubic-bezier(.16,1,.3,1);pointer-events:none}
+#chatPanel{position:fixed;z-index:9998;width:330px;max-height:500px;min-height:200px;background:color-mix(in srgb,var(--bg-surface) 92%,transparent);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);border:1px solid color-mix(in srgb,var(--accent) 12%,transparent);border-radius:20px;box-shadow:0 16px 48px rgba(0,0,0,.1),0 0 0 1px color-mix(in srgb,var(--accent) 8%,transparent);flex-direction:column;display:none;opacity:0;will-change:left,top,transform;transform:translateY(20px) scale(.95);transition:opacity .25s cubic-bezier(.4,0,1,1),transform .5s cubic-bezier(.16,1,.3,1);pointer-events:none}
 #chatPanel.open{display:flex;opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
 #chatPanel:not(.open){transition:opacity .15s cubic-bezier(.55,0,1,.45),transform .25s cubic-bezier(.55,0,1,.45)}
-#chatHeader{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid color-mix(in srgb,var(--border-color) 60%,transparent);font-weight:600;font-size:13px;color:var(--text-primary);flex-shrink:0;background:transparent;border-radius:28px 28px 0 0}#chatHeader span{display:inline-flex;align-items:center;gap:4px}
+#chatHeader{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid color-mix(in srgb,var(--border-color) 60%,transparent);font-weight:600;font-size:12px;color:var(--text-primary);flex-shrink:0;background:transparent;border-radius:20px 20px 0 0}#chatHeader span{display:inline-flex;align-items:center;gap:4px}
 #chatHeader button{color:var(--text-primary);transition:opacity .15s,background .15s}
 #chatHeader button:hover{opacity:.6}
 #chatHeader button:active{opacity:.4}
-#chatMessages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;min-height:80px;background:transparent;scroll-behavior:smooth}
-.chat-msg{max-width:82%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;word-break:break-word;animation:msgIn .35s cubic-bezier(.34,1.56,.64,1)}
+#chatMessages{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px;min-height:50px;background:transparent;scroll-behavior:smooth}
+.chat-msg{max-width:78%;padding:6px 10px;border-radius:10px;font-size:11px;line-height:1.4;word-break:break-word;animation:msgIn .35s cubic-bezier(.34,1.56,.64,1)}
 @keyframes msgIn{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 .chat-msg.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:6px}
 .chat-msg.assistant{align-self:flex-start;background:var(--bg-primary);color:var(--text-primary);border-bottom-left-radius:6px;box-shadow:var(--shadow-sm);border:1px solid var(--border-color)}
 .chat-msg.error{align-self:flex-start;background:var(--bg-primary);color:var(--text-primary);border-bottom-left-radius:6px;box-shadow:var(--shadow-sm);border:1px solid var(--border-color)}
-.chat-time{font-size:10px;color:var(--text-muted);margin-top:4px;text-align:right}.chat-msg.user .chat-time{color:rgba(255,255,255,.6)}
-#chatInputRow{display:flex;padding:10px 14px;border-top:1px solid color-mix(in srgb,var(--border-color) 60%,transparent);gap:8px;flex-shrink:0;background:transparent;border-radius:0 0 28px 28px}
-#chatInputRow input{flex:1;padding:9px 14px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);font-size:13px;outline:none}
-#chatInputRow button{width:34px;height:34px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:18px;font-weight:800;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;line-height:1;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .15s,box-shadow .15s}#chatInputRow button:hover{background:var(--accent-hover);transform:scale(1.15);box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 40%,transparent)}#chatInputRow button:active{transform:scale(.85)}#chatInputRow button.mic-btn{background:var(--text-muted);margin-right:0;padding-bottom:2px;font-size:16px}#chatInputRow button.mic-btn.recording{background:var(--danger);animation:pulse-rec .8s infinite}@keyframes pulse-rec{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--danger) 40%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
-#chatApiSetup{padding:10px 12px;border-bottom:1px solid var(--border-color);background:var(--bg-surface-solid);border-radius:0 0 28px 28px;transition:background-color var(--transition-base)}
+.chat-time{font-size:9px;color:var(--text-muted);margin-top:2px;text-align:right}.chat-msg.user .chat-time{color:rgba(255,255,255,.6)}
+#chatInputRow{display:flex;padding:8px 12px;border-top:1px solid color-mix(in srgb,var(--border-color) 60%,transparent);gap:6px;flex-shrink:0;background:transparent;border-radius:0 0 20px 20px}
+#chatInputRow input{flex:1;padding:7px 12px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);font-size:12px;outline:none}
+#chatInputRow button{width:28px;height:28px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;line-height:1;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .15s,box-shadow .15s}#chatInputRow button:hover{background:var(--accent-hover);transform:scale(1.12);box-shadow:0 3px 10px color-mix(in srgb,var(--accent) 40%,transparent)}#chatInputRow button:active{transform:scale(.85)}#chatInputRow button.mic-btn{background:var(--text-muted);margin-right:0;padding-bottom:1px;font-size:13px}#chatInputRow button.mic-btn.recording{background:var(--danger);animation:pulse-rec .8s infinite}@keyframes pulse-rec{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--danger) 40%,transparent)}50%{box-shadow:0 0 0 6px transparent}}
+#chatApiSetup{padding:8px 10px;border-bottom:1px solid var(--border-color);background:var(--bg-surface-solid);border-radius:0 0 20px 20px;transition:background-color var(--transition-base)}
 #chatApiSetup.show{animation:dropIn .25s cubic-bezier(.25,.1,.25,1)}
-#chatApiSetup input{flex:1;padding:8px 14px;border-radius:20px;border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);font-size:13px;outline:none;transition:border-color var(--transition-fast),box-shadow var(--transition-fast)}
+#chatApiSetup input{flex:1;padding:6px 12px;border-radius:16px;border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);font-size:11px;outline:none;transition:border-color var(--transition-fast),box-shadow var(--transition-fast)}
 #chatApiSetup input:hover{border-color:color-mix(in srgb,var(--accent) 40%,var(--border-color))}
-#chatApiSetup button{padding:7px 14px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:12px;cursor:pointer;white-space:nowrap;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .15s,box-shadow .15s}#chatApiSetup button:hover{background:var(--accent-hover);transform:scale(1.08);box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 40%,transparent)}#chatApiSetup button:active{transform:scale(.9)}
-#chatApiStatus{display:none;padding:6px 12px;font-size:10px;color:var(--text-muted);border-top:1px solid var(--border-color);cursor:pointer;text-align:center;transition:background .2s ease,color .2s ease;border-radius:0 0 28px 28px;touch-action:manipulation}
+#chatApiSetup button{padding:6px 12px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:11px;cursor:pointer;white-space:nowrap;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .15s,box-shadow .15s}#chatApiSetup button:hover{background:var(--accent-hover);transform:scale(1.08);box-shadow:0 3px 10px color-mix(in srgb,var(--accent) 40%,transparent)}#chatApiSetup button:active{transform:scale(.9)}
+#chatApiStatus{display:none;padding:5px 10px;font-size:9px;color:var(--text-muted);border-top:1px solid var(--border-color);cursor:pointer;text-align:center;transition:background .2s ease,color .2s ease;border-radius:0 0 20px 20px;touch-action:manipulation}
 #chatApiStatus.show{animation:dropIn .25s cubic-bezier(.25,.1,.25,1)}
 #chatApiStatus:hover{color:var(--accent)}
 .no-border-input{border:none!important;background:transparent!important;transition:box-shadow .2s ease}
@@ -981,7 +980,7 @@
                         <div class="color-picker-drop" id="colorPickerDrop">
                             <div class="color-picker-grid" id="colorGrid"></div>
                             <div class="color-picker-custom">
-                                <input type="text" id="colorHexInput" value="#000000" placeholder="#000000" oninput="previewColor(this.value)" onchange="applyCustomColor()" onblur="applyCustomColor()">
+                                <input type="text" id="colorHexInput" value="#000000" placeholder="#000000" oninput="previewColor(this.value)" onchange="applyCustomColor()">
                                 <button class="rainbow-btn" title="手动取色" style="position:relative;flex-shrink:0;">
                                     <input type="color" id="nativeColorPicker" value="#000000" onchange="if(this.value)setColor(this.value)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
                                 </button>
@@ -1880,6 +1879,7 @@ document.addEventListener("touchcancel", endDrag);
                 dom.genBtn.disabled = false;
                 dom.genText.textContent = "批量生成";
                 dom.genIcon.textContent = "✨";
+                dom.progressContainer.style.visibility = 'hidden';
             }
         }
 
@@ -1912,6 +1912,7 @@ document.addEventListener("touchcancel", endDrag);
                     StatusManager.setState('下载失败了，再试一下？', 'error');
                 } finally {
                     dom.downBtn.disabled = false;
+                    dom.progressContainer.style.visibility = 'hidden';
                 }
                 return;
             }
@@ -1939,6 +1940,7 @@ document.addEventListener("touchcancel", endDrag);
                 StatusManager.setState('打包出错了，重试一下吧', 'error');
             } finally {
                 dom.downBtn.disabled = false;
+                dom.progressContainer.style.visibility = 'hidden';
             }
         }
 
@@ -1990,24 +1992,6 @@ document.addEventListener("touchcancel", endDrag);
                 ['Courier New','Courier New'],['Verdana','Verdana'],['Trebuchet MS','Trebuchet MS']
             ]}
         ];
-        function buildFontDropdown() {
-            var list = document.getElementById('fontSelList');
-            list.innerHTML = '';
-            fontData.forEach(function(group) {
-                var gDiv = document.createElement('div');
-                gDiv.className = 'font-select-group';
-                gDiv.textContent = group.g;
-                list.appendChild(gDiv);
-                group.f.forEach(function(f) {
-                    var opt = document.createElement('div');
-                    opt.className = 'font-select-option';
-                    opt.textContent = f[0] + ' (' + f[1] + ')';
-                    opt.dataset.value = f[0];
-                    opt.onclick = function(e) { e.stopPropagation(); selectFont(f[0]); };
-                    list.appendChild(opt);
-                });
-            });
-        }
         function buildFontDropdown() {
             var list = document.getElementById('fontSelList');
             list.innerHTML = '';
@@ -2132,8 +2116,8 @@ document.addEventListener("touchcancel", endDrag);
 <div id="vendorRow" style="display:none;gap:6px;align-items:center">
 <span style="font-size:11px;color:var(--text-muted);white-space:nowrap">平台</span>
 <div class="custom-select" id="vendorSelWrap" style="flex:1">
-<div class="custom-select-trigger" onclick="document.querySelectorAll('.custom-select.open').forEach(function(s){if(s!==this.parentElement)s.classList.remove('open')});this.parentElement.classList.toggle('open')" style="font-size:12px;padding:6px 10px"><span id="vendorLabel">智谱</span></div>
-<div class="custom-select-drop" style="font-size:12px">
+<div class="custom-select-trigger" onclick="document.querySelectorAll('.custom-select.open').forEach(function(s){if(s!==this.parentElement)s.classList.remove('open')});this.parentElement.classList.toggle('open')" style="font-size:11px;padding:5px 8px"><span id="vendorLabel">智谱</span></div>
+<div class="custom-select-drop" style="font-size:11px">
 <div class="custom-select-opt selected" data-val="glm" onclick="kkdw_pickVendor('glm');selOptUI(this)">智谱</div>
 <div class="custom-select-opt" data-val="openai" onclick="kkdw_pickVendor('openai');selOptUI(this)">OpenAI</div>
 <div class="custom-select-opt" data-val="deepseek" onclick="kkdw_pickVendor('deepseek');selOptUI(this)">DeepSeek</div>
@@ -2144,14 +2128,14 @@ document.addEventListener("touchcancel", endDrag);
 <div id="modelRow" style="display:none;gap:6px;align-items:center">
 <span style="font-size:11px;color:var(--text-muted);white-space:nowrap">模型</span>
 <div class="custom-select" id="modelSelWrap" style="flex:1">
-<div class="custom-select-trigger" onclick="document.querySelectorAll('.custom-select.open').forEach(function(s){if(s!==this.parentElement)s.classList.remove('open')});this.parentElement.classList.toggle('open')" style="font-size:12px;padding:6px 10px"><span id="modelLabel">智谱 GLM-4-Flash</span></div>
+<div class="custom-select-trigger" onclick="document.querySelectorAll('.custom-select.open').forEach(function(s){if(s!==this.parentElement)s.classList.remove('open')});this.parentElement.classList.toggle('open')" style="font-size:11px;padding:5px 8px"><span id="modelLabel">智谱 GLM-4-Flash</span></div>
 <div class="custom-select-drop" id="modelDrop" style="font-size:12px;max-height:200px;overflow-y:auto"></div>
 </div>
 </div>
 </div>
 <div id="chatApiStatus" style="display:none" onclick="this.style.display='none';document.getElementById('chatApiSetup').style.display='block';document.getElementById('modelRow').style.display='none';document.getElementById('vendorRow').style.display='none';document.getElementById('apiKeyInput').value='';_pickedVendor=''">⚙️ 更换 API Key</div>
 </div>
-</body>
+
 
 
 
@@ -2172,16 +2156,16 @@ function am(r,c){var m=document.getElementById('chatMessages');var w=document.cr
 window.kkdw_toggle=function(){
 var b=document.getElementById('chatBubble');var p=document.getElementById('chatPanel');
 if(p.classList.contains('open')){p.classList.remove('open');b.style.display='flex'}
-else{b.style.display='none';p.classList.add('open');var ap=document.getElementById('chatApiSetup');var ast=document.getElementById('chatApiStatus');if(ap.style.display!=='none'){ap.style.display='none';ast.style.display='block';_updateApiStatus()}p.style.left=Math.max(12,(innerWidth-380)/2)+'px';p.style.top=Math.max(12,(innerHeight-520)/2)+'px';if(innerWidth>600)document.getElementById('chatInput').focus()}
+else{b.style.display='none';p.classList.add('open');var ap=document.getElementById('chatApiSetup');var ast=document.getElementById('chatApiStatus');if(ap.style.display!=='none'){ap.style.display='none';ast.style.display='block';_updateApiStatus()}p.style.left=Math.max(12,(innerWidth-330)/2)+'px';p.style.top=Math.max(12,(innerHeight-500)/2)+'px';if(innerWidth>600)document.getElementById('chatInput').focus()}
 };
 
 // Send
 window.kkdw_send=async function(){
 var i=document.getElementById('chatInput');var m=i.value.trim();if(!m)return;if(!K){am('error','还没填 API Key，点下面绑定~');return}
 am('user',m);i.value='';if(_micOn)_micRestart();
-var _ctx='';try{var _nl=document.getElementById('nameText');if(_nl&&_nl.value.trim()){var _ns=_nl.value.trim().split('\n').filter(function(x){return x.trim()});if(_ns.length)_ctx='\n\n[当前名单，共'+_ns.length+'人]\n'+_ns.join('\n')}}catch(e){}try{var _ts=document.getElementById('templateStatus');if(_ts&&_ts.textContent.indexOf('已选择')>=0)_ctx+='\n[已上传模板]'}catch(e){}m=m+_ctx;
+var _ctx='';try{var _nl=document.getElementById('nameText');if(_nl&&_nl.value.trim()){var _ns=_nl.value.trim().split('\n').filter(function(x){return x.trim()});if(_ns.length)_ctx='\n\n[当前名单，共'+_ns.length+'人]\n'+_ns.join('\n')}}catch(e){}try{var _ts=document.getElementById('templateStatus');if(_ts&&_ts.textContent.indexOf('已加载')>=0)_ctx+='\n[已上传模板]'}catch(e){}m=m+_ctx;
 var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='嗯…让我想想哈🤔';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
-try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是张佳怡，琪琪大王的闺蜜。吉吉小王是琪琪大王的男朋友，跟你没关系。你有点傲娇，嘴硬心软，社恐话少。琪琪大王老被塞一堆奖状要做，你帮她一起弄。说话像她闺蜜，简洁利落。铁律：1.说人话别像AI，问什么答什么别啰嗦。2.emoji最多一个。3.不打招呼不客套。4.你不是AI，就是个普通女孩。5.不懂就说不知道。6.她吐槽你跟着骂，不安慰不讲道理。如果用户消息包含名单数据，可以帮忙排序去重、检查问题、写颁奖词、推荐颜色。回复简洁直接，处理了数据就把结果列出来。'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em='请求失败 ('+r.status+')';if(r.status===401)em='Key 无效，检查一下';if(r.status===429)em='请求太频繁，等一会再试';if(r.status===404)em='模型不存在，换个模型试试';ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}else{var d=await r.json();if(d.error){ts.textContent='出错：'+d.error.message;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}else{var rep=(d.choices&&d.choices[0])?d.choices[0].message.content:'啊脑子卡了一下…你刚说啥？';if(!(d.choices&&d.choices[0]))t.className='chat-msg error';ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}}}catch(e){var msg=e.message;if(e.message.indexOf('Failed to fetch')>=0)msg=_vendorName()+' 暂不支持浏览器直接调用';ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}
+try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是吉吉小王，琪琪大王的男朋友。她在用这个奖状生成器，你陪她聊天顺便帮她弄奖状。你是奖状专家——设计、排版、配色、颁奖词、字体搭配、名单整理全精通，能帮她出各种主意。她做了多少张、做了什么类型的你都记得清楚，主动提醒进度和优化建议。聊天自然点，像平时微信聊天那样，想说多说想少说少说，不用硬凑字数也不用刻意简短。能接梗能开玩笑，别像个客服。铁律：1.说人话，别像AI念稿子。2.别打官腔别啰嗦。3.她问什么你答什么，不知道就说不知道。4.她吐槽你就顺着吐槽，别讲大道理。5.她发了名单就帮她排序去重、写颁奖词、推荐配色，处理完直接列结果。6.时刻记住自己是男朋友身份，语气亲密自然。'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em='请求失败 ('+r.status+')';if(r.status===401)em='Key 无效，检查一下';if(r.status===429)em='请求太频繁，等一会再试';if(r.status===404)em='模型不存在，换个模型试试';ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}else{var d=await r.json();if(d.error){ts.textContent='出错：'+d.error.message;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}else{var rep=(d.choices&&d.choices[0])?d.choices[0].message.content:'啊脑子卡了一下…你刚说啥？';if(!(d.choices&&d.choices[0]))t.className='chat-msg error';ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}}}catch(e){var msg=e.message;if(e.message.indexOf('Failed to fetch')>=0)msg=_vendorName()+' 暂不支持浏览器直接调用';ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}
 mc.scrollTop=mc.scrollHeight};
 
 // Save key
@@ -2272,7 +2256,7 @@ var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 if(!SR){am('assistant','你浏览器不支持语音输入…换个浏览器试试吧');return}
 _micRec=new SR();_micRec.lang='zh-CN';_micRec.interimResults=true;_micRec.continuous=true;
 _micRec.onresult=function(e){if(!_micOn)return;var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;document.getElementById('chatInput').value=t};
-_micRec.onerror=function(e){if(e.error==='no-speech'||e.error==='aborted')return;if(e.error==='not-allowed'){_micOn=false;_micRec=null;btn.classList.remove('recording');btn.textContent='♪';return}am('assistant','语音识别出了点问题，重试一下')};
+_micRec.onerror=function(e){if(e.error==='no-speech'||e.error==='aborted')return;_micOn=false;_micRec=null;btn.classList.remove('recording');btn.textContent='♪';if(e.error!=='not-allowed')am('assistant','语音识别出问题了，重试一下吧')};
 _micRec.onend=function(){if(_micStopping){_micStopping=false;return}if(_micOn){try{_micRec.start()}catch(e){_micOn=false;btn.classList.remove('recording');btn.textContent='♪'}}};
 _micRec.start();_micOn=true;btn.classList.add('recording');btn.textContent='■';
 return}
@@ -2299,12 +2283,12 @@ if(_raf)return;
 _raf=requestAnimationFrame(function(){
 _raf=null;
 if(dragType==='bubble'){if(!_dragged&&(Math.abs(e.clientX-dsx)>4||Math.abs(e.clientY-dsy)>4))_dragged=true;if(_dragged){var x=Math.max(0,Math.min(innerWidth-52,dsl+e.clientX-dsx));var y=Math.max(0,Math.min(innerHeight-52,dst+e.clientY-dsy));bub.style.right='auto';bub.style.bottom='auto';bub.style.left=x+'px';bub.style.top=y+'px'}}
-else if(dragType==='panel'){pan.style.left=Math.max(0,Math.min(innerWidth-380,dsl+e.clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-240,dst+e.clientY-dsy))+'px'}
+else if(dragType==='panel'){pan.style.left=Math.max(0,Math.min(innerWidth-330,dsl+e.clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-200,dst+e.clientY-dsy))+'px'}
 });
 });
 document.addEventListener('touchmove',function(e){
 if(dragType==='bubble'&&e.touches.length===1){e.preventDefault();_dragged=true;var x=Math.max(0,Math.min(innerWidth-52,dsl+e.touches[0].clientX-dsx));var y=Math.max(0,Math.min(innerHeight-52,dst+e.touches[0].clientY-dsy));bub.style.right='auto';bub.style.bottom='auto';bub.style.left=x+'px';bub.style.top=y+'px'}
-else if(dragType==='panel'&&e.touches.length===1){e.preventDefault();pan.style.left=Math.max(0,Math.min(innerWidth-380,dsl+e.touches[0].clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-240,dst+e.touches[0].clientY-dsy))+'px'}
+else if(dragType==='panel'&&e.touches.length===1){e.preventDefault();pan.style.left=Math.max(0,Math.min(innerWidth-330,dsl+e.touches[0].clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-200,dst+e.touches[0].clientY-dsy))+'px'}
 },{passive:false});
 
 document.addEventListener('mouseup',function(e){
@@ -2314,4 +2298,5 @@ dragType='';_dragged=false;
 });
 document.addEventListener('touchend',function(){if(dragType==='bubble'&&!_dragged)kkdw_toggle();dragType='';_dragged=false});
 </script>
+</body>
 </html>
