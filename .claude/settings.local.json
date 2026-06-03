@@ -14,7 +14,8 @@
       "Bash(python3)",
       "Bash(ren tuisong.bat \"推送.bat\")",
       "Bash(python3 *)",
-      "Bash(xxd \"推送.bat\")"
+      "Bash(xxd \"推送.bat\")",
+      "Bash(xxd)"
     ]
   }
 }

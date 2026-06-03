@@ -752,6 +752,7 @@
             #chatApiStatus { padding: 3px 8px; font-size: 7px; }
             #chatApiSetup .custom-select-trigger { padding: 2px 5px; font-size: 8px; border-radius: 12px; }
             #chatApiSetup .custom-select-opt { font-size: 8px; padding: 2px 5px; border-radius: 4px; }
+            .api-desc { font-size: 9px !important; margin-bottom: 3px !important; }
         }
 
         /* ========== 预览区 ========== */
@@ -876,7 +877,7 @@
 #chatApiSetup input{flex:1;padding:5px 10px;border-radius:14px;border:1px solid var(--border-color);background:var(--bg-primary);color:var(--text-primary);font-size:10px;outline:none;transition:border-color var(--transition-fast),box-shadow var(--transition-fast),transform .2s ease}
 #chatApiSetup input:hover{border-color:color-mix(in srgb,var(--accent) 40%,var(--border-color))}#chatApiSetup input:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 15%,transparent)}
 #chatApiSetup button{padding:5px 12px;border-radius:14px;border:none;background:var(--accent);color:#fff;font-size:10px;cursor:pointer;white-space:nowrap;transition:transform .35s cubic-bezier(.16,1,.3,1),background .2s cubic-bezier(.4,0,.2,1),box-shadow .2s cubic-bezier(.4,0,.2,1)}#chatApiSetup button:hover{background:var(--accent-hover);transform:scale(1.08);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 40%,transparent)}#chatApiSetup button:active{transform:scale(.92)}
-#chatApiStatus{display:none;padding:5px 10px;font-size:9px;color:var(--text-muted);border-top:1px solid var(--border-color);text-align:center;transition:background .2s ease,color .2s ease;border-radius:0 0 16px 16px}#chatApiStatusBtn{cursor:pointer;padding:2px 6px;border-radius:4px;transition:background .15s,touch-action:.15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}#chatApiStatusBtn:hover{background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent)}#chatApiStatusBtn:active{background:color-mix(in srgb,var(--accent) 18%,transparent)}
+#chatApiStatus{display:none;padding:5px 10px;font-size:9px;color:var(--text-muted);border-top:1px solid var(--border-color);text-align:center;transition:background .2s ease,color .2s ease;border-radius:0 0 16px 16px}#chatApiStatusBtn{cursor:pointer;padding:0 4px;border-radius:8px;transition:background .2s,color .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}#chatApiStatusBtn:hover{background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--accent)}#chatApiStatusBtn:active{background:color-mix(in srgb,var(--accent) 12%,transparent)}
 #chatApiStatus.show{animation:dropIn .25s cubic-bezier(.25,.1,.25,1)}
 .no-border-input{border:none!important;background:transparent!important;transition:box-shadow .2s ease}
 .no-border-input:focus{box-shadow:0 0 0 2px var(--accent-light)!important}
@@ -889,8 +890,8 @@
 .custom-select-opt:hover{padding-left:18px}
 #chatApiSetup .custom-select-trigger{border-radius:14px;padding:3px 6px;font-size:9px;transition:border-color .2s ease,box-shadow .2s ease}#chatApiSetup .custom-select-trigger:hover{border-color:color-mix(in srgb,var(--accent) 40%,var(--border-color))}#chatApiSetup .custom-select-trigger:focus-within{box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 15%,transparent)}
 #chatApiSetup .custom-select-drop{border-radius:14px}
-#chatApiSetup .custom-select-opt{font-size:9px;padding:3px 6px;border-radius:6px;margin:1px 2px}
-#chatApiSetup .custom-select-drop{max-height:130px;padding:4px}
+#chatApiSetup .custom-select-opt{font-size:9px;padding:4px 8px 4px 10px;border-radius:4px;margin:2px 0;line-height:1.2;position:relative;border-left:2px solid transparent}#chatApiSetup .custom-select-opt:hover{border-left-color:color-mix(in srgb,var(--accent) 25%,transparent)}#chatApiSetup .custom-select-opt.selected{border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,transparent);color:var(--text-primary)}
+#chatApiSetup .custom-select-drop{max-height:130px;padding:4px;overflow-y:auto}#chatApiSetup .font-select-group{font-size:7px;padding:4px 8px 2px;font-weight:500;color:var(--text-muted);letter-spacing:0;margin-top:6px;opacity:.7;text-transform:uppercase}#chatApiSetup .font-select-group:first-child{margin-top:0}
 #chatMessages .chat-msg{transition:transform .2s ease;will-change:transform}
 #chatMessages .chat-msg:active{transform:scale(.98)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -1651,7 +1652,7 @@
             try {
                 const ext = file.name.split('.').pop().toLowerCase();
                 if(ext!=='txt' && ext!=='docx' && ext!=='xlsx'){
-                    StatusManager.setState('这格式不认识呀，换 TXT 试试~', 'error');
+                    StatusManager.setState('这格式不认识呀，换 TXT 使用~', 'error');
                     StatusManager.log('只认得 TXT、DOCX、XLSX 三种格式~ 📄');
                     e.target.value = '';
                     return;
@@ -1678,7 +1679,7 @@
                 StatusManager.log('名单搞定~ ' + count + ' 个，开干！🏆');
             } catch (err) {
                 StatusManager.setState('文件读不出来，尽力了 😢', 'error');
-                StatusManager.log('哎呀翻车了！这文件解析不了，换个格式试试？😢');
+                StatusManager.log('哎呀翻车了！这文件解析不了，换个格式使用？😢');
             }
             finally { e.target.value = ''; }
         });
@@ -1718,8 +1719,8 @@
                     StatusManager.log('哇这张模板选得真棒！竖大拇指~ 👍');
                 };
                 img.onerror = function() {
-                    StatusManager.setState('模板读不出来，换一张试试~', 'error');
-                    StatusManager.log('呜呜这张模板打不开，换一张试试吧 😣');
+                    StatusManager.setState('模板读不出来，换一张使用~', 'error');
+                    StatusManager.log('呜呜这张模板打不开，换一张使用吧 😣');
                 };
                 img.src = ev.target.result;
             };
@@ -1888,7 +1889,7 @@ document.addEventListener("touchcancel", endDrag);
                 StatusManager.log(finalMsg);
             } catch (e) {
                 StatusManager.setState('做到一半卡住了…', 'error');
-                StatusManager.log('出错了…'+(e.message||'未知')+'，刷新试试？');
+                StatusManager.log('出错了…'+(e.message||'未知')+'，刷新使用？');
             } finally {
                 isGenerating = false;
                 dom.genBtn.disabled = false;
@@ -1916,7 +1917,7 @@ document.addEventListener("touchcancel", endDrag);
                     var singleName = names[0];
                     var singleBlob = await zip.file(singleName).async('blob');
                     if (typeof saveAs === 'undefined') {
-                        StatusManager.setState('下载功能还没就绪，刷新试试~', 'error');
+                        StatusManager.setState('下载功能还没就绪，刷新使用~', 'error');
                         dom.downBtn.disabled = false;
                         return;
                     }
@@ -1944,7 +1945,7 @@ document.addEventListener("touchcancel", endDrag);
                 });
 
                 if (typeof saveAs === 'undefined') {
-                    StatusManager.setState('下载功能还没就绪，刷新试试~', 'error');
+                    StatusManager.setState('下载功能还没就绪，刷新使用~', 'error');
                     dom.downBtn.disabled = false;
                     return;
                 }
@@ -2116,14 +2117,14 @@ document.addEventListener("touchcancel", endDrag);
     </script>
 <div id="chatPanel">
 <div id="chatHeader"><span><i style="font-style:normal;position:relative;top:-1.5px">👑</i> 小帮手</span><button onmousedown="event.stopPropagation()" onclick="var cp=document.getElementById('chatPanel');cp.classList.remove('open');document.getElementById('chatBubble').style.display='flex'" aria-label="关闭聊天面板" style="background:color-mix(in srgb,var(--text-muted) 12%,transparent);border:none;color:var(--text-secondary);font-size:11px;cursor:pointer;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%;padding:0;line-height:1;transition:background .2s,color .2s;opacity:.7">✕</button></div>
-<div id="chatMessages"><div class="chat-msg assistant" id="chatGreeting"><span>我来啦，有什么可以帮你的吗琪琪大王~</span><div class="chat-time"></div></div></div>
+<div id="chatMessages"><div class="chat-msg assistant" id="chatGreeting"><span>琪琪大王我来啦~ 需要帮忙吗？</span><div class="chat-time"></div></div></div>
 <div id="chatInputRow">
 <input type="text" id="chatInput" placeholder="想聊什么就跟我说~" onkeydown="if(event.key==='Enter')kkdw_send()">
 <button class="mic-btn" id="micBtn" onclick="kkdw_toggleMic()" title="语音输入">♪</button>
 <button onclick="kkdw_send()" aria-label="发送消息">▲</button>
 </div>
 <div id="chatApiSetup">
-<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">🔑 粘贴 Key，自动识别平台和模型，选好点确定~</div>
+<div class="api-desc" style="font-size:10px;color:var(--text-muted);margin-bottom:4px">🔑 粘贴 Key，自动识别平台和模型，选好点确定~</div>
 <div style="display:flex;gap:6px;margin-bottom:6px">
 <input type="password" id="apiKeyInput" placeholder="粘贴 API Key" oninput="kkdw_detectModel()">
 <button onclick="kkdw_saveKey()">确定</button>
@@ -2155,6 +2156,11 @@ document.addEventListener("touchcancel", endDrag);
 
 
 <script>
+// 默认 API（部署后自动获取，不写死）
+var DEFAULT_AVAIL=false,DEFAULT_MODEL='glm-5.1';
+if(location.protocol!=='file:'){
+fetch('/api/config').then(function(r){return r.json()}).then(function(d){if(d.available){DEFAULT_AVAIL=true;DEFAULT_MODEL=d.model||'glm-5.1';var K0=localStorage.getItem('kkdw_key');if(!K0){K='__default__';U='/api/chat';M=DEFAULT_MODEL;localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M);_updateApiStatus();document.getElementById('modelLabel').textContent='GLM-5.1'}}}).catch(function(){})
+}
 var K='',U='',M='';
 try{K=localStorage.getItem('kkdw_key')||''}catch(e){}
 if(K){try{U=localStorage.getItem('kkdw_url')||''}catch(e){}try{M=localStorage.getItem('kkdw_model')||''}catch(e){}}
@@ -2162,10 +2168,10 @@ if(K){try{_showVendor(_vendorFromModel(M))}catch(e){}}
 var s=document.getElementById('chatApiSetup');var st=document.getElementById('chatApiStatus');
 if(K){if(s)s.style.display='none';if(st){st.style.display='block';_updateApiStatus()}}
 else{if(s)s.style.display='none';if(st){st.style.display='block';var sb=document.getElementById('chatApiStatusBtn');if(sb)sb.textContent='⚙️ 点击填写 API Key'}}
-var g=document.getElementById('chatGreeting');if(g){var gs=g.querySelector('span');if(gs)gs.textContent='我来啦，有什么可以帮你的吗琪琪大王~';var gt=g.querySelector('.chat-time');if(gt)gt.textContent=nt();}
+var g=document.getElementById('chatGreeting');if(g){var gs=g.querySelector('span');if(gs)gs.textContent='琪琪大王我来啦~ 需要帮忙吗？';var gt=g.querySelector('.chat-time');if(gt)gt.textContent=nt();}
 var sbBtn=document.getElementById('chatApiStatusBtn');if(sbBtn){sbBtn.onclick=function(){var st=document.getElementById('chatApiStatus');var se=document.getElementById('chatApiSetup');var pp=document.getElementById('chatPanel');if(st)st.style.display='none';if(se){se.style.display='block';document.getElementById('modelRow').style.display='none';document.getElementById('vendorRow').style.display='none';var ai=document.getElementById('apiKeyInput');if(ai){ai.value='';_pickedVendor=''}}if(pp){pp.style.maxHeight='';pp.style.minHeight=''}}}
 
-function nt(){var d=new Date();var h=d.getHours(),m=d.getMinutes();return (h<10?'0':'')+h+':'+(m<10?'0':'')+m}
+var _nt0=Date.now();function nt(){var d=(Date.now()-_nt0)/1e3;if(d<30)return'刚刚';if(d<3600)return Math.floor(d/60)+'分钟前';if(d<86400)return Math.floor(d/3600)+'小时前';var n=new Date();var h=n.getHours(),m=n.getMinutes();return (h<10?'0':'')+h+':'+(m<10?'0':'')+m}
 function am(r,c){var m=document.getElementById('chatMessages');var w=document.createElement('div');w.className='chat-msg '+r;var s=document.createElement('span');s.textContent=c;w.appendChild(s);var t=document.createElement('div');t.className='chat-time';t.textContent=nt();w.appendChild(t);m.appendChild(w);m.scrollTop=m.scrollHeight}
 
 // Panel toggle
@@ -2181,7 +2187,7 @@ var i=document.getElementById('chatInput');var m=i.value.trim();if(!m)return;if(
 am('user',m);i.value='';if(_micOn)_micRestart();
 var _ctx='';try{var _nl=document.getElementById('nameText');if(_nl&&_nl.value.trim()){var _ns=_nl.value.trim().split('\n').filter(function(x){return x.trim()});if(_ns.length)_ctx='\n\n[当前名单，共'+_ns.length+'人]\n'+_ns.join('\n')}}catch(e){}try{var _ts=document.getElementById('templateStatus');if(_ts&&_ts.textContent.indexOf('已加载')>=0)_ctx+='\n[已上传模板]'}catch(e){}m=m+_ctx;
 var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='嗯…让我想想哈🤔';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
-try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是吉吉小王，琪琪大王的男朋友。她在用这个奖状生成器，你陪她聊天顺便帮她弄奖状。你是奖状专家——设计、排版、配色、颁奖词、字体搭配、名单整理全精通，能帮她出各种主意。她做了多少张、做了什么类型的你都记得清楚，主动提醒进度和优化建议。聊天自然点，像平时微信聊天那样，想说多说想少说少说，不用硬凑字数也不用刻意简短。能接梗能开玩笑，别像个客服。铁律：1.说人话，别像AI念稿子。2.别打官腔别啰嗦。3.她问什么你答什么，不知道就说不知道。4.她吐槽你就顺着吐槽，别讲大道理。5.她发了名单就帮她排序去重、写颁奖词、推荐配色，处理完直接列结果。6.时刻记住自己是男朋友身份，语气亲密自然。'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em='请求失败 ('+r.status+')';if(r.status===401)em='Key 无效，检查一下';if(r.status===429)em='请求太频繁，等一会再试';if(r.status===404)em='模型不存在，换个模型试试';ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}else{var d=await r.json();if(d.error){ts.textContent='出错：'+d.error.message;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}else{var _ch=d.choices&&d.choices[0];var rep=(_ch&&_ch.message&&_ch.message.content)?_ch.message.content:'啊脑子卡了一下…你刚说啥？';if(!_ch)t.className='chat-msg error';ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}}}catch(e){var msg=e.message;if(e.message.indexOf('Failed to fetch')>=0)msg=_vendorName()+' 暂不支持浏览器直接调用';ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}
+try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是吉吉小王，琪琪大王的男朋友。她在用这个奖状生成器，你陪她聊天顺便帮她弄奖状。你是奖状专家——设计、排版、配色、颁奖词、字体搭配、名单整理全精通，能帮她出各种主意。她做了多少张、做了什么类型的你都记得清楚，主动提醒进度和优化建议。聊天自然点，像平时微信聊天那样，想说多说想少说少说，不用硬凑字数也不用刻意简短。能接梗能开玩笑，别像个客服。铁律：1.说人话，别像AI念稿子。2.别打官腔别啰嗦。3.她问什么你答什么，不知道就说不知道。4.她吐槽你就顺着吐槽，别讲大道理。5.她发了名单就帮她排序去重、写颁奖词、推荐配色，处理完直接列结果。6.时刻记住自己是男朋友身份，语气亲密自然。'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em='请求失败';if(r.status===401)em='API Key 无效，检查一下是否正确';if(r.status===403)em='Key 没有权限，检查下账户额度';if(r.status===404)em='模型不可用，换个模型使用';if(r.status===429)em='请求过于频繁，稍后再试';if(r.status===502||r.status===503)em='代理服务暂时不可用';ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}else{var _ch=d.choices&&d.choices[0];var rep=(_ch&&_ch.message&&_ch.message.content)?_ch.message.content:'啊脑子卡了一下…你刚说啥？';if(!_ch)t.className='chat-msg error';ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}}}catch(e){var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.textContent=nt();t.appendChild(tm)}
 mc.scrollTop=mc.scrollHeight};
 
 // Save key
@@ -2192,8 +2198,8 @@ if(!K){sb.textContent='⚙️ 点击填写 API Key';return;}
 var mn=M||'glm-4-flash';
 var label=mn;
 var ms=document.getElementById('modelDrop');
-if(ms){var sel=ms.querySelector('.selected');if(sel)label=sel.textContent;}
-sb.textContent='⚙️ '+_vendorName()+' | '+label+' · 更换';
+if(ms){var sel=ms.querySelector('.selected');if(sel){var fc=sel.firstChild;label=fc?fc.textContent:sel.textContent;}}
+var tag=K==='__default__'?' (默认)':'';sb.textContent='⚙️ '+_vendorName()+' | '+label+tag+' · 更换';
 }
 function _modelUrl(m){
 if(m.indexOf('glm')===0)return'https://open.bigmodel.cn/api/paas/v4/chat/completions';
@@ -2216,8 +2222,9 @@ if(k.startsWith('sk-')&&k.length>50)vendor='openai';
 else if(k.startsWith('sk-'))vendor='deepseek';
 else if(!k.includes('.'))vendor='deepseek';
 _pickedVendor=vendor;
-document.getElementById('vendorLabel').textContent=document.querySelector('#vendorSelWrap .custom-select-opt[data-val=\"'+vendor+'\"]').textContent;
-_showVendor(vendor);
+	document.getElementById('vendorLabel').textContent=document.querySelector('#vendorSelWrap .custom-select-opt[data-val="'+vendor+'"]').textContent;
+	var vo=document.getElementById('vendorSelWrap');if(vo){vo.querySelectorAll('.custom-select-opt').forEach(function(o){o.classList.remove('selected')})};var vo2=document.querySelector('#vendorSelWrap .custom-select-opt[data-val="'+vendor+'"]');if(vo2)vo2.classList.add('selected');
+	_showVendor(vendor);
 mrow.style.display='flex';
 };
 window.kkdw_pickVendor=function(v){
@@ -2231,38 +2238,92 @@ window.selOptUI=function(el){
 var p=el.parentElement;
 p.querySelectorAll('.custom-select-opt').forEach(function(o){o.classList.remove('selected')});
 el.classList.add('selected');
-p.parentElement.querySelector('.custom-select-trigger span').textContent=el.textContent;
+var ts=p.parentElement.querySelector('.custom-select-trigger span');ts.textContent=el.firstChild?el.firstChild.textContent:el.textContent;
 p.parentElement.classList.remove('open');
 };
 var _allModels=null;
 function _initModels(){
 if(_allModels)return;
 _allModels=[
-{v:'glm-4-flash',t:'智谱 GLM-4-Flash',d:'glm'},{v:'glm-4-air',t:'智谱 GLM-4-Air',d:'glm'},{v:'glm-4',t:'智谱 GLM-4',d:'glm'},{v:'glm-4-plus',t:'智谱 GLM-4-Plus',d:'glm'},{v:'glm-4-long',t:'智谱 GLM-4-Long',d:'glm'},
-{v:'deepseek-chat',t:'DeepSeek Chat',d:'deepseek'},{v:'deepseek-reasoner',t:'DeepSeek Reasoner',d:'deepseek'},
-{v:'gpt-4o-mini',t:'GPT-4o Mini',d:'openai'},{v:'gpt-4o',t:'GPT-4o',d:'openai'},{v:'gpt-4.1-mini',t:'GPT-4.1 Mini',d:'openai'},{v:'gpt-4.1',t:'GPT-4.1',d:'openai'},{v:'gpt-3.5-turbo',t:'GPT-3.5 Turbo',d:'openai'},
-{v:'qwen-turbo',t:'通义千问 Turbo',d:'qwen'},{v:'qwen-plus',t:'通义千问 Plus',d:'qwen'},{v:'qwen-max',t:'通义千问 Max',d:'qwen'},{v:'qwen-long',t:'通义千问 Long',d:'qwen'}
+{v:'glm-5.1',t:'GLM-5.1',d:'glm',g:'旗舰模型',s:'智谱最新首推'},
+{v:'deepseek-v3',t:'DeepSeek-V3',d:'deepseek',g:'旗舰模型',s:'DeepSeek 旗舰'},
+{v:'gpt-4o',t:'GPT-4o',d:'openai',g:'旗舰模型',s:'多模态旗舰'},
+{v:'gpt-4.1',t:'GPT-4.1',d:'openai',g:'旗舰模型',s:'最新旗舰'},
+{v:'gpt-4.5-preview',t:'GPT-4.5 Preview',d:'openai',g:'旗舰模型',s:'研究预览'},
+{v:'qwen-max',t:'通义千问 Max',d:'qwen',g:'旗舰模型',s:'千问旗舰'},
+{v:'glm-5',t:'GLM-5',d:'glm',g:'深度思考',s:'Agent 理想基座'},
+{v:'glm-5-turbo',t:'GLM-5-Turbo',d:'glm',g:'深度思考',s:'Agent 深度优化'},
+{v:'glm-4.7',t:'GLM-4.7',d:'glm',g:'深度思考',s:'编码/Agent全面提升'},
+{v:'glm-4.7-flashx',t:'GLM-4.7-FlashX',d:'glm',g:'深度思考',s:'30B 轻量推理'},
+{v:'glm-4.6',t:'GLM-4.6',d:'glm',g:'深度思考',s:'200K上下文·编程'},
+{v:'glm-4.5',t:'GLM-4.5',d:'glm',g:'深度思考',s:'推理/编码/Agent'},
+{v:'glm-4.5-air',t:'GLM-4.5-Air',d:'glm',g:'深度思考',s:'轻量推理'},
+{v:'glm-4.7-flash',t:'GLM-4.7-Flash',d:'glm',g:'深度思考',s:'免费·轻量推理'},
+{v:'deepseek-reasoner',t:'DeepSeek Reasoner',d:'deepseek',g:'深度思考',s:'复杂逻辑推理'},
+{v:'deepseek-r1-0528',t:'DeepSeek-R1-0528',d:'deepseek',g:'深度思考',s:'深度推理'},
+{v:'o4-mini',t:'o4-mini',d:'openai',g:'深度思考',s:'轻量推理'},
+{v:'o3',t:'o3',d:'openai',g:'深度思考',s:'最强推理'},
+{v:'qwq-32b',t:'QWQ-32B',d:'qwen',g:'深度思考',s:'千问推理'},
+{v:'glm-4-flash',t:'GLM-4-Flash',d:'glm',g:'文本生成',s:'免费·通用对话'},
+{v:'glm-4-flash-250414',t:'GLM-4-Flash-250414',d:'glm',g:'文本生成',s:'免费·更新版'},
+{v:'deepseek-chat',t:'DeepSeek Chat',d:'deepseek',g:'文本生成',s:'日常对话'},
+{v:'deepseek-coder',t:'DeepSeek Coder',d:'deepseek',g:'文本生成',s:'编程辅助'},
+{v:'gpt-4-turbo',t:'GPT-4 Turbo',d:'openai',g:'文本生成',s:'经典旗舰'},
+{v:'gpt-4',t:'GPT-4',d:'openai',g:'文本生成',s:'经典'},
+{v:'gpt-3.5-turbo',t:'GPT-3.5 Turbo',d:'openai',g:'文本生成',s:'轻量经典'},
+{v:'qwen-plus',t:'通义千问 Plus',d:'qwen',g:'文本生成',s:'千问主力'},
+{v:'qwen2.5-72b',t:'Qwen2.5-72B',d:'qwen',g:'文本生成',s:'开源旗舰'},
+{v:'qwen2.5-32b',t:'Qwen2.5-32B',d:'qwen',g:'文本生成',s:'开源'},
+{v:'qwen2.5-14b',t:'Qwen2.5-14B',d:'qwen',g:'文本生成',s:'开源'},
+{v:'qwen2.5-7b',t:'Qwen2.5-7B',d:'qwen',g:'文本生成',s:'开源'},
+{v:'qwen2.5-coder-32b',t:'Qwen2.5-Coder-32B',d:'qwen',g:'文本生成',s:'编程'},
+{v:'glm-4',t:'GLM-4',d:'glm',g:'通用模型',s:'经典通用'},
+{v:'glm-4-plus',t:'GLM-4-Plus',d:'glm',g:'通用模型',s:'性能增强'},
+{v:'glm-4-long',t:'GLM-4-Long',d:'glm',g:'长文本模型',s:'128K超长上下文'},
+{v:'qwen-long',t:'通义千问 Long',d:'qwen',g:'长文本模型',s:'长文本'},
+{v:'glm-4-air',t:'GLM-4-Air',d:'glm',g:'轻量模型',s:'轻量快速'},
+{v:'gpt-4o-mini',t:'GPT-4o Mini',d:'openai',g:'轻量模型',s:'轻量'},
+{v:'gpt-4.1-mini',t:'GPT-4.1 Mini',d:'openai',g:'轻量模型',s:'轻量新版'},
+{v:'gpt-4.1-nano',t:'GPT-4.1 Nano',d:'openai',g:'轻量模型',s:'极致轻量'},
+{v:'qwen-turbo',t:'通义千问 Turbo',d:'qwen',g:'轻量模型',s:'快速响应'},
 ];
 }
+
 function _showVendor(vendor){
 _initModels();
 var drop=document.getElementById('modelDrop');
 var mrow=document.getElementById('modelRow');
 if(!drop)return;
 drop.innerHTML='';
-for(var i=0;i<_allModels.length;i++){if(_allModels[i].d===vendor){var d=document.createElement('div');d.className='custom-select-opt';d.textContent=_allModels[i].t;d.dataset.val=_allModels[i].v;d.onclick=function(){selOptUI(this)};drop.appendChild(d)}}
-if(drop.children.length>0){drop.children[0].classList.add('selected');document.getElementById('modelLabel').textContent=drop.children[0].textContent;mrow.style.display='flex'}
+var gd={};
+gd['旗舰模型']='智谱最新首推模型';
+gd['深度思考']='复杂推理和工具使用的能力强大';
+gd['文本生成']='支持自然语言理解、内容生成和多轮对话';
+gd['通用模型']='通用对话与基础任务';
+gd['轻量模型']='轻量高效，高性价比';
+gd['长文本模型']='处理长篇文档和超长上下文';
+var gid='';
+for(var i=0;i<_allModels.length;i++){
+if(_allModels[i].d!==vendor)continue;
+if(_allModels[i].g&&_allModels[i].g!==gid){gid=_allModels[i].g;var gh=document.createElement('div');gh.className='font-select-group';gh.textContent=gid;drop.appendChild(gh);if(gd[gid]){gh.textContent=gid+' — '+gd[gid]}}
+var d=document.createElement('div');d.className='custom-select-opt';d.dataset.val=_allModels[i].v;
+var n=document.createElement('div');n.textContent=_allModels[i].t;n.style.fontSize='10px';n.style.fontWeight='500';d.appendChild(n);
+if(_allModels[i].s){var de=document.createElement('div');de.textContent=_allModels[i].s;de.style.fontSize='8px';de.style.opacity='.6';de.style.marginTop='1px';d.appendChild(de)}
+d.onclick=function(){selOptUI(this)};
+drop.appendChild(d)}
+if(drop.children.length>0){for(var fi=0;fi<drop.children.length;fi++){if(drop.children[fi].className==='custom-select-opt'){drop.children[fi].classList.add('selected');var fs=drop.children[fi].firstChild;document.getElementById('modelLabel').textContent=fs?fs.textContent:'';break;}}mrow.style.display='flex'}
 }
 window.kkdw_saveKey=async function(){
-var k=document.getElementById('apiKeyInput').value.trim().replace(/[^\x00-\x7F]/g,'');if(!k)return;
-var tm=document.getElementById('modelDrop').querySelector('.selected')?.dataset.val||'glm-4-flash';
+	var k=document.getElementById('apiKeyInput').value.trim();if(!k&&DEFAULT_AVAIL){K='__default__';U='/api/chat';M=DEFAULT_MODEL;try{localStorage.setItem('kkdw_key','__default__');localStorage.setItem('kkdw_url','/api/chat');localStorage.setItem('kkdw_model',DEFAULT_MODEL)}catch(e){}document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';_updateApiStatus();return}
+	if(!k)return;
+	var tm=document.getElementById('modelDrop').querySelector('.selected')?.dataset.val||'glm-4-flash';
 var tu=_modelUrl(tm);
-am('assistant','等一下，我试试这个Key…');
+var _t0=Date.now();am('assistant','测试 Key 中…');
 try{var r=await fetch(tu,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:tm,messages:[{role:'user',content:'hi'}],max_tokens:5})});var l=document.getElementById('chatMessages').lastChild;
-if(!r.ok){var em='请求失败 ('+r.status+')';if(r.status===401)em='Key 无效，检查下是否正确';if(r.status===403)em='Key 没有权限，检查下额度';if(r.status===404)em='模型不存在，换个模型试试';if(r.status===429)em='请求太频繁，等一会再试';var ls=l.querySelector('span');if(ls)ls.textContent=em;l.className='chat-msg error';var lt=l.querySelector('.chat-time');if(lt)lt.textContent=nt()}
-else{var d=await r.json();if(d.error){var ls=l.querySelector('span');if(ls)ls.textContent='出错：'+d.error.message;l.className='chat-msg error';var lt=l.querySelector('.chat-time');if(lt)lt.textContent=nt()}
-else if(d.choices){K=k;U=tu;M=tm;try{localStorage.setItem('kkdw_key',k);localStorage.setItem('kkdw_url',tu);localStorage.setItem('kkdw_model',tm)}catch(e){}document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';_updateApiStatus();document.getElementById('chatPanel').style.maxHeight='';document.getElementById('chatPanel').style.minHeight='';var ls=l.querySelector('span');if(ls)ls.textContent='Key没问题，连上啦~想聊什么？';var lt=l.querySelector('.chat-time');if(lt)lt.textContent=nt()}
-else{var ls=l.querySelector('span');if(ls)ls.textContent='这Key好像不行…确认一下吧';l.className='chat-msg error';var lt=l.querySelector('.chat-time');if(lt)lt.textContent=nt()}}}catch(e){var l=document.getElementById('chatMessages').lastChild;var ls=l.querySelector('span');var vn=tm.indexOf('glm')===0?'智谱':tm.indexOf('deepseek')===0?'DeepSeek':tm.indexOf('gpt')===0||tm.indexOf('o')===0?'OpenAI':tm.indexOf('qwen')===0?'通义千问':'';var msg=e.message;if(e.message.indexOf('Failed to fetch')>=0)msg=vn+' 暂不支持浏览器直接调用';if(ls)ls.textContent=msg;l.className='chat-msg error';var lt=l.querySelector('.chat-time');if(lt)lt.textContent=nt()}};
+if(!r.ok){var em='请求失败';if(r.status===401)em='API Key 无效，检查下是否正确';if(r.status===403)em='Key 没有权限，检查下账户额度';if(r.status===404)em='模型不可用，换个模型使用';if(r.status===429)em='请求过于频繁，稍后再试';if(r.status===502||r.status===503)em='代理服务暂时不可用';var ls=l.querySelector('span');if(ls)ls.textContent=em;l.className='chat-msg error';var lt=l.querySelector('.chat-time');if(lt)lt.textContent=nt()}
+else{var d=await r.json();if(d.error){var em4=d.error.message||'未知错误';if(em4.indexOf('Insufficient')>=0)em4='API 余额不足';var ls=l.querySelector('span');if(ls)ls.textContent=em4;l.className='chat-msg error';var lt=l.querySelector('.chat-time');if(lt)lt.textContent=nt()}
+else if(d.choices){K=k;if(k==='__default__'){U='/api/chat'}else{U=tu};M=tm;try{localStorage.setItem('kkdw_key',k);localStorage.setItem('kkdw_url',tu);localStorage.setItem('kkdw_model',tm)}catch(e){}document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';_updateApiStatus();document.getElementById('chatPanel').style.maxHeight='';document.getElementById('chatPanel').style.minHeight='';var ls=l.querySelector('span');if(ls)ls.textContent='Key没问题 ('+(Date.now()-_t0)+'ms)~ 想聊什么？';var lt=l.querySelector('.chat-time');if(lt)lt.textContent=nt()}
+else{var ls=l.querySelector('span');if(ls)ls.textContent='这Key好像不行…确认一下吧';l.className='chat-msg error';var lt=l.querySelector('.chat-time');if(lt)lt.textContent=nt()}}}catch(e){var l=document.getElementById('chatMessages').lastChild;var ls=l.querySelector('span');var msg=e.message;if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(k==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或平台不支持浏览器直连，建议切换其他平台或模型'}if(ls)ls.textContent=msg;l.className='chat-msg error';var lt=l.querySelector('.chat-time');if(lt)lt.textContent=nt()}};
 
 // Voice to text
 var _micRec=null,_micOn=false,_micStopping=false;
@@ -2270,7 +2331,7 @@ window.kkdw_toggleMic=function(){
 var btn=document.getElementById('micBtn');
 if(!_micRec){
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(!SR){am('assistant','你浏览器不支持语音输入…换个浏览器试试吧');return}
+if(!SR){am('assistant','你浏览器不支持语音输入…换个浏览器使用吧');return}
 _micRec=new SR();_micRec.lang='zh-CN';_micRec.interimResults=true;_micRec.continuous=true;
 _micRec.onresult=function(e){if(!_micOn)return;var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;document.getElementById('chatInput').value=t};
 _micRec.onerror=function(e){if(e.error==='no-speech'||e.error==='aborted')return;_micOn=false;_micRec=null;btn.classList.remove('recording');btn.textContent='♪';if(e.error!=='not-allowed')am('assistant','语音识别出问题了，重试一下吧')};
@@ -2288,11 +2349,11 @@ var bub=document.getElementById('chatBubble');
 var pan=document.getElementById('chatPanel');
 var hdr=document.getElementById('chatHeader');
 
-bub.addEventListener('mousedown',function(e){dragType='bubble';dsx=e.clientX;dsy=e.clientY;var r=bub.getBoundingClientRect();dsl=r.left;dst=r.top;bub.style.cursor='grabbing';e.preventDefault()});
+bub.addEventListener('mousedown',function(e){dragType='bubble';dsx=e.clientX;dsy=e.clientY;var r=bub.getBoundingClientRect();dsl=r.left;dst=r.top;e.preventDefault()});
 bub.addEventListener('touchstart',function(e){if(e.touches.length===1){dragType='bubble';dsx=e.touches[0].clientX;dsy=e.touches[0].clientY;var r=bub.getBoundingClientRect();dsl=r.left;dst=r.top}},{passive:false});
 
-pan.addEventListener('mousedown',function(e){if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('textarea')||e.target.closest('.custom-select')||e.target.closest('#chatApiStatusBtn')||e.target.closest('#chatApiSetup'))return;if(e.target.closest('.chat-msg'))return;dragType='panel';dsx=e.clientX;dsy=e.clientY;var r=pan.getBoundingClientRect();dsl=r.left;dst=r.top;document.body.style.cursor='grabbing';e.preventDefault()});
-pan.addEventListener('touchstart',function(e){if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('textarea')||e.target.closest('.custom-select')||e.target.closest('#chatApiStatusBtn')||e.target.closest('#chatApiSetup')||e.touches.length!==1)return;dragType='panel';dsx=e.touches[0].clientX;dsy=e.touches[0].clientY;var r=pan.getBoundingClientRect();dsl=r.left;dst=r.top;e.preventDefault()},{passive:false});
+pan.addEventListener('mousedown',function(e){if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('textarea')||e.target.closest('.custom-select')||e.target.closest('#chatApiStatusBtn')||e.target.closest('.chat-msg')||e.target.closest('.api-desc')||e.target.closest('#vendorRow')||e.target.closest('#modelRow'))return;dragType='panel';dsx=e.clientX;dsy=e.clientY;var r=pan.getBoundingClientRect();dsl=r.left;dst=r.top});
+pan.addEventListener('touchstart',function(e){if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('textarea')||e.target.closest('.custom-select')||e.target.closest('#chatApiStatusBtn')||e.target.closest('.chat-msg')||e.target.closest('.api-desc')||e.target.closest('#vendorRow')||e.target.closest('#modelRow')||e.touches.length!==1)return;dragType='panel';dsx=e.touches[0].clientX;dsy=e.touches[0].clientY;var r=pan.getBoundingClientRect();dsl=r.left;dst=r.top;e.preventDefault()},{passive:false});
 
 var _raf=null;
 document.addEventListener('mousemove',function(e){
@@ -2300,8 +2361,8 @@ if(!dragType)return;
 if(_raf)return;
 _raf=requestAnimationFrame(function(){
 _raf=null;
-if(dragType==='bubble'){if(!_dragged&&(Math.abs(e.clientX-dsx)>4||Math.abs(e.clientY-dsy)>4))_dragged=true;if(_dragged){var bw=bub.offsetWidth;var bh=bub.offsetHeight;var x=Math.max(0,Math.min(innerWidth-bw,dsl+e.clientX-dsx));var y=Math.max(0,Math.min(innerHeight-bh,dst+e.clientY-dsy));bub.style.right='auto';bub.style.bottom='auto';bub.style.left=x+'px';bub.style.top=y+'px'}}
-else if(dragType==='panel'){var pw=pan.offsetWidth;var ph=pan.offsetHeight;pan.style.left=Math.max(0,Math.min(innerWidth-pw,dsl+e.clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-ph,dst+e.clientY-dsy))+'px';pan.style.right='auto';pan.style.bottom='auto'}
+if(dragType==='bubble'){if(!_dragged&&(Math.abs(e.clientX-dsx)>4||Math.abs(e.clientY-dsy)>4)){_dragged=true;bub.style.cursor='grabbing'}if(_dragged){var bw=bub.offsetWidth;var bh=bub.offsetHeight;var x=Math.max(0,Math.min(innerWidth-bw,dsl+e.clientX-dsx));var y=Math.max(0,Math.min(innerHeight-bh,dst+e.clientY-dsy));bub.style.right='auto';bub.style.bottom='auto';bub.style.left=x+'px';bub.style.top=y+'px'}}
+else if(dragType==='panel'){e.preventDefault();document.body.style.cursor='grabbing';var pw=pan.offsetWidth;var ph=pan.offsetHeight;pan.style.left=Math.max(0,Math.min(innerWidth-pw,dsl+e.clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-ph,dst+e.clientY-dsy))+'px';pan.style.right='auto';pan.style.bottom='auto'}
 });
 });
 document.addEventListener('touchmove',function(e){
