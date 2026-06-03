@@ -1568,8 +1568,8 @@
 
         // 手动输入坐标
         function manualSetCoord() {
-            const x = parseInt(dom.inputX.value);
-            const y = parseInt(dom.inputY.value);
+            const x = parseInt(dom.inputX.value, 10);
+            const y = parseInt(dom.inputY.value, 10);
             if (!isNaN(x)) textX = x;
             if (!isNaN(y)) textY = y;
             updateCoordUI();
@@ -1600,7 +1600,7 @@
             var actualT = cr.top - wr.top;
             scaleRatio = Math.min(cr.width / dom.canvas.width, cr.height / dom.canvas.height);
 
-            var val = parseInt(dom.fontSize.value);
+            var val = parseInt(dom.fontSize.value, 10);
             if (!isNaN(val) && val > 0) {
                 canvasFontSize = Math.round(val / scaleRatio);
             }
@@ -1622,7 +1622,7 @@
             var actualT = cr.top - wr.top;
             scaleRatio = Math.min(cr.width / dom.canvas.width, cr.height / dom.canvas.height);
 
-            var val = parseInt(dom.fontSize.value);
+            var val = parseInt(dom.fontSize.value, 10);
             if (!isNaN(val) && val > 0) {
                 canvasFontSize = Math.round(val / scaleRatio);
             }
@@ -1707,7 +1707,7 @@
                     updateCoordUI();
                     refreshText();
                     syncPreviewPosition();
-                    var initVal = parseInt(dom.fontSize.value);
+                    var initVal = parseInt(dom.fontSize.value, 10);
                     if (!isNaN(initVal) && initVal > 0) { canvasFontSize = Math.round(initVal / scaleRatio); }
                     StatusManager.setState('模板就位！准备好啦~', 'success');
                     StatusManager.log('哇这张模板选得真棒！竖大拇指~ 👍');
@@ -1975,7 +1975,7 @@ document.addEventListener("touchcancel", endDrag);
         dom.fontSize.addEventListener("input", () => {
             refreshText();
             // 快照画布坐标字号，锁定用户意图，避免后续视口变化影响下载结果
-            const val = parseInt(dom.fontSize.value);
+            const val = parseInt(dom.fontSize.value, 10);
             if (template && scaleRatio > 0 && !isNaN(val) && val > 0) {
                 canvasFontSize = Math.round(val / scaleRatio);
             }
@@ -2099,7 +2099,7 @@ document.addEventListener("touchcancel", endDrag);
         (function init() {
             StatusManager.init();
             dom.fontSize.value = isMobile ? 10 : 30;
-            canvasFontSize = parseInt(dom.fontSize.value);
+            canvasFontSize = parseInt(dom.fontSize.value, 10);
             updateCoordUI();
             refreshText();
             dom.inputX.value = textX;
@@ -2166,7 +2166,7 @@ function am(r,c){var m=document.getElementById('chatMessages');var w=document.cr
 window.kkdw_toggle=function(){
 var b=document.getElementById('chatBubble');var p=document.getElementById('chatPanel');
 if(p.classList.contains('open')){p.classList.remove('open');b.style.display='flex'}
-else{b.style.display='none';p.classList.add('open');var ap=document.getElementById('chatApiSetup');var ast=document.getElementById('chatApiStatus');if(ap.style.display!=='none'){ap.style.display='none';ast.style.display='block';_updateApiStatus()}if(innerWidth>600){p.style.left=Math.max(12,(innerWidth-300)/2)+'px';p.style.top=Math.max(12,(innerHeight-440)/2)+'px';document.getElementById('chatInput').focus()}else{p.style.left='';p.style.top=''}}
+else{b.style.display='none';p.classList.add('open');var ap=document.getElementById('chatApiSetup');var ast=document.getElementById('chatApiStatus');if(ap.style.display!=='none'){ap.style.display='none';ast.style.display='block';_updateApiStatus()}if(innerWidth>600){var _pw2=p.offsetWidth;var _ph2=p.offsetHeight;p.style.left=Math.max(12,(innerWidth-_pw2)/2)+'px';p.style.top=Math.max(12,(innerHeight-_ph2)/2)+'px';document.getElementById('chatInput').focus()}else{p.style.left='';p.style.top=''}}
 };
 
 // Send
@@ -2292,13 +2292,14 @@ if(!dragType)return;
 if(_raf)return;
 _raf=requestAnimationFrame(function(){
 _raf=null;
-if(dragType==='bubble'){if(!_dragged&&(Math.abs(e.clientX-dsx)>4||Math.abs(e.clientY-dsy)>4))_dragged=true;if(_dragged){var x=Math.max(0,Math.min(innerWidth-52,dsl+e.clientX-dsx));var y=Math.max(0,Math.min(innerHeight-52,dst+e.clientY-dsy));bub.style.right='auto';bub.style.bottom='auto';bub.style.left=x+'px';bub.style.top=y+'px'}}
-else if(dragType==='panel'){pan.style.left=Math.max(0,Math.min(innerWidth-300,dsl+e.clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-200,dst+e.clientY-dsy))+'px'}
+if(dragType==='bubble'){if(!_dragged&&(Math.abs(e.clientX-dsx)>4||Math.abs(e.clientY-dsy)>4))_dragged=true;if(_dragged){var bw=bub.offsetWidth;var bh=bub.offsetHeight;var x=Math.max(0,Math.min(innerWidth-bw,dsl+e.clientX-dsx));var y=Math.max(0,Math.min(innerHeight-bh,dst+e.clientY-dsy));bub.style.right='auto';bub.style.bottom='auto';bub.style.left=x+'px';bub.style.top=y+'px'}}
+else if(dragType==='panel'){var pw=pan.offsetWidth;var ph=pan.offsetHeight;pan.style.left=Math.max(0,Math.min(innerWidth-pw,dsl+e.clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-ph,dst+e.clientY-dsy))+'px'}
 });
 });
 document.addEventListener('touchmove',function(e){
-if(dragType==='bubble'&&e.touches.length===1){e.preventDefault();_dragged=true;var x=Math.max(0,Math.min(innerWidth-52,dsl+e.touches[0].clientX-dsx));var y=Math.max(0,Math.min(innerHeight-52,dst+e.touches[0].clientY-dsy));bub.style.right='auto';bub.style.bottom='auto';bub.style.left=x+'px';bub.style.top=y+'px'}
-else if(dragType==='panel'&&e.touches.length===1){e.preventDefault();pan.style.left=Math.max(0,Math.min(innerWidth-300,dsl+e.touches[0].clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-200,dst+e.touches[0].clientY-dsy))+'px'}
+var _bw=bub.offsetWidth,_bh=bub.offsetHeight,_pw=pan.offsetWidth,_ph=pan.offsetHeight;
+if(dragType==='bubble'&&e.touches.length===1){e.preventDefault();_dragged=true;var x=Math.max(0,Math.min(innerWidth-_bw,dsl+e.touches[0].clientX-dsx));var y=Math.max(0,Math.min(innerHeight-_bh,dst+e.touches[0].clientY-dsy));bub.style.right='auto';bub.style.bottom='auto';bub.style.left=x+'px';bub.style.top=y+'px'}
+else if(dragType==='panel'&&e.touches.length===1){e.preventDefault();pan.style.left=Math.max(0,Math.min(innerWidth-_pw,dsl+e.touches[0].clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-_ph,dst+e.touches[0].clientY-dsy))+'px'}
 },{passive:false});
 
 document.addEventListener('mouseup',function(e){

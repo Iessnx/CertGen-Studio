@@ -11,7 +11,10 @@
       "Bash(git remote *)",
       "Bash(GIT_TERMINAL_PROMPT=0 git -c http.extraHeader=\"Host: github.com\" push origin main)",
       "Bash(git revert *)",
-      "Bash(python3)"
+      "Bash(python3)",
+      "Bash(ren tuisong.bat \"推送.bat\")",
+      "Bash(python3 *)",
+      "Bash(xxd \"推送.bat\")"
     ]
   }
 }
