@@ -2287,40 +2287,31 @@ var bub=document.getElementById('chatBubble');
 var pan=document.getElementById('chatPanel');
 var hdr=document.getElementById('chatHeader');
 
-bub.addEventListener('mousedown',function(e){dragType='bubble';dsx=e.clientX;dsy=e.clientY;var r=bub.getBoundingClientRect();dsl=r.left;dst=r.top;bub.style.cursor='grabbing';e.preventDefault();pan.style.willChange=''});
-bub.addEventListener('touchstart',function(e){if(e.touches.length===1){dragType='bubble';dsx=e.touches[0].clientX;dsy=e.touches[0].clientY;var r=bub.getBoundingClientRect();dsl=r.left;dst=r.top;pan.style.willChange=''}},{passive:false});
-pan.addEventListener('mousedown',function(e){if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('textarea'))return;if(e.target.closest('.chat-msg'))return;dragType='panel';dsx=e.clientX;dsy=e.clientY;var r=pan.getBoundingClientRect();dsl=r.left;dst=r.top;document.body.style.cursor='grabbing';e.preventDefault();pan.style.willChange='transform'});
-pan.addEventListener('touchstart',function(e){if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('textarea')||e.target.closest('#chatApiStatus')||e.target.closest('#chatApiSetup')||e.touches.length!==1)return;dragType='panel';dsx=e.touches[0].clientX;dsy=e.touches[0].clientY;var r=pan.getBoundingClientRect();dsl=r.left;dst=r.top;pan.style.willChange='transform';e.preventDefault()},{passive:false});
+bub.addEventListener('mousedown',function(e){dragType='bubble';dsx=e.clientX;dsy=e.clientY;var r=bub.getBoundingClientRect();dsl=r.left;dst=r.top;bub.style.cursor='grabbing';e.preventDefault()});
+bub.addEventListener('touchstart',function(e){if(e.touches.length===1){dragType='bubble';dsx=e.touches[0].clientX;dsy=e.touches[0].clientY;var r=bub.getBoundingClientRect();dsl=r.left;dst=r.top}},{passive:false});
+pan.addEventListener('mousedown',function(e){if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('textarea'))return;if(e.target.closest('.chat-msg'))return;dragType='panel';dsx=e.clientX;dsy=e.clientY;var r=pan.getBoundingClientRect();dsl=r.left;dst=r.top;document.body.style.cursor='grabbing';e.preventDefault()});
+pan.addEventListener('touchstart',function(e){if(e.target.closest('button')||e.target.closest('input')||e.target.closest('select')||e.target.closest('textarea')||e.target.closest('#chatApiStatus')||e.target.closest('#chatApiSetup')||e.touches.length!==1)return;dragType='panel';dsx=e.touches[0].clientX;dsy=e.touches[0].clientY;var r=pan.getBoundingClientRect();dsl=r.left;dst=r.top;e.preventDefault()},{passive:false});
 
-var _dlx=0,_dly=0,_dragRAF=null;
-document.addEventListener('mousemove',function(e){if(!dragType)return;_dlx=e.clientX;_dly=e.clientY;if(!_dragRAF)_dragRAF=requestAnimationFrame(_dragUpdate)});
-document.addEventListener('touchmove',function(e){if(!dragType||e.touches.length!==1)return;e.preventDefault();_dlx=e.touches[0].clientX;_dly=e.touches[0].clientY;if(!_dragRAF)_dragRAF=requestAnimationFrame(_dragUpdate)},{passive:false});
+var _raf=null;
+document.addEventListener('mousemove',function(e){
+if(!dragType)return;
+if(_raf)return;
+_raf=requestAnimationFrame(function(){
+_raf=null;
+if(dragType==='bubble'){if(!_dragged&&(Math.abs(e.clientX-dsx)>4||Math.abs(e.clientY-dsy)>4))_dragged=true;if(_dragged){var x=Math.max(0,Math.min(innerWidth-52,dsl+e.clientX-dsx));var y=Math.max(0,Math.min(innerHeight-52,dst+e.clientY-dsy));bub.style.right='auto';bub.style.bottom='auto';bub.style.left=x+'px';bub.style.top=y+'px'}}
+else if(dragType==='panel'){pan.style.left=Math.max(0,Math.min(innerWidth-380,dsl+e.clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-240,dst+e.clientY-dsy))+'px'}
+});
+});
+document.addEventListener('touchmove',function(e){
+if(dragType==='bubble'&&e.touches.length===1){e.preventDefault();_dragged=true;var x=Math.max(0,Math.min(innerWidth-52,dsl+e.touches[0].clientX-dsx));var y=Math.max(0,Math.min(innerHeight-52,dst+e.touches[0].clientY-dsy));bub.style.right='auto';bub.style.bottom='auto';bub.style.left=x+'px';bub.style.top=y+'px'}
+else if(dragType==='panel'&&e.touches.length===1){e.preventDefault();pan.style.left=Math.max(0,Math.min(innerWidth-380,dsl+e.touches[0].clientX-dsx))+'px';pan.style.top=Math.max(0,Math.min(innerHeight-240,dst+e.touches[0].clientY-dsy))+'px'}
+},{passive:false});
 
-function _dragUpdate(){
-_dragRAF=null;
-var dx=_dlx-dsx,dy=_dly-dsy;
-if(dragType==='bubble'){
-if(!_dragged&&(Math.abs(dx)>4||Math.abs(dy)>4))_dragged=true;
-if(_dragged){bub.style.right='auto';bub.style.bottom='auto';bub.style.left=Math.max(0,Math.min(innerWidth-52,dsl+dx))+'px';bub.style.top=Math.max(0,Math.min(innerHeight-52,dst+dy))+'px'}
-}else if(dragType==='panel'){
-pan.style.transform='translate('+dx+'px,'+dy+'px)'
-}
-}
-function _dragEnd(){
-if(dragType==='bubble'){
-if(!_dragged)kkdw_toggle()
-}else if(dragType==='panel'){
-pan.style.willChange='';
-var t=pan.style.transform;
-if(t&&t!=='none'){
-var m=t.match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
-if(m){pan.style.left=(dsl+parseFloat(m[1]))+'px';pan.style.top=(dst+parseFloat(m[2]))+'px';pan.style.transform=''}
-}
-}
-dragType='';_dragged=false;document.body.style.cursor='';bub.style.cursor='';
-if(_dragRAF){cancelAnimationFrame(_dragRAF);_dragRAF=null}
-}
-document.addEventListener('mouseup',_dragEnd);
-document.addEventListener('touchend',_dragEnd);
+document.addEventListener('mouseup',function(e){
+document.body.style.cursor='';bub.style.cursor='';
+if(dragType==='bubble'&&!_dragged)kkdw_toggle();
+dragType='';_dragged=false;
+});
+document.addEventListener('touchend',function(){if(dragType==='bubble'&&!_dragged)kkdw_toggle();dragType='';_dragged=false});
 </script>
 </html>
