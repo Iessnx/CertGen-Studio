@@ -16,7 +16,9 @@
       "Bash(python3 *)",
       "Bash(xxd \"推送.bat\")",
       "Bash(xxd)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(awk 'NR==2319{print} NR>=2319 && NR<=2329' index.html)",
+      "Bash(grep -vE '^\\\\+\\\\s*$|^-\\\\s*$')"
     ]
   }
 }
