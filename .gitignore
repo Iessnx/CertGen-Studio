@@ -1,1 +1,6 @@
 推送.bat
+*.log
+diff.txt
+_debug_*
+🔧手机测试-启动服务器.cmd
+.claude/settings.local.json
