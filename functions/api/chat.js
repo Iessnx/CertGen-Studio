@@ -32,6 +32,8 @@ export async function onRequest(context) {
   if (model.startsWith('deepseek')) targetUrl = 'https://api.deepseek.com/v1/chat/completions';
   else if (model.startsWith('gpt') || model.startsWith('o')) targetUrl = 'https://api.openai.com/v1/chat/completions';
   else if (model.startsWith('qwen') || model.startsWith('qwq')) targetUrl = 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
+  else if (model.startsWith('gemini')) targetUrl = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+  else if (model.startsWith('groq') || model.startsWith('llama') || model.startsWith('mixtral') || model.startsWith('gemma')) targetUrl = 'https://api.groq.com/openai/v1/chat/completions';
 
   try {
     const controller = new AbortController();
