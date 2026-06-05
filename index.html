@@ -2160,7 +2160,7 @@ document.addEventListener("touchcancel", endDrag);
 // 默认 API（部署后自动获取，不写死）
 var DEFAULT_AVAIL=false,DEFAULT_MODEL='glm-4-flash-250414';
 if(location.protocol!=='file:'){
-fetch('/api/config').then(function(r){return r.json()}).then(function(d){if(d.available){DEFAULT_AVAIL=true;DEFAULT_MODEL=d.model||'glm-4-flash-250414';var K0=localStorage.getItem('kkdw_key');if(!K0){K='__default__';U='/api/chat';M=DEFAULT_MODEL;localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M);_updateApiStatus();document.getElementById('modelLabel').textContent='GLM-5.1'}}}).catch(function(){})
+fetch('/api/config').then(function(r){return r.json()}).then(function(d){if(d.available){DEFAULT_AVAIL=true;DEFAULT_MODEL=d.model||'glm-4-flash-250414';var K0=localStorage.getItem('kkdw_key');if(!K0){K='__default__';U='/api/chat';M=DEFAULT_MODEL;localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M);_updateApiStatus();_showVendor(_vendorFromModel(M));document.getElementById('modelLabel').textContent='GLM-4-Flash-250414'}}}).catch(function(){})
 }
 var K='',U='',M='';
 try{K=localStorage.getItem('kkdw_key')||''}catch(e){}
