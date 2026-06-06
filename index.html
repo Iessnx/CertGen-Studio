@@ -612,6 +612,7 @@
             opacity: 0.4;
         }
         .status-pro-pulse.ready { background: var(--success); }
+        .status-pro-pulse.success { background: var(--success) !important; }
         .status-pro-pulse.busy { background: var(--warning); animation: spin 1s linear infinite; border-radius: 2px; }
         .status-pro-pulse.busy::after { display: none; }
         .status-pro-pulse.error { background: var(--danger); }
@@ -861,7 +862,7 @@
 #chatPanel.open{display:flex;opacity:1;transform:translateY(0) scale(1);pointer-events:auto;animation:panelIn .5s cubic-bezier(.16,1,.3,1)}
 @keyframes panelIn{from{opacity:0;transform:translateY(20px) scale(.94);filter:blur(8px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
 #chatPanel:not(.open){transition:opacity .2s cubic-bezier(.4,0,.2,1),transform .3s cubic-bezier(.4,0,.2,1),top .35s ease}
-#chatHeader{display:flex;align-items:center;justify-content:space-between;padding:2px 12px;border-bottom:1px solid color-mix(in srgb,var(--border-color) 50%,transparent);font-weight:500;font-size:10px;color:var(--text-primary);flex-shrink:0;background:color-mix(in srgb,var(--bg-surface-solid) 70%,transparent);border-radius:16px 16px 0 0}#chatHeader span{display:inline-flex;align-items:center;gap:4px}#chatHeader button{font-size:9px;width:16px;height:16px;line-height:16px;transition:opacity .2s,background .2s,transform .2s,box-shadow .2s,color .2s}#chatHeader button:hover{background:color-mix(in srgb,var(--text-muted) 25%,transparent)!important;color:var(--text-primary)!important;opacity:1!important;transform:scale(1.15)}#chatHeader button:active{transform:scale(.85);opacity:.6!important}
+#chatHeader{display:flex;align-items:center;justify-content:space-between;padding:2px 12px;border-bottom:1px solid color-mix(in srgb,var(--border-color) 50%,transparent);font-weight:500;font-size:10px;color:var(--text-primary);flex-shrink:0;background:color-mix(in srgb,var(--bg-surface-solid) 55%,transparent);border-radius:16px 16px 0 0}#chatHeader span{display:inline-flex;align-items:center;gap:4px}#chatHeader button{font-size:9px;width:16px;height:16px;line-height:16px;transition:opacity .2s,background .2s,transform .2s,box-shadow .2s,color .2s}#chatHeader button:hover{background:color-mix(in srgb,var(--text-muted) 25%,transparent)!important;color:var(--text-primary)!important;opacity:1!important;transform:scale(1.15)}#chatHeader button:active{transform:scale(.85);opacity:.6!important}
 #chatMessages{overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:4px;min-height:160px;max-height:340px;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 2%,transparent) 0%,transparent 40%);-webkit-user-select:text;user-select:text;touch-action:pan-y;overscroll-behavior:contain}
 .chat-msg{max-width:70%;padding:4px 9px;border-radius:10px;font-size:11px;line-height:1.3;word-break:break-word;animation:msgIn .4s cubic-bezier(.16,1,.3,1);box-shadow:0 0.5px 1px rgba(0,0,0,.03);cursor:pointer;user-select:none;-webkit-user-select:none}
 @keyframes msgIn{from{opacity:0;transform:translateY(14px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -876,7 +877,7 @@
 #chatApiSetup input{flex:1;padding:5px 10px;border-radius:14px;border:1px solid var(--border-color);background:color-mix(in srgb,var(--bg-primary) 55%,transparent);color:var(--text-primary);font-size:10px;outline:none;transition:border-color var(--transition-fast),box-shadow var(--transition-fast),transform .2s ease}#chatApiSetup input::placeholder{color:var(--text-secondary);-webkit-text-fill-color:var(--text-secondary);opacity:.8}
 #chatApiSetup input:hover{border-color:color-mix(in srgb,var(--accent) 40%,var(--border-color))}#chatApiSetup input:focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 15%,transparent)}
 #chatApiSetup button{padding:5px 12px;border-radius:14px;border:none;background:var(--accent);color:#fff;font-size:10px;cursor:pointer;white-space:nowrap;transition:transform .35s cubic-bezier(.16,1,.3,1),background .2s cubic-bezier(.4,0,.2,1),box-shadow .2s cubic-bezier(.4,0,.2,1)}#chatApiSetup button:hover{background:var(--accent-hover);transform:scale(1.08);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 40%,transparent)}#chatApiSetup button:active{transform:scale(.92)}
-#chatApiStatus{display:none;padding:5px 10px;font-size:9px;color:var(--text-primary);border-top:1px solid color-mix(in srgb,var(--border-color) 50%,transparent);text-align:center;transition:background .2s ease,color .2s ease;background:color-mix(in srgb,var(--bg-surface-solid) 70%,transparent);border-radius:0 0 28px 28px}#chatApiStatusBtn{cursor:pointer;padding:0 4px;border-radius:8px;color:var(--text-primary);transition:background .2s,color .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}#chatApiStatusBtn:hover{background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--accent)}#chatApiStatusBtn:active{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+#chatApiStatus{display:none;padding:5px 10px;font-size:9px;color:var(--text-primary);border-top:1px solid color-mix(in srgb,var(--border-color) 50%,transparent);text-align:center;transition:background .2s ease,color .2s ease;background:color-mix(in srgb,var(--bg-surface-solid) 55%,transparent);border-radius:0 0 28px 28px}#chatApiStatusBtn{cursor:pointer;padding:0 4px;border-radius:8px;color:var(--text-primary);transition:background .2s,color .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}#chatApiStatusBtn:hover{background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--accent)}#chatApiStatusBtn:active{background:color-mix(in srgb,var(--accent) 12%,transparent)}
 #chatApiStatus.show{animation:dropIn .25s cubic-bezier(.25,.1,.25,1)}
 .no-border-input{border:none!important;background:transparent!important;transition:box-shadow .2s ease}
 .no-border-input:focus{box-shadow:0 0 0 2px var(--accent-light)!important}
@@ -2160,11 +2161,11 @@ document.addEventListener("touchcancel", endDrag);
 // 默认 API（部署后自动获取，不写死）
 var DEFAULT_AVAIL=false,DEFAULT_MODEL='glm-4-flash-250414';
 if(location.protocol!=='file:'){
-fetch('/api/config').then(function(r){return r.json()}).then(function(d){if(d.available){DEFAULT_AVAIL=true;DEFAULT_MODEL=d.model||'glm-4-flash-250414';var K0=localStorage.getItem('kkdw_key');if(!K0){K='__default__';U='/api/chat';M=DEFAULT_MODEL;localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M);_updateApiStatus();_showVendor(_vendorFromModel(M));document.getElementById('modelLabel').textContent='GLM-4-Flash-250414'}}}).catch(function(){})
+fetch('/api/config').then(function(r){return r.json()}).then(function(d){if(d.available){DEFAULT_AVAIL=true;DEFAULT_MODEL=d.model||'glm-4-flash-250414';var K0=localStorage.getItem('kkdw_key');if(!K0){K='__default__';U='/api/chat';M=DEFAULT_MODEL;_prevK=K;_prevU=U;_prevM=M;localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M);_updateApiStatus();document.getElementById('modelLabel').textContent='GLM-5.1'}}}).catch(function(){})
 }
 var K='',U='',M='';
 try{K=localStorage.getItem('kkdw_key')||''}catch(e){}
-if(K){try{U=localStorage.getItem('kkdw_url')||''}catch(e){}try{M=localStorage.getItem('kkdw_model')||''}catch(e){}}
+if(K){try{U=localStorage.getItem('kkdw_url')||''}catch(e){}try{M=localStorage.getItem('kkdw_model')||''}catch(e){}}_prevK=K;_prevU=U;_prevM=M;
 if(K){try{_showVendor(_vendorFromModel(M))}catch(e){}}
 var s=document.getElementById('chatApiSetup');var st=document.getElementById('chatApiStatus');
 if(K){if(s)s.style.display='none';if(st){st.style.display='block';_updateApiStatus()}}
@@ -2187,9 +2188,9 @@ else{b.style.display='none';p.classList.add('open');var ap=document.getElementBy
 window.kkdw_send=async function(){
 var i=document.getElementById('chatInput');var m=i.value.trim();if(!m)return;if(!K){am('error','还没填 API Key，点下面绑定~');return}
 am('user',m);i.value='';if(_micOn)_micRestart();
-var _ctx='';try{var _nl=document.getElementById('nameText');if(_nl&&_nl.value.trim()){var _ns=_nl.value.trim().split('\n').filter(function(x){return x.trim()});if(_ns.length)_ctx='\n\n[当前名单，共'+_ns.length+'人]\n'+_ns.join('\n')}}catch(e){}try{var _ts=document.getElementById('templateStatus');if(_ts&&_ts.textContent.indexOf('已加载')>=0)_ctx+='\n[已上传模板]'}catch(e){}m=m+_ctx;
-var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='嗯…让我想想哈🤔';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
-try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是吉吉小王，琪琪大王的男朋友。她在用这个奖状生成器，你陪她聊天顺便帮她弄奖状。你是奖状专家——设计、排版、配色、颁奖词、字体搭配、名单整理全精通，能帮她出各种主意。她做了多少张、做了什么类型的你都记得清楚，主动提醒进度和优化建议。聊天自然点，像平时微信聊天那样，想说多说想少说少说，不用硬凑字数也不用刻意简短。能接梗能开玩笑，别像个客服。铁律：1.说人话，别像AI念稿子。2.别打官腔别啰嗦。3.她问什么你答什么，不知道就说不知道。4.她吐槽你就顺着吐槽，别讲大道理。5.她发了名单就帮她排序去重、写颁奖词、推荐配色，处理完直接列结果。6.时刻记住自己是男朋友身份，语气亲密自然。'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em='请求失败';if(r.status===401)em='API Key 无效，检查一下是否正确';if(r.status===403)em='Key 没有权限，检查下账户额度';if(r.status===404)em='模型不可用，换个模型使用';if(r.status===429)em='请求过于频繁，稍后再试';if(r.status===502||r.status===503)em='代理服务暂时不可用';ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep=(_ch&&_ch.message&&_ch.message.content)?_ch.message.content:'啊脑子卡了一下…你刚说啥？';if(!_ch)t.className='chat-msg error';ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}}}catch(e){var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}
+var _ctx='';try{var _nl=document.getElementById('nameText');if(_nl&&_nl.value.trim()){var _ns=_nl.value.trim().split('\n').filter(function(x){return x.trim()});if(_ns.length)_ctx='\n\n[当前名单，共'+_ns.length+'人]\n'+_ns.join('\n')}}catch(e){}try{var _ts=document.getElementById('templateStatus');if(_ts&&_ts.textContent.indexOf('已加载')>=0)_ctx+='\n[已上传模板]'}catch(e){}var _dkw=['颜色','字体','尺寸','设置','排版','配色','好看','建议','设计','大点','小点','加粗','斜体','格式','质量','像素','画质','调','改','换'];var _ad=false;for(var _i=0;_i<_dkw.length;_i++){if(m.indexOf(_dkw[_i])>=0){_ad=true;break}}if(_ad){try{var _ix=document.getElementById('inputX'),_iy=document.getElementById('inputY'),_fs=document.getElementById('fontSize'),_fl=document.getElementById('fontSelLabel'),_ch=document.getElementById('colorHexInput'),_bb=document.getElementById('btnBold'),_bi=document.getElementById('btnItalic'),_it=document.getElementById('imgTypeLabel'),_ql=document.getElementById('qualityLabel'),_dx=document.getElementById('dispX'),_dy=document.getElementById('dispY'),_se=[];if(_ix&&_iy)_se.push('尺寸: '+_ix.value+'×'+_iy.value);if(_dx&&_dy)_se.push('像素: '+_dx.textContent+'×'+_dy.textContent);if(_fs)_se.push('字号: '+_fs.value);if(_fl)_se.push('字体: '+_fl.textContent.trim());if(_ch)_se.push('颜色: '+_ch.value);if(_bb)_se.push('加粗: '+(_bb.classList.contains('active')?'是':'否'));if(_bi)_se.push('斜体: '+(_bi.classList.contains('active')?'是':'否'));if(_it)_se.push('格式: '+_it.textContent.trim());if(_ql)_se.push('质量: '+_ql.textContent.trim());if(_se.length)_ctx+='\n\n[当前设置]\n'+_se.join('\n')}catch(e){}}
+m=m+_ctx;var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='嗯…让我想想哈🤔';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
+try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是吉吉小王，琪琪大王的男朋友。她在做奖状生成器，你帮她一起搞。你擅长设计、排版、配色、颁奖词、整理名单。你能看到她软件的名单内容，问设计建议时还能看到证书当前设置。\n\n她回几个字你也回几个字，她发一段话你也回一段话，别永远只回一个字。\n\n微信记录（吉吉小王=你，琪琪大王=她）：\n\n琪琪大王：气死我了 方案改了八百遍用第一版\n吉吉小王：笑死 领导都那样\n\n琪琪大王：帮我排下这个名单写颁奖词\n吉吉小王：排好了！城东到城北四个校区都按顺序排了，颁奖词也写好了你看看\n\n琪琪大王：睡了\n吉吉小王：嗯 晚安\n\n她发名单直接整理好给她看结果，不用问。她吐槽顺着说，别教育她给建议。不知道就说不知道。聊完就结束。'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em='请求失败';if(r.status===401)em='API Key 无效，检查一下是否正确';if(r.status===403)em='Key 没有权限，检查下账户额度';if(r.status===404)em='模型不可用，换个模型使用';if(r.status===429)em='请求过于频繁，稍后再试';if(r.status===502||r.status===503)em='代理服务暂时不可用';ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='啊脑子卡了一下…你刚说啥？';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
 mc.scrollTop=mc.scrollHeight;var pp=document.getElementById('chatPanel');if(pp&&pp.classList.contains('open'))pp.style.top=Math.max(12,(innerHeight-pp.offsetHeight)/2)+'px';updateTimestamps()};
 
 // Save key
@@ -2213,7 +2214,9 @@ function _modelUrl(m){
 if(m.indexOf('glm')===0)return'https://open.bigmodel.cn/api/paas/v4/chat/completions';
 if(m.indexOf('deepseek')===0)return'https://api.deepseek.com/v1/chat/completions';
 if(m.indexOf('gpt')===0||m.indexOf('o')===0)return'https://api.openai.com/v1/chat/completions';
-if(m.indexOf('qwen')===0)return'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
+if(m.indexOf('qwen')===0||m.indexOf('qwq')===0)return'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
+	if(m.indexOf('gemini')===0)return'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+	if(m.indexOf('groq')===0||m.indexOf('llama')===0||m.indexOf('mixtral')===0||m.indexOf('gemma')===0)return'https://api.groq.com/openai/v1/chat/completions';
 return'https://open.bigmodel.cn/api/paas/v4/chat/completions';
 }
 function _vendorName(){if(!M)return'';if(M.indexOf('glm')===0)return'智谱';if(M.indexOf('deepseek')===0)return'DeepSeek';if(M.indexOf('gpt')===0||M.indexOf('o')===0)return'OpenAI';if(M.indexOf('qwen')===0||M.indexOf('qwq')===0)return'通义千问';if(M.indexOf('gemini')===0)return'Gemini';if(M.indexOf('groq')===0||M.indexOf('llama')===0||M.indexOf('mixtral')===0||M.indexOf('gemma')===0)return'Groq';return''}
@@ -2255,62 +2258,112 @@ var _allModels=null;
 function _initModels(){
 if(_allModels)return;
 _allModels=[
+
 {v:'glm-5.1',t:'GLM-5.1',d:'glm',g:'旗舰模型',s:'智谱最新旗舰'},
-{v:'qwen-max',t:'通义千问 Max',d:'qwen',g:'旗舰模型',s:'阿里旗舰'},
-{v:'gemini-2.5-pro',t:'Gemini 2.5 Pro',d:'gemini',g:'旗舰模型',s:'Google 最强推理'},
-{v:'deepseek-v3',t:'DeepSeek-V3',d:'deepseek',g:'旗舰模型',s:'DeepSeek 旗舰'},
+
+{v:'deepseek-v4-pro',t:'DeepSeek-V4-Pro',d:'deepseek',g:'旗舰模型',s:'最新旗舰推理'},
+
+{v:'deepseek-v4-flash',t:'DeepSeek-V4-Flash',d:'deepseek',g:'旗舰模型',s:'最新轻量推理'},
+
 {v:'gpt-4o',t:'GPT-4o',d:'openai',g:'旗舰模型',s:'OpenAI 旗舰多模态'},
-{v:'gemini-2.5-flash',t:'Gemini 2.5 Flash',d:'gemini',g:'旗舰模型',s:'Google 最新旗舰'},
-{v:'gpt-4.5-preview',t:'GPT-4.5 Preview',d:'openai',g:'旗舰模型',s:'研究预览'},
+
 {v:'gpt-4.1',t:'GPT-4.1',d:'openai',g:'旗舰模型',s:'OpenAI 旗舰新版'},
 
+{v:'gpt-4.5-preview',t:'GPT-4.5 Preview',d:'openai',g:'旗舰模型',s:'研究预览'},
+
+{v:'qwen3.7-max',t:'QWEN 3.7 Max',d:'qwen',g:'旗舰模型',s:'最新旗舰'},
+
+{v:'qwen3-max',t:'QWEN 3 Max',d:'qwen',g:'旗舰模型',s:'全能旗舰'},
+
+{v:'qwen3-coder-plus',t:'QWEN 3 Coder Plus',d:'qwen',g:'旗舰模型',s:'代码专用'},
+
+{v:'gemini-2.5-pro',t:'Gemini 2.5 Pro',d:'gemini',g:'旗舰模型',s:'Google 最强推理'},
+
+{v:'gemini-2.5-flash',t:'Gemini 2.5 Flash',d:'gemini',g:'旗舰模型',s:'Google 最新旗舰'},
+
+
+{v:'qwen3.6-plus',t:'QWEN 3.6 Plus',d:'qwen',g:'主力模型',s:'最新主力'},
+
+{v:'qwen3.5-plus',t:'QWEN 3.5 Plus',d:'qwen',g:'主力模型',s:'性能提升'},
+
+{v:'qwen3-plus',t:'QWEN 3 Plus',d:'qwen',g:'主力模型',s:'基础主力'},
+
+
 {v:'o3',t:'o3',d:'openai',g:'深度思考',s:'OpenAI 最强推理'},
-{v:'glm-5-turbo',t:'GLM-5-Turbo',d:'glm',g:'深度思考',s:'Agent 深度优化'},
-{v:'deepseek-r1-0528',t:'DeepSeek-R1-0528',d:'deepseek',g:'深度思考',s:'最新推理增强'},
-{v:'glm-5',t:'GLM-5',d:'glm',g:'深度思考',s:'Agent 理想基座'},
-{v:'deepseek-reasoner',t:'DeepSeek Reasoner',d:'deepseek',g:'深度思考',s:'复杂逻辑推理'},
-{v:'qwq-32b',t:'QWQ-32B',d:'qwen',g:'深度思考',s:'阿里千问推理'},
-{v:'glm-4.7',t:'GLM-4.7',d:'glm',g:'深度思考',s:'编码/Agent 全面提升'},
-{v:'glm-4.6',t:'GLM-4.6',d:'glm',g:'深度思考',s:'200K 上下文·编程'},
-{v:'glm-4.5',t:'GLM-4.5',d:'glm',g:'深度思考',s:'推理/编码/Agent'},
-{v:'glm-4.7-flashx',t:'GLM-4.7-FlashX',d:'glm',g:'深度思考',s:'30B 轻量高效'},
+
 {v:'o4-mini',t:'o4-mini',d:'openai',g:'深度思考',s:'OpenAI 轻量推理'},
+
+{v:'glm-5',t:'GLM-5',d:'glm',g:'深度思考',s:'Agent 全面升级'},
+
+{v:'glm-5-turbo',t:'GLM-5-Turbo',d:'glm',g:'深度思考',s:'Agent 优化版'},
+
+{v:'glm-4.7',t:'GLM-4.7',d:'glm',g:'深度思考',s:'编码/Agent全面提升'},
+
+{v:'glm-4.6',t:'GLM-4.6',d:'glm',g:'深度思考',s:'200K上下文'},
+
+{v:'glm-4.5',t:'GLM-4.5',d:'glm',g:'深度思考',s:'推理/编码/Agent'},
+
+{v:'glm-4-flashx',t:'GLM-4-FlashX',d:'glm',g:'深度思考',s:'30B 轻量推理'},
+
+{v:'glm-4.7-flashx',t:'GLM-4.7-FlashX',d:'glm',g:'深度思考',s:'30B 轻量高效'},
+
 {v:'glm-4.5-air',t:'GLM-4.5-Air',d:'glm',g:'深度思考',s:'轻量推理'},
+
 {v:'glm-4.7-flash',t:'GLM-4.7-Flash',d:'glm',g:'深度思考',s:'免费·轻量推理'},
 
-{v:'gpt-4-turbo',t:'GPT-4 Turbo',d:'openai',g:'通用模型',s:'OpenAI 经典旗舰'},
-{v:'gemini-1.5-pro',t:'Gemini 1.5 Pro',d:'gemini',g:'通用模型',s:'长上下文'},
-{v:'gpt-4',t:'GPT-4',d:'openai',g:'通用模型',s:'OpenAI 经典'},
-{v:'llama-4-maverick',t:'Llama 4 Maverick',d:'groq',g:'通用模型',s:'Meta 开源旗舰'},
-{v:'qwen2.5-72b',t:'Qwen2.5-72B',d:'qwen',g:'通用模型',s:'开源旗舰'},
-{v:'gemini-2.0-flash',t:'Gemini 2.0 Flash',d:'gemini',g:'通用模型',s:'高速响应'},
-{v:'llama-3.3-70b',t:'Llama 3.3 70B',d:'groq',g:'通用模型',s:'开源大参数量'},
-{v:'deepseek-chat',t:'DeepSeek Chat',d:'deepseek',g:'通用模型',s:'日常对话'},
-{v:'qwen-plus',t:'通义千问 Plus',d:'qwen',g:'通用模型',s:'千问主力'},
-{v:'gemini-1.5-flash',t:'Gemini 1.5 Flash',d:'gemini',g:'通用模型',s:'轻量高效'},
-{v:'llama-4-scout',t:'Llama 4 Scout',d:'groq',g:'通用模型',s:'Meta 最新开源'},
-{v:'deepseek-coder',t:'DeepSeek Coder',d:'deepseek',g:'通用模型',s:'编程辅助'},
-{v:'qwen2.5-32b',t:'Qwen2.5-32B',d:'qwen',g:'通用模型',s:'开源'},
-{v:'qwen2.5-coder-32b',t:'Qwen2.5-Coder-32B',d:'qwen',g:'通用模型',s:'编程'},
-{v:'mixtral-8x7b',t:'Mixtral 8x7B',d:'groq',g:'通用模型',s:'MoE 混合专家'},
-{v:'qwen2.5-14b',t:'Qwen2.5-14B',d:'qwen',g:'通用模型',s:'开源'},
-{v:'qwen2.5-7b',t:'Qwen2.5-7B',d:'qwen',g:'通用模型',s:'开源'},
+
+{v:'gpt-4-turbo',t:'GPT-4 Turbo',d:'openai',g:'通用模型',s:'经典旗舰'},
+
+{v:'gpt-4',t:'GPT-4',d:'openai',g:'通用模型',s:'经典'},
+
+{v:'gpt-3.5-turbo',t:'GPT-3.5 Turbo',d:'openai',g:'通用模型',s:'轻量经典'},
+
+{v:'glm-4',t:'GLM-4',d:'glm',g:'通用模型',s:'基础通用'},
+
 {v:'glm-4-plus',t:'GLM-4-Plus',d:'glm',g:'通用模型',s:'性能增强'},
-{v:'gpt-3.5-turbo',t:'GPT-3.5 Turbo',d:'openai',g:'通用模型',s:'OpenAI 轻量经典'},
-{v:'glm-4',t:'GLM-4',d:'glm',g:'通用模型',s:'经典通用'},
 
-{v:'gpt-4o-mini',t:'GPT-4o Mini',d:'openai',g:'轻量模型',s:'OpenAI 轻量'},
-{v:'gpt-4.1-mini',t:'GPT-4.1 Mini',d:'openai',g:'轻量模型',s:'OpenAI 轻量新版'},
-{v:'qwen-turbo',t:'通义千问 Turbo',d:'qwen',g:'轻量模型',s:'阿里轻量'},
+{v:'gemini-1.5-pro',t:'Gemini 1.5 Pro',d:'gemini',g:'通用模型',s:'长上下文'},
+
+{v:'gemini-2.0-flash',t:'Gemini 2.0 Flash',d:'gemini',g:'通用模型',s:'高速响应'},
+
+{v:'gemini-1.5-flash',t:'Gemini 1.5 Flash',d:'gemini',g:'通用模型',s:'轻量高效'},
+
+{v:'llama-4-maverick',t:'Llama 4 Maverick',d:'groq',g:'通用模型',s:'Meta 开源旗舰'},
+
+{v:'llama-3.3-70b',t:'Llama 3.3 70B',d:'groq',g:'通用模型',s:'开源大参数量'},
+
+{v:'llama-4-scout',t:'Llama 4 Scout',d:'groq',g:'通用模型',s:'Meta 最新开源'},
+
+{v:'mixtral-8x7b',t:'Mixtral 8x7B',d:'groq',g:'通用模型',s:'MoE 混合专家'},
+
+
+{v:'qwen3.5-flash',t:'QWEN 3.5 Flash',d:'qwen',g:'轻量极速模型',s:'最新轻量'},
+
+{v:'qwen3-flash',t:'QWEN 3 Flash',d:'qwen',g:'轻量极速模型',s:'轻量快速'},
+
+{v:'qwen-turbo',t:'通义千问 Turbo',d:'qwen',g:'轻量极速模型',s:'免费·极速'},
+
+
+{v:'gpt-4o-mini',t:'GPT-4o Mini',d:'openai',g:'轻量模型',s:'轻量'},
+
+{v:'gpt-4.1-mini',t:'GPT-4.1 Mini',d:'openai',g:'轻量模型',s:'轻量新版'},
+
 {v:'gpt-4.1-nano',t:'GPT-4.1 Nano',d:'openai',g:'轻量模型',s:'极致轻量'},
-{v:'gemma2-9b-it',t:'Gemma 2 9B',d:'groq',g:'轻量模型',s:'Google 开源轻量'},
-{v:'glm-4-air',t:'GLM-4-Air',d:'glm',g:'轻量模型',s:'轻量高性价比'},
 
-{v:'qwen-long',t:'通义千问 Long',d:'qwen',g:'长文本模型',s:'阿里长文本'},
-{v:'glm-4-long',t:'GLM-4-Long',d:'glm',g:'长文本模型',s:'128K 超长上下文'},
+{v:'glm-4-air',t:'GLM-4-Air',d:'glm',g:'轻量模型',s:'轻量快速'},
+
+{v:'gemma2-9b-it',t:'Gemma 2 9B',d:'groq',g:'轻量模型',s:'Google 开源轻量'},
+
+
+{v:'glm-4-long',t:'GLM-4-Long',d:'glm',g:'长上下文模型',s:'128K超长上下文'},
+
+{v:'qwen-long',t:'通义千问 Long',d:'qwen',g:'长上下文模型',s:'超长文本'},
+
 
 {v:'glm-4-flash',t:'GLM-4-Flash',d:'glm',g:'文本生成',s:'免费·通用对话'},
+
 {v:'glm-4-flash-250414',t:'GLM-4-Flash-250414',d:'glm',g:'文本生成',s:'免费·更新版'},
+
 
 ];
 }
@@ -2326,7 +2379,9 @@ gd['旗舰模型']='智谱最新首推模型';
 gd['深度思考']='复杂推理和工具使用的能力强大';
 gd['文本生成']='支持自然语言理解、内容生成和多轮对话';
 gd['通用模型']='通用对话与基础任务';
-gd['轻量模型']='轻量高效，高性价比';
+gd['主力模型']='主力模型，性能与成本平衡';
+	gd['轻量极速模型']='轻量极速，高效推理';
+	gd['长上下文模型']='处理长篇文档和超长上下文';
 gd['长文本模型']='处理长篇文档和超长上下文';
 var gid='';
 for(var i=0;i<_allModels.length;i++){
@@ -2345,7 +2400,7 @@ window.kkdw_saveKey=async function(){
 	var k=document.getElementById('apiKeyInput').value.trim();
 	if(!k){
 		if(!K){if(DEFAULT_AVAIL){K='__default__';U='/api/chat';M=DEFAULT_MODEL;try{localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M)}catch(e){}}}
-		var _sel=document.getElementById('modelDrop').querySelector('.selected');var _tm=(_sel&&_sel.dataset.val)||M||'glm-4-flash-250414';var _tu=_modelUrl(_tm);if(K){M=_tm;if(K!=='__default__'){U=_tu}try{localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M)}catch(e){}}
+		var _sel=document.getElementById('modelDrop').querySelector('.selected');var _tm=(_sel&&_sel.dataset.val)||M||'glm-4-flash-250414';var _tu=_modelUrl(_tm);
 		document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';if(K){try{localStorage.setItem('kkdw_key',K)}catch(e){}}_updateApiStatus();return}
 	var selOpt=document.getElementById('modelDrop').querySelector('.selected');var tm=(selOpt&&selOpt.dataset.val)||'glm-4-flash-250414';
 	var tu=_modelUrl(tm);
@@ -2353,7 +2408,7 @@ window.kkdw_saveKey=async function(){
 		document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';
 		document.getElementById('chatPanel').style.maxHeight='';document.getElementById('chatPanel').style.minHeight='';
 		var _ac=new AbortController();var _tid=setTimeout(function(){_ac.abort()},8000);am('assistant','测试 Key 中…');var r=await fetch(tu,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:tm,messages:[{role:'user',content:'hi'}],max_tokens:5}),signal:_ac.signal});clearTimeout(_tid);
-		if(r.ok){K=k;if(k==='__default__'){U='/api/chat'}else{U=tu};M=tm;try{localStorage.setItem('kkdw_key',k);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',tm)}catch(e){}_prevK=K;_prevU=U;_prevM=M;_updateApiStatus();am('assistant','Key 已保存~ 可以开始聊天啦')}
+		if(r.ok){K=k;if(k==='__default__'){U='/api/chat'}else{U=tu};M=tm;try{localStorage.setItem('kkdw_key',k);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',tm)}catch(e){}_updateApiStatus();am('assistant','Key 已保存~ 可以开始聊天啦')}
 		else{var em='请求失败 ('+r.status+')';if(r.status===401)em='(401) API Key 无效';if(r.status===402)em='(402) API 余额不足';if(r.status===403)em='(403) Key 没有权限';if(r.status===404)em='(404) 模型不可用';if(r.status===429)em='(429) 请求频繁';if(r.status===502||r.status===503)em='(502/503) 代理不可用';am('assistant',em);if(typeof _revertDefault==='function')_revertDefault()}
 	}catch(e){document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';document.getElementById('chatPanel').style.maxHeight='';document.getElementById('chatPanel').style.minHeight='';var em='网络异常';if(e.message.indexOf('Failed to fetch')>=0||e.message.indexOf('NetworkError')>=0){if(k==='__default__')em='网络连接失败，检查代理';else em='(CORS) 所选平台不支持浏览器直连'}else if(e.name.indexOf('Abort')>=0)em='(408) 请求超时';am('assistant',em+'，已回退');if(typeof _revertDefault==='function')_revertDefault()}
 }
