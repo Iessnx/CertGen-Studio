@@ -1463,9 +1463,7 @@
             const navKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
             if (navKeys.includes(key)) {
-                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
-                    return; // 焦点在输入框内时不移动文字位置，但允许正常光标操作
-                }
+                var ae=document.activeElement;if(ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA')){return}
                 e.preventDefault();
                 keysPressed[key] = true;
                 if (!moveInterval) { moveTick(); moveInterval = setInterval(moveTick, MOVE_DELAY); }
@@ -1709,12 +1707,12 @@
                         textX = Math.round(img.width / 2);
                         textY = Math.round(img.height * 0.45);
                     }
-                    calibrateFontBaseline();
                     updateCoordUI();
                     refreshText();
                     syncPreviewPosition();
                     var initVal = parseInt(dom.fontSize.value, 10);
                     if (!isNaN(initVal) && initVal > 0) { canvasFontSize = Math.round(initVal / scaleRatio); }
+                    calibrateFontBaseline();
                     StatusManager.setState('模板就位！准备好啦~', 'success');
                     StatusManager.log('哇这张模板选得真棒！竖大拇指~ 👍');
                 };
@@ -2099,7 +2097,7 @@ document.addEventListener("touchcancel", endDrag);
         
         // 颜色变更已由自定义取色器 setColor() 处理，包含 refreshText() 和日志
 
-        window.addEventListener("resize", syncPreviewPosition);
+        var _resizeTimer;window.addEventListener("resize",function(){clearTimeout(_resizeTimer);_resizeTimer=setTimeout(syncPreviewPosition,100)});
 
         var _themeInit = true;
         (function init() {
@@ -2190,7 +2188,7 @@ var i=document.getElementById('chatInput');var m=i.value.trim();if(!m)return;if(
 am('user',m);i.value='';if(_micOn)_micRestart();
 var _ctx='';try{var _nl=document.getElementById('nameText');if(_nl&&_nl.value.trim()){var _ns=_nl.value.trim().split('\n').filter(function(x){return x.trim()});if(_ns.length)_ctx='\n\n[当前名单，共'+_ns.length+'人]\n'+_ns.join('\n')}}catch(e){}try{var _ts=document.getElementById('templateStatus');if(_ts&&_ts.textContent.indexOf('已加载')>=0)_ctx+='\n[已上传模板]'}catch(e){}var _dkw=['颜色','字体','尺寸','设置','排版','配色','好看','建议','设计','大点','小点','加粗','斜体','格式','质量','像素','画质','调','改','换'];var _ad=false;for(var _i=0;_i<_dkw.length;_i++){if(m.indexOf(_dkw[_i])>=0){_ad=true;break}}if(_ad){try{var _ix=document.getElementById('inputX'),_iy=document.getElementById('inputY'),_fs=document.getElementById('fontSize'),_fl=document.getElementById('fontSelLabel'),_ch=document.getElementById('colorHexInput'),_bb=document.getElementById('btnBold'),_bi=document.getElementById('btnItalic'),_it=document.getElementById('imgTypeLabel'),_ql=document.getElementById('qualityLabel'),_dx=document.getElementById('dispX'),_dy=document.getElementById('dispY'),_se=[];if(_ix&&_iy)_se.push('尺寸: '+_ix.value+'×'+_iy.value);if(_dx&&_dy)_se.push('像素: '+_dx.textContent+'×'+_dy.textContent);if(_fs)_se.push('字号: '+_fs.value);if(_fl)_se.push('字体: '+_fl.textContent.trim());if(_ch)_se.push('颜色: '+_ch.value);if(_bb)_se.push('加粗: '+(_bb.classList.contains('active')?'是':'否'));if(_bi)_se.push('斜体: '+(_bi.classList.contains('active')?'是':'否'));if(_it)_se.push('格式: '+_it.textContent.trim());if(_ql)_se.push('质量: '+_ql.textContent.trim());if(_se.length)_ctx+='\n\n[当前设置]\n'+_se.join('\n')}catch(e){}}
 m=m+_ctx;var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='嗯…让我想想哈🤔';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
-try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是吉吉小王，琪琪大王的男朋友。她在做奖状生成器，你帮她一起搞。你擅长设计、排版、配色、颁奖词、整理名单。你能看到她软件的名单内容，问设计建议时还能看到证书当前设置。\n\n她回几个字你也回几个字，她发一段话你也回一段话，别永远只回一个字。\n\n微信记录（吉吉小王=你，琪琪大王=她）：\n\n琪琪大王：气死我了 方案改了八百遍用第一版\n吉吉小王：笑死 领导都那样\n\n琪琪大王：帮我排下这个名单写颁奖词\n吉吉小王：排好了！城东到城北四个校区都按顺序排了，颁奖词也写好了你看看\n\n琪琪大王：睡了\n吉吉小王：嗯 晚安\n\n她发名单直接整理好给她看结果，不用问。她吐槽顺着说，别教育她给建议。不知道就说不知道。聊完就结束。'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em='请求失败';if(r.status===401)em='API Key 无效，检查一下是否正确';if(r.status===403)em='Key 没有权限，检查下账户额度';if(r.status===404)em='模型不可用，换个模型使用';if(r.status===429)em='请求过于频繁，稍后再试';if(r.status===502||r.status===503)em='代理服务暂时不可用';ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='啊脑子卡了一下…你刚说啥？';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
+try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你服务的用户叫琪琪大王，平时叫他主人，需要喊名字的时候叫琪琪大人。琪琪大人的男朋友叫吉吉小王。这是一个奖状生成器里内置的ai聊天功能，你能看到用户当前输入的名单和奖状设计设置尺寸、字体、颜色之类的，但这个用的很少，基本你的任务是陪伴聊天开心。'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em='请求失败';if(r.status===401)em='API Key 无效，检查一下是否正确';if(r.status===403)em='Key 没有权限，检查下账户额度';if(r.status===404)em='模型不可用，换个模型使用';if(r.status===429)em='请求过于频繁，稍后再试';if(r.status===502||r.status===503)em='代理服务暂时不可用';ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='啊脑子卡了一下…你刚说啥？';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
 mc.scrollTop=mc.scrollHeight;var pp=document.getElementById('chatPanel');if(pp&&pp.classList.contains('open'))pp.style.top=Math.max(12,(innerHeight-pp.offsetHeight)/2)+'px';updateTimestamps()};
 
 // Save key
@@ -2203,7 +2201,7 @@ var tag=K==='__default__'?' (默认)':'';sb.textContent='⚙️ '+_vendorName()+
 }
 var _prevK,_prevU,_prevM;
 function _revertDefault(){
-var rk=typeof _prevK!=='undefined'?_prevK:'__default__';
+var rk=typeof _prevK!=='undefined'&&_prevK?_prevK:'__default__';
 var ru=typeof _prevU!=='undefined'?_prevU:'/api/chat';
 var rm=typeof _prevM!=='undefined'?_prevM:'glm-4-flash-250414';
 K=rk;U=ru;M=rm;
@@ -2392,7 +2390,7 @@ var n=document.createElement('div');n.textContent=_allModels[i].t;n.style.fontSi
 if(_allModels[i].s){var de=document.createElement('div');de.textContent=_allModels[i].s;de.style.fontSize='8px';de.style.opacity='.6';de.style.marginTop='1px';d.appendChild(de)}
 d.onclick=function(){selOptUI(this)};
 drop.appendChild(d)}
-if(drop.children.length>0){for(var fi=0;fi<drop.children.length;fi++){if(drop.children[fi].className==='custom-select-opt'){drop.children[fi].classList.add('selected');var fs=drop.children[fi].firstChild;document.getElementById('modelLabel').textContent=fs?fs.textContent:'';break;}}mrow.style.display='flex'}
+if(drop.children.length>0){var _found=false;for(var fi=0;fi<drop.children.length;fi++){if(drop.children[fi].className==='custom-select-opt'){if(!_found&&drop.children[fi].dataset.val===M){drop.children[fi].classList.add('selected');var fs=drop.children[fi].firstChild;if(fs)document.getElementById('modelLabel').textContent=fs.textContent;_found=true;break}}}if(!_found){for(var fi=0;fi<drop.children.length;fi++){if(drop.children[fi].className==='custom-select-opt'){drop.children[fi].classList.add('selected');var fs=drop.children[fi].firstChild;document.getElementById('modelLabel').textContent=fs?fs.textContent:'';break}}}mrow.style.display='flex'}
 }
 function _dragScroll(e){var t=e.target.closest('.custom-select-drop');if(!t||t.id!=='modelDrop')return;var sy=t.scrollTop,cy=e.clientY;function mv(e2){t.scrollTop=sy+(cy-e2.clientY)}function up(e2){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);if(t.scrollTop!==sy&&e2.target.closest('.custom-select-opt')){e2.preventDefault();var op=e2.target.closest('.custom-select-opt');op.style.pointerEvents='none';setTimeout(function(){op.style.pointerEvents=''},200)}}document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up)}
 document.addEventListener('mousedown',_dragScroll);
