@@ -12,17 +12,17 @@
             var hm = h.match(/theme=([^&]+)/);
             if (hm) {
                 var v = decodeURIComponent(hm[1]);
-                if (v === 'dark' || v === 'light' || v.indexOf('light-') === 0) attr = v;
+                if (v === 'dark' || v === 'light' || v.indexOf('light-') === 0 || v.indexOf('dark-') === 0) attr = v;
             } else {
                 // 没有 hash：尝试 localStorage / cookie 回退
                 try {
                     var saved = localStorage.getItem('appTheme');
-                    if (saved) { try { var t = JSON.parse(saved); attr = t.mode === 'dark' && t.color === 'base' ? 'dark' : 'light-' + t.color; if (t.color === 'base' && t.mode === 'light') attr = 'light'; } catch(e) {} }
+                    if (saved) { try { var t = JSON.parse(saved); attr = t.color === 'base' ? (t.mode === 'dark' ? 'dark' : 'light') : (t.mode || 'light') + '-' + t.color; } catch(e) {} }
                 } catch(e) {}
                 if (attr === 'light') {
                     try {
                         var cm = document.cookie.match(/(?:^|;\s*)appTheme=([^;]*)/);
-                        if (cm) { try { var c = JSON.parse(decodeURIComponent(cm[1])); attr = c.mode === 'dark' && c.color === 'base' ? 'dark' : 'light-' + c.color; if (c.color === 'base' && c.mode === 'light') attr = 'light'; } catch(e) {} }
+                        if (cm) { try { var c = JSON.parse(decodeURIComponent(cm[1])); attr = c.color === 'base' ? (c.mode === 'dark' ? 'dark' : 'light') : (c.mode || 'light') + '-' + c.color; } catch(e) {} }
                     } catch(e) {}
                 }
                 // 将主题写入 URL hash，下次打开就能恢复
@@ -901,9 +901,236 @@
 [data-theme="light-pink"] .progress-bar{background:linear-gradient(90deg,#ec4899,#f472b6,#ec4899)!important;background-size:200% 100%!important;box-shadow:0 0 8px rgba(236,72,153,.3)!important}
 [data-theme="light-green"] .progress-bar{background:linear-gradient(90deg,#10b981,#34d399,#10b981)!important;background-size:200% 100%!important;box-shadow:0 0 8px rgba(16,185,129,.3)!important}
 [data-theme="light-yellow"] .progress-bar{background:linear-gradient(90deg,#eab308,#fbbf24,#eab308)!important;background-size:200% 100%!important;box-shadow:0 0 8px rgba(234,179,8,.3)!important}
+
+/* ============================================================
+   ✨ Design System v2 — 视觉进化层（只增强，不破坏原有功能）
+   ============================================================ */
+
+/* ---------- 新增：薰衣草紫（浅色） ---------- */
+[data-theme="light-purple"] {
+    --bg-primary: #f6f4fd;
+    --bg-surface: rgba(255, 255, 255, 0.92);
+    --bg-surface-solid: #ffffff;
+    --border-color: rgba(139, 92, 246, 0.12);
+    --text-primary: #2e2a3f;
+    --text-secondary: #5d5873;
+    --text-muted: #9b95b3;
+    --accent: #8b5cf6;
+    --accent-hover: #7c3aed;
+    --accent-light: #f3efff;
+}
+[data-theme="light-purple"] #chatBubble { background: linear-gradient(135deg, #a78bfa, #8b5cf6, #7c3aed); box-shadow: 0 4px 24px rgba(139,92,246,.35), 0 0 0 1px rgba(139,92,246,.25), inset 0 1px 0 rgba(255,255,255,.3); }
+[data-theme="light-purple"] #chatBubble:hover { box-shadow: 0 8px 32px rgba(139,92,246,.45), 0 0 0 1px rgba(139,92,246,.35); }
+[data-theme="light-purple"] .progress-bar { background: linear-gradient(90deg,#8b5cf6,#a78bfa,#8b5cf6) !important; background-size: 200% 100% !important; box-shadow: 0 0 8px rgba(139,92,246,.3) !important; }
+
+/* ---------- 新增：深色彩色主题 ---------- */
+[data-theme="dark-pink"] {
+    --bg-primary: #170a13;
+    --bg-surface: rgba(46, 20, 36, 0.92);
+    --bg-surface-solid: #2e1424;
+    --border-color: rgba(255, 255, 255, 0.12);
+    --text-primary: #fdf2f8;
+    --text-secondary: #e8d3de;
+    --text-muted: #9c6f86;
+    --accent: #f472b6;
+    --accent-hover: #f9a8d4;
+    --accent-light: rgba(244, 114, 182, 0.18);
+}
+[data-theme="dark-green"] {
+    --bg-primary: #06120d;
+    --bg-surface: rgba(13, 45, 31, 0.92);
+    --bg-surface-solid: #0d2d1f;
+    --border-color: rgba(255, 255, 255, 0.12);
+    --text-primary: #ecfdf5;
+    --text-secondary: #d1fae5;
+    --text-muted: #6fae8e;
+    --accent: #34d399;
+    --accent-hover: #6ee7b7;
+    --accent-light: rgba(52, 211, 153, 0.16);
+}
+[data-theme="dark-yellow"] {
+    --bg-primary: #140f04;
+    --bg-surface: rgba(50, 38, 10, 0.92);
+    --bg-surface-solid: #32260a;
+    --border-color: rgba(255, 255, 255, 0.12);
+    --text-primary: #fefce8;
+    --text-secondary: #fef3c7;
+    --text-muted: #b79b52;
+    --accent: #fbbf24;
+    --accent-hover: #fcd34d;
+    --accent-light: rgba(251, 191, 36, 0.16);
+}
+[data-theme="dark-purple"] {
+    --bg-primary: #0e0a1a;
+    --bg-surface: rgba(30, 22, 54, 0.92);
+    --bg-surface-solid: #1e1636;
+    --border-color: rgba(255, 255, 255, 0.12);
+    --text-primary: #f5f3ff;
+    --text-secondary: #e9e4ff;
+    --text-muted: #8d83b5;
+    --accent: #a78bfa;
+    --accent-hover: #c4b5fd;
+    --accent-light: rgba(167, 139, 250, 0.18);
+}
+[data-theme="dark-pink"] #chatBubble { background: linear-gradient(135deg, #f9a8d4, #ec4899, #be185d); box-shadow: 0 4px 24px rgba(236,72,153,.4), 0 0 0 1px rgba(236,72,153,.3), inset 0 1px 0 rgba(255,255,255,.15); }
+[data-theme="dark-pink"] #chatBubble:hover { box-shadow: 0 8px 32px rgba(236,72,153,.5), 0 0 0 1px rgba(236,72,153,.4); }
+[data-theme="dark-green"] #chatBubble { background: linear-gradient(135deg, #6ee7b7, #10b981, #047857); box-shadow: 0 4px 24px rgba(16,185,129,.4), 0 0 0 1px rgba(16,185,129,.3), inset 0 1px 0 rgba(255,255,255,.15); }
+[data-theme="dark-green"] #chatBubble:hover { box-shadow: 0 8px 32px rgba(16,185,129,.5), 0 0 0 1px rgba(16,185,129,.4); }
+[data-theme="dark-yellow"] #chatBubble { background: linear-gradient(135deg, #fcd34d, #f59e0b, #b45309); box-shadow: 0 4px 24px rgba(245,158,11,.4), 0 0 0 1px rgba(245,158,11,.3), inset 0 1px 0 rgba(255,255,255,.15); }
+[data-theme="dark-yellow"] #chatBubble:hover { box-shadow: 0 8px 32px rgba(245,158,11,.5), 0 0 0 1px rgba(245,158,11,.4); }
+[data-theme="dark-purple"] #chatBubble { background: linear-gradient(135deg, #c4b5fd, #8b5cf6, #6d28d9); box-shadow: 0 4px 24px rgba(139,92,246,.4), 0 0 0 1px rgba(139,92,246,.3), inset 0 1px 0 rgba(255,255,255,.15); }
+[data-theme="dark-purple"] #chatBubble:hover { box-shadow: 0 8px 32px rgba(139,92,246,.5), 0 0 0 1px rgba(139,92,246,.4); }
+[data-theme="dark-pink"] .progress-bar { background: linear-gradient(90deg,#ec4899,#f9a8d4,#ec4899) !important; background-size: 200% 100% !important; box-shadow: 0 0 8px rgba(236,72,153,.4) !important; }
+[data-theme="dark-green"] .progress-bar { background: linear-gradient(90deg,#10b981,#6ee7b7,#10b981) !important; background-size: 200% 100% !important; box-shadow: 0 0 8px rgba(16,185,129,.4) !important; }
+[data-theme="dark-yellow"] .progress-bar { background: linear-gradient(90deg,#f59e0b,#fcd34d,#f59e0b) !important; background-size: 200% 100% !important; box-shadow: 0 0 8px rgba(245,158,11,.4) !important; }
+[data-theme="dark-purple"] .progress-bar { background: linear-gradient(90deg,#8b5cf6,#c4b5fd,#8b5cf6) !important; background-size: 200% 100% !important; box-shadow: 0 0 8px rgba(139,92,246,.4) !important; }
+
+/* ---------- 动态光晕背景装饰层 ---------- */
+.bg-decor { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.app-container { position: relative; z-index: 1; }
+.bg-orb { position: absolute; border-radius: 50%; filter: blur(90px); will-change: transform; }
+[data-theme^="light"] .bg-orb { opacity: .5; }
+[data-theme^="dark"] .bg-orb { opacity: .3; }
+.bg-orb-1 { width: 46vw; height: 46vw; left: -12vw; top: -14vw; background: radial-gradient(circle, color-mix(in srgb, var(--accent) 40%, transparent) 0%, transparent 65%); animation: orbFloat1 26s ease-in-out infinite alternate; }
+.bg-orb-2 { width: 38vw; height: 38vw; right: -10vw; top: 22vh; background: radial-gradient(circle, color-mix(in srgb, var(--success) 32%, transparent) 0%, transparent 65%); animation: orbFloat2 32s ease-in-out infinite alternate; }
+.bg-orb-3 { width: 30vw; height: 30vw; left: 24vw; bottom: -12vw; background: radial-gradient(circle, color-mix(in srgb, var(--warning) 24%, transparent) 0%, transparent 65%); animation: orbFloat3 38s ease-in-out infinite alternate; }
+@keyframes orbFloat1 { from { transform: translate(0, 0) scale(1); } to { transform: translate(6vw, 4vh) scale(1.12); } }
+@keyframes orbFloat2 { from { transform: translate(0, 0) scale(1.05); } to { transform: translate(-5vw, 6vh) scale(.95); } }
+@keyframes orbFloat3 { from { transform: translate(0, 0) scale(.95); } to { transform: translate(4vw, -5vh) scale(1.08); } }
+.bg-grid {
+    position: absolute; inset: 0;
+    background-image:
+        linear-gradient(color-mix(in srgb, var(--text-primary) 2.5%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--text-primary) 2.5%, transparent) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 30%, transparent 75%);
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 30%, transparent 75%);
+}
+
+/* ---------- 卡片质感升级 ---------- */
+.glass-card::before {
+    content: ''; position: absolute; top: 0; left: 18px; right: 18px; height: 1px;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 45%, transparent), transparent);
+    opacity: 0; transition: opacity .3s ease; border-radius: var(--radius-lg);
+}
+.glass-card:hover::before { opacity: 1; }
+@keyframes cardIn { from { opacity: 0; transform: translateY(18px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+.control-panel > .glass-card, .workspace > .preview-container { animation: cardIn .55s cubic-bezier(.16,1,.3,1) backwards; }
+.control-panel > .glass-card:nth-child(2) { animation-delay: .06s; }
+.control-panel > .glass-card:nth-child(3) { animation-delay: .12s; }
+.control-panel > .glass-card:nth-child(4) { animation-delay: .18s; }
+
+/* ---------- 头部品牌区 ---------- */
+.control-panel > .glass-card:first-child .card-title > div > div:first-child {
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--success)), var(--accent-hover));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    font-weight: 800; font-size: 16px; letter-spacing: .5px;
+}
+.control-panel > .glass-card:first-child .card-title > span {
+    display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center;
+    border-radius: 14px; font-size: 22px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 20%, transparent), color-mix(in srgb, var(--accent) 6%, transparent));
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+    box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--accent) 35%, transparent), inset 0 1px 0 rgba(255,255,255,.4);
+}
+
+/* ---------- 主题切换器 v2：色板 + 明暗 ---------- */
+.theme-switcher { display: flex; gap: 7px; padding: 6px; border-radius: 14px; }
+.theme-btn {
+    width: 26px; height: 26px; border-radius: 50%; font-size: 0;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 1px 3px rgba(0,0,0,.08);
+    transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease, outline-color .2s ease;
+}
+.theme-btn:hover { transform: translateY(-2px) scale(1.08); box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 4px 10px rgba(0,0,0,.14); }
+.theme-btn:active { transform: scale(.9); }
+.theme-btn.active {
+    background: transparent; color: transparent;
+    outline: 2px solid var(--accent); outline-offset: 2px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.theme-btn[data-theme="base"][data-mode="light"] { background: linear-gradient(135deg, #ffffff, #e2e8f0); }
+.theme-btn[data-theme="base"][data-mode="dark"] { background: linear-gradient(135deg, #475569, #0f172a); }
+.theme-btn[data-theme="pink"][data-mode="light"] { background: linear-gradient(135deg, #fbcfe8, #f472b6); }
+.theme-btn[data-theme="pink"][data-mode="dark"] { background: linear-gradient(135deg, #be185d, #500724); }
+.theme-btn[data-theme="green"][data-mode="light"] { background: linear-gradient(135deg, #a7f3d0, #34d399); }
+.theme-btn[data-theme="green"][data-mode="dark"] { background: linear-gradient(135deg, #059669, #064e3b); }
+.theme-btn[data-theme="yellow"][data-mode="light"] { background: linear-gradient(135deg, #fde68a, #fbbf24); }
+.theme-btn[data-theme="yellow"][data-mode="dark"] { background: linear-gradient(135deg, #d97706, #78350f); }
+.theme-btn[data-theme="purple"][data-mode="light"] { background: linear-gradient(135deg, #ddd6fe, #a78bfa); }
+.theme-btn[data-theme="purple"][data-mode="dark"] { background: linear-gradient(135deg, #7c3aed, #2e1065); }
+.theme-mode-btn {
+    width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border-color);
+    background: var(--bg-surface-solid); color: var(--text-primary); font-size: 16px;
+    cursor: pointer; flex-shrink: 0; line-height: 1;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease, border-color .2s ease;
+}
+.theme-mode-btn:hover { transform: translateY(-2px) rotate(8deg); border-color: var(--accent); box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 25%, transparent); }
+.theme-mode-btn:active { transform: scale(.88); }
+
+/* ---------- 按钮光泽扫过 ---------- */
+.btn-primary { position: relative; overflow: hidden; }
+.btn-primary::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.38) 50%, transparent 70%);
+    transform: translateX(-120%);
+    animation: btnShine 4s ease-in-out infinite;
+}
+.btn-primary:disabled::after { display: none; }
+@keyframes btnShine { 0%, 55% { transform: translateX(-120%); } 85%, 100% { transform: translateX(120%); } }
+
+/* ---------- 输入聚焦辉光 ---------- */
+input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent), 0 4px 20px -2px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+/* ---------- 预览区 ---------- */
+.preview-header { background: color-mix(in srgb, var(--bg-surface-solid) 60%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+/* 不加圆角：预览必须与生成图片完全一致（角落不裁剪） */
+#canvas { box-shadow: 0 30px 70px -15px rgba(0,0,0,.28), 0 10px 30px -8px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.05); }
+
+/* ---------- 状态点发光 ---------- */
+.status-pro-pulse.ready, .status-pro-pulse.success { box-shadow: 0 0 10px color-mix(in srgb, var(--success) 55%, transparent); }
+.status-pro-pulse.busy { box-shadow: 0 0 10px color-mix(in srgb, var(--warning) 50%, transparent); }
+.status-pro-pulse.error { box-shadow: 0 0 10px color-mix(in srgb, var(--danger) 50%, transparent); }
+
+/* ---------- 聊天面板光晕 + 气泡质感 ---------- */
+#chatPanel { box-shadow: 0 32px 80px rgba(0,0,0,.08), 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent), 0 0 60px -12px color-mix(in srgb, var(--accent) 22%, transparent), inset 0 0 0 0.5px rgba(255,255,255,.08); }
+.chat-msg.user { background: linear-gradient(135deg, #a7f57e, #95EC69 60%, #7fdc5a); box-shadow: 0 2px 8px rgba(76,175,80,.22); }
+
+/* ---------- 主题切换 View Transition（不支持的浏览器自动降级） ---------- */
+::view-transition-old(root) { animation: vtOut .35s cubic-bezier(.4,0,.2,1); }
+::view-transition-new(root) { animation: vtIn .35s cubic-bezier(.4,0,.2,1); }
+@keyframes vtOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: scale(1.02); } }
+@keyframes vtIn { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: none; } }
+
+/* ---------- 尊重系统减弱动效设置 ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- 移动端微调 ---------- */
+@media (max-width: 600px) {
+    .bg-orb-1 { width: 70vw; height: 70vw; }
+    .bg-orb-2 { width: 60vw; height: 60vw; }
+    .bg-orb-3 { width: 50vw; height: 50vw; }
+    .theme-btn { width: 24px; height: 24px; }
+    .theme-mode-btn { width: 34px; height: 34px; font-size: 14px; }
+}
+
 </style>
 </head>
 <body>
+<!-- 动态光晕背景装饰层 -->
+<div class="bg-decor" aria-hidden="true">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="bg-grid"></div>
+</div>
 <div id="chatBubble" title="小帮手">💬</div>
 
     <div class="app-container">
@@ -920,20 +1147,18 @@
                         </div>
                     </div>
                 </div>
-                <!-- 主题切换组 (顺序已调整) -->
+                <!-- 主题切换组 (v2: 色板 + 明暗) -->
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
                     <span class="hint" style="font-weight: 600;">界面风格</span>
-                    <div class="theme-switcher">
-                      <!-- 1. 默认浅色 -->
-<button class="theme-btn active" data-theme="base" data-mode="light" title="经典白 (浅色)" onclick="setTheme('base', 'light')">☀️</button>
-<!-- 2. 深色模式 -->
-<button class="theme-btn" data-theme="base" data-mode="dark" title="经典黑 (深色)" onclick="setTheme('base', 'dark')">🌙</button>
-<!-- 3. 樱花粉 -->
-<button class="theme-btn" data-theme="pink" data-mode="light" title="樱花粉" onclick="setTheme('pink', 'light')">🌸</button>
-<!-- 4. 薄荷绿 -->
-<button class="theme-btn" data-theme="green" data-mode="light" title="薄荷绿" onclick="setTheme('green', 'light')">🌿</button>
-<!-- 5. 晴空蓝 -->
-<button class="theme-btn" data-theme="yellow" data-mode="light" title="阳光黄" onclick="setTheme('yellow', 'light')">⭐</button>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <div class="theme-switcher">
+                        <button class="theme-btn active" data-theme="base" data-mode="light" title="经典白" onclick="setTheme('base', 'light')"></button>
+                        <button class="theme-btn" data-theme="pink" data-mode="light" title="樱花粉" onclick="setTheme('pink', 'light')"></button>
+                        <button class="theme-btn" data-theme="green" data-mode="light" title="薄荷绿" onclick="setTheme('green', 'light')"></button>
+                        <button class="theme-btn" data-theme="yellow" data-mode="light" title="阳光黄" onclick="setTheme('yellow', 'light')"></button>
+                        <button class="theme-btn" data-theme="purple" data-mode="light" title="薰衣草紫" onclick="setTheme('purple', 'light')"></button>
+                      </div>
+                      <button class="theme-mode-btn" id="themeModeBtn" title="切换深色/浅色" onclick="toggleMode()">🌙</button>
                     </div>
                 </div>
             </div>
@@ -1076,7 +1301,7 @@
                     <div class="status-pro-header">
                         <div class="status-pro-main">
                             <div class="status-pro-pulse ready" id="statusDotPro"></div>
-                            <div class="status-pro-text" id="statusTextPro">准备好啦，随时可以开始~</div>
+                            <div class="status-pro-text" id="statusTextPro">准备好啦，上传模板就开工</div>
                         </div>
                         <div class="status-pro-metrics">
                             <div class="metric-item">
@@ -1125,48 +1350,31 @@
         // ====================== 有趣的文案库 ======================
         const FunTexts = {
             loading: [
-                "正在唤醒渲染引擎...",
-                "给打印机磨墨中...",
-                "调整最佳角度中...",
-                "正在施法✨",
-                "马上就好，稍等片刻哦~",
-                "加载中，不要着急嘛~",
-                "引擎预热中，先喝口水☕",
-                "画笔已经准备好了！",
-                "在搓手，准备大干一场~",
-                "加载资源中，好事多磨嘛！",
-                "别催别催，这就好~"
+                "正在给打印机灌墨水…",
+                "在铺画布、调色盘…",
+                "正在唤醒渲染小精灵…",
+                "小帮手在热身，马上就好~",
+                "纸已经备好，就差名字啦…",
+                "正在抛光金边…✨",
+                "加载中，好事多磨嘛！",
+                "墨水还没干，稍等一秒钟~"
             ],
             generating: [
-                "正在为「{name}」手写专属奖状...✍️",
+                "正在为「{name}」手写专属奖状…✍️",
                 "「{name}」的奖状新鲜出炉啦！",
-                "盖章！「{name}」同学太棒了！",
-                "下一位幸运鹅是「{name}」！🍀",
-                "「{name}」的荣耀时刻到了！",
-                "正在给「{name}」烫金镶边...",
+                "啪！给「{name}」盖上荣誉印章！",
                 "「{name}」的奖状刚从打印机里蹦出来！",
-                "正在为「{name}」挑选最闪亮的金边✨",
-                "「{name}」同学请注意，你的荣誉正在生成！",
-                "给「{name}」的证书加热压膜中...🔥",
+                "正在给「{name}」烫金镶边…",
                 "「{name}」的名字写得超好看！",
-                "小心翼翼给「{name}」盖印章…啪！"
+                "给「{name}」的证书加热压膜中…🔥",
+                "「{name}」同学请注意，你的荣誉正在生成！",
+                "正在为「{name}」挑最闪亮的那道金边✨"
             ],
             success: [
-                "全部搞定！收工！🎉",
-                "所有奖状都做好啦，快打开看看~",
-                "完美！可以发朋友圈了！",
-                "全部完工！准备下班！🎊",
-                "一张不落全部做好！太厉害了！",
-                "搞定收工！去喝奶茶庆祝~🧋"
-            ],
-            normal: [
-                "收到！马上安排~",
-                "好嘞，没问题！",
-                "这就来，别急！",
-                "收到指令！",
-                "好的大王，马上执行！",
-                "明白！这就动起来~",
-                "OK大王，交给我！"
+                "全部搞定！🎉",
+                "一张不落，全部完成",
+                "全部完成，可下载",
+                "全部生成成功！🎉"
             ]
         };
 
@@ -1219,7 +1427,7 @@
                 // 绑定拖拽事件
                 this.bindLogDragEvents();
 
-                setTimeout(() => this.log('琪琪大王偷懒版 Pro Max 已就绪！今天也是元气满满的一天~ ☀️'), 500);
+                setTimeout(() => this.log('小帮手就位，随时开工'), 500);
             },
 
             getTime() {
@@ -1377,8 +1585,6 @@
         let isDragging = false, scaleRatio = 1, isGenerating = false;
         let canvasFontSize = 30; // 画布坐标下的字号，不受视口变化影响
         let styleState = { bold: false, italic: false };
-        // 设备偏移补偿：桌面/手机 Canvas 与 CSS 渲染垂直偏差的实测校准值
-        const DESKTOP_Y_ADJUST = 17, MOBILE_Y_ADJUST = -2.7;
 
         // ====================== 主题管理系统 (顺序已调整) ======================
         let currentTheme = { color: 'base', mode: 'light' };
@@ -1386,15 +1592,15 @@
         function setTheme(color, mode) {
             currentTheme = { color, mode };
 
-            // 特殊处理：如果是 base 且是 light，就去掉属性，或者设为 "light"
-            if (color === 'base' && mode === 'light') {
-                document.documentElement.setAttribute('data-theme', 'light');
-            } else if (color === 'base' && mode === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
+            // base 用 light/dark，彩色主题用 light-{color} / dark-{color}
+            if (color === 'base') {
+                document.documentElement.setAttribute('data-theme', mode === 'dark' ? 'dark' : 'light');
             } else {
-                // 彩色主题只有浅色模式
-                document.documentElement.setAttribute('data-theme', `light-${color}`);
+                document.documentElement.setAttribute('data-theme', `${mode}-${color}`);
             }
+            // 同步明暗切换按钮图标
+            var _tmb = document.getElementById('themeModeBtn');
+            if (_tmb) _tmb.textContent = (mode === 'light') ? '🌙' : '☀️';
             
             // 更新按钮激活状态
             document.querySelectorAll('.theme-btn').forEach(btn => {
@@ -1421,8 +1627,8 @@
             try { document.cookie = 'appTheme=' + encodeURIComponent(themeJson) + ';max-age=31536000;path=/'; } catch(e) {}
 
             if (!_themeInit) {
-                StatusManager.setState('换好主题啦~', 'ready');
-                StatusManager.log('主题换好啦，这件好看不~ ✨');
+                StatusManager.setState('主题已切换', 'ready');
+                StatusManager.log('主题已切换');
             }
         }
 
@@ -1435,7 +1641,8 @@
                     var attr = decodeURIComponent(hm[1]);
                     if (attr === 'dark') { setTheme('base', 'dark'); return; }
                     if (attr === 'light') { setTheme('base', 'light'); return; }
-                    if (attr.indexOf('light-') === 0) { setTheme(attr.replace('light-', ''), 'light'); return; }
+                    var _dm = attr.match(/^(light|dark)-(.+)$/);
+                    if (_dm) { setTheme(_dm[2], _dm[1]); return; }
                 }
             } catch(e) {}
             // 2. localStorage 回退
@@ -1463,7 +1670,21 @@
             const navKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 
             if (navKeys.includes(key)) {
-                var ae=document.activeElement;if(ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA')){return}
+                var ae=document.activeElement;
+                if(ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA')){
+                    // 焦点在坐标输入框时，方向键直接精调文字位置（±1px），而不是移动光标
+                    if (ae === dom.inputX || ae === dom.inputY) {
+                        e.preventDefault();
+                        if (key === 'ArrowUp') textY -= 1;
+                        else if (key === 'ArrowDown') textY += 1;
+                        else if (key === 'ArrowLeft') textX -= 1;
+                        else if (key === 'ArrowRight') textX += 1;
+                        renderText();
+                        syncDragIndicator();
+                        updateCoordUI();
+                    }
+                    return;
+                }
                 e.preventDefault();
                 keysPressed[key] = true;
                 if (!moveInterval) { moveTick(); moveInterval = setInterval(moveTick, MOVE_DELAY); }
@@ -1496,7 +1717,9 @@
 
             if (dx !== 0 || dy !== 0) {
                 textX += dx; textY += dy;
-                updateCoordUI(); syncPreviewPosition();
+                renderText();
+                syncDragIndicator();
+                updateCoordUI();
             }
         }
 
@@ -1504,58 +1727,22 @@
         document.addEventListener('keyup', handleKeyUp);
 
         // ====================== 样式切换 ======================
-        // 字体底部对齐：以微软雅黑为基准，计算每个字体的垂直偏移
-        var fontBaselineOffset = 0;
-        var refFontBottom = null;
-        function calibrateFontBaseline() {
-            fontBaselineOffset = 0;
-            try { var testCanvas = document.createElement('canvas'); } catch(e) { return; }
-            testCanvas.width = 200; testCanvas.height = 200;
-            var tcx = testCanvas.getContext('2d');
-            if (!tcx) return;
-            var testSize = 100;
-            var testChar = '国'; // CJK 方块字，所有字体都支持
-
-            // 测量微软雅黑（基准）
-            tcx.font = testSize + 'px 微软雅黑';
-            tcx.textBaseline = 'middle';
-            tcx.fillText(testChar, 100, 100);
-            var refData = tcx.getImageData(80, 50, 40, 100);
-            var refBottom = 0;
-            for (var y = 99; y >= 0; y--) {
-                var alpha = refData.data[(y * 40 + 20) * 4 + 3];
-                if (alpha > 0) { refBottom = y; break; }
-            }
-            refFontBottom = refBottom; // 基准字体的底部位置（相对于 middle 基线）
-
-            // 测量当前字体
-            var font = dom.fontSelValue || '微软雅黑';
-            tcx.clearRect(0, 0, 200, 200);
-            tcx.font = testSize + 'px ' + font;
-            tcx.fillText(testChar, 100, 100);
-            var curData = tcx.getImageData(80, 50, 40, 100);
-            var curBottom = 0;
-            for (var y = 99; y >= 0; y--) {
-                var alpha = curData.data[(y * 40 + 20) * 4 + 3];
-                if (alpha > 0) { curBottom = y; break; }
-            }
-            // 偏移量：正值 = 当前字体需要下移才能底部对齐微软雅黑
-            fontBaselineOffset = (refBottom - curBottom) / testSize * canvasFontSize;
-        }
         function onFontChange(name) {
             if (name) dom.fontSelValue = name;
-            if (template) { calibrateFontBaseline(); refreshText(); }
-            var funnyNotes=['这字儿有劲！','气质拿捏了~','好看好看！','就是这个feel！','优雅永不过时~'];
-            StatusManager.log('字体切到「'+dom.fontSelValue+'」！'+funnyNotes[Math.floor(Math.random()*funnyNotes.length)]);
+            if (template) {
+                updateCanvasFontSize();
+                measureGlyphOffset(dom.fontSelValue, canvasFontSize);
+                refreshText();
+            }
+            StatusManager.log('字体已切换：'+dom.fontSelValue);
         }
         function toggleStyle(type) {
             styleState[type] = !styleState[type];
             if (type === 'bold') dom.btnBold.classList.toggle('active', styleState.bold);
             if (type === 'italic') dom.btnItalic.classList.toggle('active', styleState.italic);
             refreshText();
-            var emoji=styleState[type]?'✨':'💨';
             var word=type==='bold'?'加粗':'倾斜';
-            StatusManager.log(word+'已'+(styleState[type]?'开启 '+emoji:'关闭')+'，'+(styleState[type]?'更有力量感了！':'回归清爽~'));
+            StatusManager.log(word+(styleState[type]?'已开启':'已关闭'));
         }
 
         // ====================== 核心功能函数 ======================
@@ -1576,63 +1763,123 @@
             const y = parseInt(dom.inputY.value, 10);
             if (!isNaN(x)) textX = x;
             if (!isNaN(y)) textY = y;
+            renderText();
+            syncDragIndicator();
             updateCoordUI();
-            syncPreviewPosition();
-            StatusManager.log('手动输入坐标 ('+textX+', '+textY+')，精确到像素！佩服~ 🎯');
+            StatusManager.log('坐标：'+textX+', '+textY);
         }
 
-        // 刷新预览文字
+        // 把用户输入的字号（CSS 视觉 px）换算为画布像素字号
+        function updateCanvasFontSize() {
+            var cr = dom.canvas.getBoundingClientRect();
+            if (cr.width > 0 && dom.canvas.width > 0) {
+                scaleRatio = Math.min(cr.width / dom.canvas.width, cr.height / dom.canvas.height);
+            }
+            var val = parseInt(dom.fontSize.value, 10);
+            if (!isNaN(val) && val > 0 && scaleRatio > 0) {
+                canvasFontSize = Math.round(val / scaleRatio);
+            }
+        }
+
+        // 测量当前字体下 canvas middle 基线到字形视觉中心的偏移（按字号线性缩放）
+        // 让文字视觉中心精确落在 textX/textY，拖拽完全跟手，预览与生成同源
+        var _glyphCenterOffset = 0; // 每 px 字号的偏移比例
+        function measureGlyphOffset(fontFamily, sizePx) {
+            sizePx = sizePx || 100;
+            var c = document.createElement('canvas');
+            c.width = 200; c.height = 200;
+            var cx = c.getContext('2d');
+            cx.font = sizePx + 'px ' + fontFamily;
+            cx.textAlign = 'center'; cx.textBaseline = 'middle';
+            cx.fillText('国', 100, 100);
+            var d = cx.getImageData(60, 0, 80, 200).data;
+            var minY = -1, maxY = -1;
+            for (var y = 0; y < 200; y++) {
+                for (var x = 0; x < 80; x++) {
+                    if (d[(y * 80 + x) * 4 + 3] > 0) { if (minY < 0) minY = y; maxY = y; }
+                }
+            }
+            if (minY < 0) { _glyphCenterOffset = 0; return; }
+            _glyphCenterOffset = ((minY + maxY) / 2 - 100) / sizePx;
+        }
+
+        // 预览文字直接渲染在画布上（与生成图片共用同一套渲染代码 → 所见即所得）
+        // 离屏缓存模板底图，供全量重绘使用（彻底消除移动拖影）
+        var templateCanvas = null;
+        var _measuredFont = '', _measuredSize = 0;
+        function ensureGlyphMeasure() {
+            if (_measuredFont !== dom.fontSelValue || _measuredSize !== canvasFontSize) {
+                measureGlyphOffset(dom.fontSelValue, canvasFontSize);
+                _measuredFont = dom.fontSelValue;
+                _measuredSize = canvasFontSize;
+            }
+        }
+        function renderText() {
+            if (!template) return;
+            ensureGlyphMeasure();
+            var t = dom.nameText.value.trim().split("\n")[0] || "";
+            // 全量重绘：清空画布 → 重绘模板 → 画文字（不留任何残影）
+            ctx.clearRect(0, 0, dom.canvas.width, dom.canvas.height);
+            ctx.drawImage(templateCanvas || template, 0, 0);
+            if (!t) return;
+            var f = [];
+            if (styleState.italic) f.push('italic');
+            if (styleState.bold) f.push('bold');
+            f.push(canvasFontSize + 'px');
+            f.push(dom.fontSelValue);
+            ctx.font = f.join(' ');
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = dom.fontColorValue;
+            var glyphOff = _glyphCenterOffset * canvasFontSize;
+            ctx.fillText(t, textX, textY - glyphOff);
+        }
+
+        // 刷新预览：更新画布字号 → 重绘文字 → 同步拖拽指示器与坐标
         function refreshText() {
             const t = dom.nameText.value.trim().split("\n")[0] || "";
-            dom.dragText.textContent = t;
-            dom.dragText.style.display = t ? "block" : "none";
-            dom.dragText.style.fontFamily = dom.fontSelValue;
-            dom.dragText.style.fontSize = `${dom.fontSize.value}px`;
-            dom.dragText.style.color = dom.fontColorValue;
-            dom.dragText.style.fontWeight = styleState.bold ? 'bold' : 'normal';
-            dom.dragText.style.fontStyle = styleState.italic ? 'italic' : 'normal';
-            syncPreviewPosition();
-        }
-
-        // 计算位置（拖拽时调用）
-        function calcPosition() {
-            if (!template) return;
-            // 用 canvas 的真实渲染尺寸，避免公式计算和实际渲染的偏差
-            var cr = dom.canvas.getBoundingClientRect();
-            var wr = dom.previewBox.getBoundingClientRect();
-            var actualL = cr.left - wr.left;
-            var actualT = cr.top - wr.top;
-            scaleRatio = Math.min(cr.width / dom.canvas.width, cr.height / dom.canvas.height);
-
-            var val = parseInt(dom.fontSize.value, 10);
-            if (!isNaN(val) && val > 0) {
-                canvasFontSize = Math.round(val / scaleRatio);
+            if (!template) {
+                // 无模板时用 DOM 预览文字内容（悬空预览）
+                dom.dragText.textContent = t;
+                dom.dragText.style.display = t ? "block" : "none";
+                dom.dragText.style.fontFamily = dom.fontSelValue;
+                dom.dragText.style.fontSize = `${dom.fontSize.value}px`;
+                dom.dragText.style.color = dom.fontColorValue;
+                dom.dragText.style.fontWeight = styleState.bold ? 'bold' : 'normal';
+                dom.dragText.style.fontStyle = styleState.italic ? 'italic' : 'normal';
+                return;
             }
-
-            var dr = dom.dragText.getBoundingClientRect();
-            var dragCenterX = dr.left + dr.width/2 - wr.left;
-            var dragCenterY = dr.top + dr.height/2 - wr.top;
-            textX = Math.round((dragCenterX - actualL) / scaleRatio);
-            textY = Math.round((dragCenterY - actualT) / scaleRatio);
+            dom.dragText.textContent = '';
+            updateCanvasFontSize();
+            renderText();
+            syncDragIndicator();
             updateCoordUI();
         }
 
-        // 同步预览位置
-        function syncPreviewPosition() {
-            if (!template) return;
+        // 拖拽热区指示器：透明虚线框，跟随文字中心（仅作交互提示，不承载文字内容）
+        function syncDragIndicator() {
             var cr = dom.canvas.getBoundingClientRect();
             var wr = dom.previewBox.getBoundingClientRect();
             var actualL = cr.left - wr.left;
             var actualT = cr.top - wr.top;
-            scaleRatio = Math.min(cr.width / dom.canvas.width, cr.height / dom.canvas.height);
-
-            var val = parseInt(dom.fontSize.value, 10);
-            if (!isNaN(val) && val > 0) {
-                canvasFontSize = Math.round(val / scaleRatio);
-            }
-
-            dom.dragText.style.left = `${actualL + textX * scaleRatio}px`;
-            var _yAdj=isMobile?MOBILE_Y_ADJUST:DESKTOP_Y_ADJUST;dom.dragText.style.top = `${actualT + (textY + fontBaselineOffset + _yAdj) * scaleRatio}px`;
+            var t = dom.nameText.value.trim().split("\n")[0] || "";
+            if (!t) { dom.dragText.style.display = "none"; return; }
+            dom.dragText.style.display = "block";
+            // 框尺寸 = 文字实际宽高 + 余量（与渲染同字体测量）
+            var f = [];
+            if (styleState.italic) f.push('italic');
+            if (styleState.bold) f.push('bold');
+            f.push(canvasFontSize + 'px');
+            f.push(dom.fontSelValue);
+            ctx.font = f.join(' ');
+            var w = ctx.measureText(t).width;
+            var boxW = (w + canvasFontSize * 0.3) * scaleRatio;
+            var boxH = canvasFontSize * 1.35 * scaleRatio;
+            dom.dragText.style.left = (actualL + textX * scaleRatio) + "px";
+            dom.dragText.style.top = (actualT + textY * scaleRatio) + "px";
+            dom.dragText.style.width = boxW + "px";
+            dom.dragText.style.height = boxH + "px";
+            dom.dragText.style.transform = "translate(-50%, -50%)";
         }
 
         
@@ -1641,17 +1888,17 @@
             const file = e.target.files[0]; if (!file) return;
             // 文件大小限制 1MB
             if (file.size > 1048576) {
-                StatusManager.setState('文件太胖了！1MB以内才搬得动哦~', 'error');
-                StatusManager.log('这个文件有点胖诶…1MB以内才搬得动哦~ 🏋️');
+                StatusManager.setState('文件超过 1MB，请压缩后重试', 'error');
+                StatusManager.log('文件超过 1MB，压缩一下再试');
                 e.target.value = '';
                 return;
             }
-            StatusManager.setState('正在读 '+file.name+' ...', 'busy');
+            StatusManager.setState('正在读取「'+file.name+'」…', 'busy');
             try {
                 const ext = file.name.split('.').pop().toLowerCase();
                 if(ext!=='txt' && ext!=='docx' && ext!=='xlsx'){
-                    StatusManager.setState('这格式不认识呀，换 TXT 使用~', 'error');
-                    StatusManager.log('只认得 TXT、DOCX、XLSX 三种格式~ 📄');
+                    StatusManager.setState('仅支持 TXT/DOCX/XLSX 格式', 'error');
+                    StatusManager.log('仅支持 TXT/DOCX/XLSX 三种格式');
                     e.target.value = '';
                     return;
                 }
@@ -1669,26 +1916,30 @@
                 var lines = dom.nameText.value.split('\n');
                 if (lines.length > 500) {
                     dom.nameText.value = lines.slice(0, 500).join('\n');
-                    StatusManager.log('名单好长！眼睛都看花了，只收前 500 条哦~ 👀');
+                    StatusManager.log('名单超长，仅保留前 500 条');
                 }
                 refreshText();
                 var count = dom.nameText.value.trim().split('\n').filter(function(i){return i.trim();}).length;
-                StatusManager.setState('名单好了，'+count+'人，准备开干~', 'success');
-                StatusManager.log('名单搞定~ ' + count + ' 个，开干！🏆');
+                StatusManager.setState('已导入 '+count+' 人', 'success');
+                StatusManager.log('已导入 '+count+' 人');
             } catch (err) {
-                StatusManager.setState('文件读不出来，尽力了 😢', 'error');
-                StatusManager.log('哎呀翻车了！这文件解析不了，换个格式使用？😢');
+                StatusManager.setState('文件解析失败，请换格式重试', 'error');
+                StatusManager.log('解析失败，请用 TXT/DOCX/XLSX 格式');
             }
             finally { e.target.value = ''; }
         });
 
         // 拖拽上传模板图片到预览区
         var dropZone = document.getElementById('previewBox');
+        // 点击预览区时释放焦点：保证接下来方向键一定控制文字位置（而非被输入框吃掉）
+        dropZone.addEventListener('mousedown', function() {
+            if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+        });
         dropZone.addEventListener('dragover', function(e) { e.preventDefault(); e.stopPropagation(); });
         dropZone.addEventListener('drop', function(e) {
             e.preventDefault(); e.stopPropagation();
             var file = e.dataTransfer.files[0];
-            if (!file || !file.type.match(/image\//)) { StatusManager.log('拖张模板图片进来就行啦~ 🖼️'); return; }
+            if (!file || !file.type.match(/image\//)) { StatusManager.log('请拖入模板图片'); return; }
             loadTemplateImage(file);
         });
         function loadTemplateImage(file) {
@@ -1698,7 +1949,16 @@
                 var img = new Image();
                 img.onload = function() {
                     template = img;
+                    // 超大模板会占用大量内存（画布 ×2 + 图片），提前提示
+                    if (img.width * img.height > 16000000) {
+                        StatusManager.log('模板较大（'+img.width+'x'+img.height+'），生成时可能偏慢~');
+                    }
                     dom.canvas.width = img.width; dom.canvas.height = img.height;
+                    // 离屏缓存模板，供 renderText 全量重绘
+                    templateCanvas = document.createElement('canvas');
+                    templateCanvas.width = img.width;
+                    templateCanvas.height = img.height;
+                    templateCanvas.getContext('2d').drawImage(img, 0, 0);
                     ctx.drawImage(img, 0, 0);
                     dom.canvas.style.display = 'block';
                     dom.templateStatus.textContent = '✓ 模板已加载';
@@ -1709,16 +1969,12 @@
                     }
                     updateCoordUI();
                     refreshText();
-                    syncPreviewPosition();
-                    var initVal = parseInt(dom.fontSize.value, 10);
-                    if (!isNaN(initVal) && initVal > 0) { canvasFontSize = Math.round(initVal / scaleRatio); }
-                    calibrateFontBaseline();
-                    StatusManager.setState('模板就位！准备好啦~', 'success');
-                    StatusManager.log('哇这张模板选得真棒！竖大拇指~ 👍');
+                    StatusManager.setState('模板已加载', 'success');
+                    StatusManager.log('模板已加载');
                 };
                 img.onerror = function() {
-                    StatusManager.setState('模板读不出来，换一张使用~', 'error');
-                    StatusManager.log('呜呜这张模板打不开，换一张使用吧 😣');
+                    StatusManager.setState('模板加载失败，请换图片重试', 'error');
+                    StatusManager.log('图片加载失败，请换 PNG/JPG 格式');
                 };
                 img.src = ev.target.result;
             };
@@ -1729,11 +1985,41 @@
         document.getElementById("imgUpload").addEventListener("change", (e) => {
             const f = e.target.files[0]; if (!f) return;
             loadTemplateImage(f);
+            e.target.value = ''; // 允许重复选择同一文件
         });
 
-// ====================== 【终极修复】移动端拖拽：慢速/轻拖/快拖都丝滑 ======================
+// ====================== 文字拖拽：直接驱动画布坐标（预览与生成同源） ======================
 let dragStartClientX = 0, dragStartClientY = 0;
-let dragStartLeft = 0, dragStartTop = 0;
+
+// 把屏幕坐标换算为画布像素坐标并移动文字
+// rAF 节流：mousemove 高频只记坐标，每帧执行一次（跟手且不超帧）
+var _dragPending = null, _dragRaf = 0;
+function dragMoveTo(clientX, clientY) {
+    _dragPending = [clientX, clientY];
+    if (!_dragRaf) {
+        _dragRaf = requestAnimationFrame(function() {
+            _dragRaf = 0;
+            if (_dragPending) {
+                var p = _dragPending;
+                _dragPending = null;
+                applyDragMove(p[0], p[1]);
+            }
+        });
+    }
+}
+function applyDragMove(clientX, clientY) {
+    var cr = dom.canvas.getBoundingClientRect();
+    scaleRatio = Math.min(cr.width / dom.canvas.width, cr.height / dom.canvas.height);
+    var x = Math.round((clientX - cr.left) / scaleRatio);
+    var y = Math.round((clientY - cr.top) / scaleRatio);
+    x = Math.max(0, Math.min(dom.canvas.width, x));
+    y = Math.max(0, Math.min(dom.canvas.height, y));
+    textX = x; textY = y;
+    updateCoordUI();
+    renderText();
+    syncDragIndicator();
+    StatusManager.setState('坐标：'+textX+', '+textY, 'busy');
+}
 
 // 鼠标按下
 dom.dragText.addEventListener("mousedown", (e) => {
@@ -1743,10 +2029,8 @@ dom.dragText.addEventListener("mousedown", (e) => {
     isDragging = true;
     dragStartClientX = e.clientX;
     dragStartClientY = e.clientY;
-    dragStartLeft = dom.dragText.offsetLeft;
-    dragStartTop = dom.dragText.offsetTop;
     dom.dragText.style.cursor = "grabbing";
-    StatusManager.setState('拖拽中，松手就定住啦~', 'busy');
+    StatusManager.setState('坐标：'+textX+', '+textY, 'busy');
 });
 
 // 触摸开始
@@ -1758,33 +2042,23 @@ dom.dragText.addEventListener("touchstart", (e) => {
     const touch = e.touches[0];
     dragStartClientX = touch.clientX;
     dragStartClientY = touch.clientY;
-    dragStartLeft = dom.dragText.offsetLeft;
-    dragStartTop = dom.dragText.offsetTop;
     dom.dragText.style.cursor = "grabbing";
-    StatusManager.setState('拖拽中，手指别松~', 'busy');
+    StatusManager.setState('坐标：'+textX+', '+textY, 'busy');
 }, { passive: false });
 
 // 鼠标移动
 document.addEventListener("mousemove", (e) => {
     if (!isDragging || !template) return;
-    const dx = e.clientX - dragStartClientX;
-    const dy = e.clientY - dragStartClientY;
-    dom.dragText.style.left = `${dragStartLeft + dx}px`;
-    dom.dragText.style.top = `${dragStartTop + dy}px`;
-    calcPosition();
+    dragMoveTo(e.clientX, e.clientY);
 });
 
-// 触摸移动（核心修复：慢速绝对不抖、绝对不动）
+// 触摸移动
 document.addEventListener("touchmove", (e) => {
     if (!isDragging || !template || e.touches.length !== 1) return;
     e.preventDefault();
     e.stopPropagation();
     const touch = e.touches[0];
-    const dx = touch.clientX - dragStartClientX;
-    const dy = touch.clientY - dragStartClientY;
-    dom.dragText.style.left = `${dragStartLeft + dx}px`;
-    dom.dragText.style.top = `${dragStartTop + dy}px`;
-    calcPosition();
+    dragMoveTo(touch.clientX, touch.clientY);
 }, { passive: false });
 
 // 结束拖拽
@@ -1792,8 +2066,14 @@ function endDrag() {
     if (!isDragging) return;
     isDragging = false;
     dom.dragText.style.cursor = "grab";
-    StatusManager.setState('位置定好了~', 'success');
-    StatusManager.log('就放这，记住了~');
+    // 若 rAF 节流中还有未执行的移动，立即落盘，保证最终位置准确
+    if (_dragPending) {
+        var p = _dragPending;
+        _dragPending = null;
+        applyDragMove(p[0], p[1]);
+    }
+    StatusManager.setState('位置已锁定', 'success');
+    StatusManager.log('位置已锁定');
 }
 document.addEventListener("mouseup", endDrag);
 document.addEventListener("touchend", endDrag);
@@ -1803,20 +2083,20 @@ document.addEventListener("touchcancel", endDrag);
         async function batchGen() {
             if (isGenerating) return;
             if (!template) { 
-                StatusManager.setState('模板还没上传哦~ 📷', 'error');
-                StatusManager.log('还没有模板呢，先去上传一张嘛~ 📷');
+                StatusManager.setState('请先上传模板图片', 'error');
+                StatusManager.log('还没上传模板，请先上传图片');
                 return; 
             }
             
             const list = dom.nameText.value.trim().split("\n").filter(i => i.trim());
             if (list.length === 0) { 
-                StatusManager.setState('名单还是空的呢~', 'error'); 
-                StatusManager.log('名单还空着呢，先填几个名字嘛~ 📋');
+                StatusManager.setState('请先填写名单', 'error');
+                StatusManager.log('名单为空，请先填写');
                 return; 
             }
 
             if (typeof JSZip === 'undefined') {
-                StatusManager.setState('组件还没就绪，刷新一下~', 'error');
+                StatusManager.setState('组件未就绪，请刷新页面', 'error');
                 return;
             }
 
@@ -1828,8 +2108,8 @@ document.addEventListener("touchcancel", endDrag);
             dom.progressBar.style.width = "0%";
             dom.progressText.style.display = 'none';
 
-            StatusManager.setState('开始做啦~ 一共 '+list.length+' 张哦 ✨', 'busy');
-            StatusManager.log('开始做啦~ '+list.length+' 张，我会加油的~ ✨');
+            StatusManager.setState('开工！共 '+list.length+' 张 ✨', 'busy');
+            StatusManager.log('开工！'+list.length+' 张制作中');
 
             try {
                 zip = new JSZip();
@@ -1860,7 +2140,8 @@ document.addEventListener("touchcancel", endDrag);
                     tcx.textBaseline = "middle";
                     tcx.fillStyle = fColor;
                     tcx.font = canvasFont;
-                    tcx.fillText(n, textX, textY + fontBaselineOffset + (isMobile ? MOBILE_Y_ADJUST : DESKTOP_Y_ADJUST));
+                    // 与预览 renderText 完全同源的渲染参数 → 所见即所得
+                    tcx.fillText(n, textX, textY - _glyphCenterOffset * fSize);
 
                     // 过滤文件名非法字符，处理重名
                     let safeName = n.replace(/[\\/:*?"<>|]/g, '_');
@@ -1875,10 +2156,11 @@ document.addEventListener("touchcancel", endDrag);
                     
                     const percent = Math.round(((i + 1) / list.length) * 100);
                     dom.progressBar.style.width = `${percent}%`;
-                    StatusManager.setState('制作中…'+(i+1)+'/'+list.length, 'busy');
+                    StatusManager.setState('生成中 '+(i+1)+'/'+list.length, 'busy');
                     if(i%10===0||i===list.length-1)StatusManager.log(getRandomText('generating', n));
                     
-                    await new Promise(r => setTimeout(r, 30));
+                    // 每张仅让出主线程（5ms），保证 UI 不冻结且进度可感知；500 张约 2.5 秒
+                    await new Promise(r => setTimeout(r, 5));
                 }
                 
                 StatusManager.addGenCount(list.length);
@@ -1886,8 +2168,8 @@ document.addEventListener("touchcancel", endDrag);
                 StatusManager.setState(finalMsg, 'success');
                 StatusManager.log(finalMsg);
             } catch (e) {
-                StatusManager.setState('做到一半卡住了…', 'error');
-                StatusManager.log('出错了…'+(e.message||'未知')+'，刷新使用？');
+                StatusManager.setState('生成失败，请重试', 'error');
+                StatusManager.log('出错：'+(e.message||'未知原因')+'，请刷新重试');
             } finally {
                 isGenerating = false;
                 dom.genBtn.disabled = false;
@@ -1900,12 +2182,12 @@ document.addEventListener("touchcancel", endDrag);
         // 下载
         async function downloadZip() {
             if (typeof JSZip === 'undefined') {
-                StatusManager.setState('加载失败，刷新一下~', 'error');
+                StatusManager.setState('组件未就绪，请刷新页面', 'error');
                 return;
             }
             var names = Object.keys(zip.files);
             if (!zip || names.length === 0) {
-                StatusManager.setState('还没生成呢，先点生成~', 'error');
+                StatusManager.setState('请先点击「批量生成」', 'error');
                 return;
             }
             dom.downBtn.disabled = true;
@@ -1915,27 +2197,29 @@ document.addEventListener("touchcancel", endDrag);
                     var singleName = names[0];
                     var singleBlob = await zip.file(singleName).async('blob');
                     if (typeof saveAs === 'undefined') {
-                        StatusManager.setState('下载功能还没就绪，刷新使用~', 'error');
+                        StatusManager.setState('下载组件未就绪，请刷新页面', 'error');
                         dom.downBtn.disabled = false;
                         return;
                     }
                     saveAs(singleBlob, singleName);
-                    StatusManager.setState('单张直出，拿走~ ✈️', 'success');
-                    StatusManager.log('就一张，直接下~ ✈️');
+                    // 延迟释放 blob URL（过早释放会中断下载）
+                    if (window.URL && URL.revokeObjectURL) setTimeout(function(){ URL.revokeObjectURL(url); }, 10000);
+                    StatusManager.setState('已开始下载', 'success');
+                    StatusManager.log('已开始下载');
                 } catch (e) {
-                    StatusManager.setState('下载失败了，再试一下？', 'error');
+                    StatusManager.setState('下载失败，请重试', 'error');
                 } finally {
                     dom.downBtn.disabled = false;
                     dom.progressContainer.style.visibility = 'hidden';
                 }
                 return;
             }
-            StatusManager.setState('正在打包中，马上就好~ 📦', 'busy');
+            StatusManager.setState('正在打包 '+names.length+' 张…', 'busy');
             try {
                 const blob = await zip.generateAsync({
                     type: 'blob',
-                    compression: 'DEFLATE',
-                    compressionOptions: { level: 6 }
+                    // 图片已是压缩格式（JPEG/PNG/WebP），STORE 免重复压缩，打包速度提升数倍
+                    compression: 'STORE'
                 }, function(metadata) {
                     dom.progressContainer.style.visibility = 'visible';
                     dom.progressBar.style.width = metadata.percent.toFixed(0) + '%';
@@ -1943,15 +2227,15 @@ document.addEventListener("touchcancel", endDrag);
                 });
 
                 if (typeof saveAs === 'undefined') {
-                    StatusManager.setState('下载功能还没就绪，刷新使用~', 'error');
+                    StatusManager.setState('下载组件未就绪，请刷新页面', 'error');
                     dom.downBtn.disabled = false;
                     return;
                 }
                 saveAs(blob, '奖状批量文件.zip');
-                StatusManager.setState('打包完成！浏览器开始下载啦~ 🎉', 'success');
-                StatusManager.log('打包好咯，拿去吧~ 📦');
+                StatusManager.setState('已开始下载', 'success');
+                StatusManager.log('已开始下载');
             } catch (e) {
-                StatusManager.setState('打包出错了，重试一下吧', 'error');
+                StatusManager.setState('打包失败，请重试', 'error');
             } finally {
                 dom.downBtn.disabled = false;
                 dom.progressContainer.style.visibility = 'hidden';
@@ -1983,9 +2267,10 @@ document.addEventListener("touchcancel", endDrag);
             if (template && scaleRatio > 0 && !isNaN(val) && val > 0) {
                 canvasFontSize = Math.round(val / scaleRatio);
             }
+            measureGlyphOffset(dom.fontSelValue, canvasFontSize);
         });
         dom.fontSize.addEventListener("change", () => {
-             StatusManager.log('字号调到 '+dom.fontSize.value+'px 啦，大小刚刚好~');
+             StatusManager.log('字号：'+dom.fontSize.value+'px');
         });
 
         // 自定义字体下拉
@@ -2024,9 +2309,7 @@ document.addEventListener("touchcancel", endDrag);
                 });
             });
         }
-        var currentFont = '微软雅黑';
         function selectFont(name) {
-            currentFont = name;
             document.getElementById('fontSelLabel').textContent = name;
             document.getElementById('fontSelWrapper').classList.remove('open');
             onFontChange(name);
@@ -2067,7 +2350,7 @@ document.addEventListener("touchcancel", endDrag);
             document.getElementById('colorHexInput').value = hex;
             document.getElementById('nativeColorPicker').value = hex;
             refreshText();
-            StatusManager.log('换色了，'+hex+'，这个颜色可以~');
+            StatusManager.log('颜色已更换');
         }
         function toggleColorPicker() {
             document.getElementById('colorPickerDrop').classList.toggle('open');
@@ -2097,13 +2380,14 @@ document.addEventListener("touchcancel", endDrag);
         
         // 颜色变更已由自定义取色器 setColor() 处理，包含 refreshText() 和日志
 
-        var _resizeTimer;window.addEventListener("resize",function(){clearTimeout(_resizeTimer);_resizeTimer=setTimeout(syncPreviewPosition,100)});
+        var _resizeTimer;window.addEventListener("resize",function(){clearTimeout(_resizeTimer);_resizeTimer=setTimeout(refreshText,100)});
 
         var _themeInit = true;
         (function init() {
             StatusManager.init();
             dom.fontSize.value = isMobile ? 10 : 30;
             canvasFontSize = parseInt(dom.fontSize.value, 10);
+            measureGlyphOffset(dom.fontSelValue, canvasFontSize);
             updateCoordUI();
             refreshText();
             dom.inputX.value = textX;
@@ -2112,6 +2396,20 @@ document.addEventListener("touchcancel", endDrag);
             loadSavedTheme();
             _themeInit = false;
         })();
+
+        // ====================== v2：主题系统升级 ======================
+        // 明暗一键切换
+        window.toggleMode = function() {
+            setTheme(currentTheme.color, currentTheme.mode === 'light' ? 'dark' : 'light');
+        };
+        // View Transition 主题过渡（不支持的浏览器自动降级为直接切换）
+        var _origSetTheme = setTheme;
+        setTheme = function(color, mode) {
+            if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                try { document.startViewTransition(function(){ _origSetTheme(color, mode); }); }
+                catch(e) { _origSetTheme(color, mode); }
+            } else { _origSetTheme(color, mode); }
+        };
     </script>
 <div id="chatPanel">
 <div id="chatHeader"><span><i style="font-style:normal;position:relative;top:-1.5px">👑</i> 小帮手</span><button onmousedown="event.stopPropagation()" onclick="var cp=document.getElementById('chatPanel');cp.classList.remove('open');document.getElementById('chatBubble').style.display='flex'" aria-label="关闭聊天面板" style="background:rgba(255,255,255,.15);border:none;color:var(--text-primary);font-size:11px;cursor:pointer;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%;padding:0;line-height:1;transition:background .2s,color .2s;opacity:1">✕</button></div>
@@ -2188,7 +2486,7 @@ var i=document.getElementById('chatInput');var m=i.value.trim();if(!m)return;if(
 am('user',m);i.value='';if(_micOn)_micRestart();
 var _ctx='';try{var _nl=document.getElementById('nameText');if(_nl&&_nl.value.trim()){var _ns=_nl.value.trim().split('\n').filter(function(x){return x.trim()});if(_ns.length)_ctx='\n\n[当前名单，共'+_ns.length+'人]\n'+_ns.join('\n')}}catch(e){}try{var _ts=document.getElementById('templateStatus');if(_ts&&_ts.textContent.indexOf('已加载')>=0)_ctx+='\n[已上传模板]'}catch(e){}var _dkw=['颜色','字体','尺寸','设置','排版','配色','好看','建议','设计','大点','小点','加粗','斜体','格式','质量','像素','画质','调','改','换'];var _ad=false;for(var _i=0;_i<_dkw.length;_i++){if(m.indexOf(_dkw[_i])>=0){_ad=true;break}}if(_ad){try{var _ix=document.getElementById('inputX'),_iy=document.getElementById('inputY'),_fs=document.getElementById('fontSize'),_fl=document.getElementById('fontSelLabel'),_ch=document.getElementById('colorHexInput'),_bb=document.getElementById('btnBold'),_bi=document.getElementById('btnItalic'),_it=document.getElementById('imgTypeLabel'),_ql=document.getElementById('qualityLabel'),_dx=document.getElementById('dispX'),_dy=document.getElementById('dispY'),_se=[];if(_ix&&_iy)_se.push('尺寸: '+_ix.value+'×'+_iy.value);if(_dx&&_dy)_se.push('像素: '+_dx.textContent+'×'+_dy.textContent);if(_fs)_se.push('字号: '+_fs.value);if(_fl)_se.push('字体: '+_fl.textContent.trim());if(_ch)_se.push('颜色: '+_ch.value);if(_bb)_se.push('加粗: '+(_bb.classList.contains('active')?'是':'否'));if(_bi)_se.push('斜体: '+(_bi.classList.contains('active')?'是':'否'));if(_it)_se.push('格式: '+_it.textContent.trim());if(_ql)_se.push('质量: '+_ql.textContent.trim());if(_se.length)_ctx+='\n\n[当前设置]\n'+_se.join('\n')}catch(e){}}
 m=m+_ctx;var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='嗯…让我想想哈🤔';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
-try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你服务的用户叫琪琪大王，平时叫他主人，需要喊名字的时候叫琪琪大人。琪琪大人的男朋友叫吉吉小王。这是一个奖状生成器里内置的ai聊天功能，你能看到用户当前输入的名单和奖状设计设置尺寸、字体、颜色之类的，但这个用的很少，基本你的任务是陪伴聊天开心。'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em='请求失败';if(r.status===401)em='API Key 无效，检查一下是否正确';if(r.status===403)em='Key 没有权限，检查下账户额度';if(r.status===404)em='模型不可用，换个模型使用';if(r.status===429)em='请求过于频繁，稍后再试';if(r.status===502||r.status===503)em='代理服务暂时不可用';ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='啊脑子卡了一下…你刚说啥？';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
+try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你服务的用户叫琪琪大王，平时叫他主人，需要喊名字的时候叫琪琪大人。琪琪大人的男朋友叫吉吉小王。这是一个奖状生成器里内置的ai聊天功能，你能看到用户当前输入的名单和奖状设计设置尺寸、字体、颜色之类的，但这个用的很少，基本你的任务是陪伴聊天开心。'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em='请求失败';if(r.status===401)em='API Key 无效，检查一下是否正确';if(r.status===403)em='Key 没有权限，检查下账户额度';if(r.status===404)em='模型不可用，换个模型使用';if(r.status===429)em='请求过于频繁，稍后再试';if(r.status===502||r.status===503)em='代理服务暂时不可用';ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='未收到回复，请重试';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
 mc.scrollTop=mc.scrollHeight;var pp=document.getElementById('chatPanel');if(pp&&pp.classList.contains('open'))pp.style.top=Math.max(12,(innerHeight-pp.offsetHeight)/2)+'px';updateTimestamps()};
 
 // Save key
@@ -2417,10 +2715,10 @@ window.kkdw_toggleMic=function(){
 var btn=document.getElementById('micBtn');
 if(!_micRec){
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(!SR){am('assistant','你浏览器不支持语音输入…换个浏览器使用吧');return}
+if(!SR){am('assistant','浏览器不支持语音输入，请换浏览器~');return}
 _micRec=new SR();_micRec.lang='zh-CN';_micRec.interimResults=true;_micRec.continuous=true;
 _micRec.onresult=function(e){if(!_micOn)return;var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;document.getElementById('chatInput').value=t};
-_micRec.onerror=function(e){if(e.error==='no-speech'||e.error==='aborted')return;_micOn=false;_micRec=null;btn.classList.remove('recording');btn.textContent='♪';if(e.error!=='not-allowed')am('assistant','语音识别出问题了，重试一下吧')};
+_micRec.onerror=function(e){if(e.error==='no-speech'||e.error==='aborted')return;_micOn=false;_micRec=null;btn.classList.remove('recording');btn.textContent='♪';if(e.error!=='not-allowed')am('assistant','语音识别失败，请重试~')};
 _micRec.onend=function(){if(_micStopping){_micStopping=false;return}if(_micOn){try{_micRec.start()}catch(e){_micOn=false;btn.classList.remove('recording');btn.textContent='♪'}}};
 _micRec.start();_micOn=true;btn.classList.add('recording');btn.textContent='■';
 return}
