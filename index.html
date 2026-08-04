@@ -2060,6 +2060,7 @@ input:focus, select:focus, textarea:focus {
 // 把屏幕坐标换算为画布像素坐标并移动文字
 // rAF 节流：mousemove 高频只记坐标，每帧执行一次（跟手且不超帧）
 var _dragPending = null, _dragRaf = 0;
+var _dragOffX = 0, _dragOffY = 0; // 鼠标按住点与文字中心的偏移（相对拖动，点字哪里就相对哪里）
 function dragMoveTo(clientX, clientY) {
     _dragPending = [clientX, clientY];
     if (!_dragRaf) {
@@ -2073,11 +2074,18 @@ function dragMoveTo(clientX, clientY) {
         });
     }
 }
+function startDragOffset(clientX, clientY) {
+    var cr = dom.canvas.getBoundingClientRect();
+    scaleRatio = Math.min(cr.width / dom.canvas.width, cr.height / dom.canvas.height);
+    // 偏移统一用画布像素（鼠标画布坐标 - 文字中心画布坐标）
+    _dragOffX = (clientX - cr.left) / scaleRatio - textX;
+    _dragOffY = (clientY - cr.top) / scaleRatio - textY;
+}
 function applyDragMove(clientX, clientY) {
     var cr = dom.canvas.getBoundingClientRect();
     scaleRatio = Math.min(cr.width / dom.canvas.width, cr.height / dom.canvas.height);
-    var x = Math.round((clientX - cr.left) / scaleRatio);
-    var y = Math.round((clientY - cr.top) / scaleRatio);
+    var x = Math.round((clientX - cr.left) / scaleRatio - _dragOffX);
+    var y = Math.round((clientY - cr.top) / scaleRatio - _dragOffY);
     x = Math.max(0, Math.min(dom.canvas.width, x));
     y = Math.max(0, Math.min(dom.canvas.height, y));
     textX = x; textY = y;
@@ -2093,6 +2101,7 @@ dom.dragText.addEventListener("mousedown", (e) => {
     e.preventDefault();
     e.stopPropagation();
     isDragging = true;
+    startDragOffset(e.clientX, e.clientY);
     dom.dragText.style.cursor = "grabbing";
     StatusManager.setState('坐标：'+textX+', '+textY, 'busy');
 });
@@ -2103,6 +2112,7 @@ dom.dragText.addEventListener("touchstart", (e) => {
     e.preventDefault();
     e.stopPropagation();
     isDragging = true;
+    startDragOffset(e.touches[0].clientX, e.touches[0].clientY);
     dom.dragText.style.cursor = "grabbing";
     StatusManager.setState('坐标：'+textX+', '+textY, 'busy');
 }, { passive: false });
