@@ -660,7 +660,7 @@
         }
 
 
-        /* 底部：可拖动日志流 (核心修改区) */
+        /* 底部：可拖动日志流 */
         .status-pro-log {
             display: flex;
             flex-direction: column;
@@ -691,6 +691,8 @@
             width: 100%;
             font-size: 13px;
             color: var(--text-secondary);
+            /* 防止被 flex 容器压缩，保证滚动范围准确 */
+            flex-shrink: 0;
             /* 这里的 transform 用来控制滚动位置 */
             will-change: transform;
             transition: transform 0.1s ease-out;
@@ -706,9 +708,18 @@
             flex-shrink: 0;
             padding: 2px 0; /* 增加一点行内间距方便阅读 */
             opacity: 0;
-            transform: translateY(12px);
+            transform: translateY(-8px);
             transition: opacity .35s cubic-bezier(.25,.1,.25,1), transform .4s cubic-bezier(.34,1.56,.64,1);
         }
+        /* 日志状态点：颜色即状态（成功绿 / 进行中黄 / 错误红 / 默认灰） */
+        .log-line::before {
+            content: ''; display: inline-block; width: 7px; height: 7px;
+            border-radius: 50%; margin-right: 7px; vertical-align: 1px;
+            background: var(--text-muted); opacity: .7;
+        }
+        .log-line.success::before { background: var(--success); opacity: 1; box-shadow: 0 0 6px color-mix(in srgb, var(--success) 60%, transparent); }
+        .log-line.busy::before { background: var(--warning); opacity: 1; box-shadow: 0 0 6px color-mix(in srgb, var(--warning) 60%, transparent); }
+        .log-line.error::before { background: var(--danger); opacity: 1; box-shadow: 0 0 6px color-mix(in srgb, var(--danger) 60%, transparent); }
 
         .log-line.show {
             opacity: 1;
@@ -852,7 +863,6 @@
 #chatBubble{position:fixed;z-index:9999;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 85%,#fff),var(--accent),var(--accent-hover));color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px color-mix(in srgb,var(--accent) 25%,transparent),0 0 0 1px color-mix(in srgb,var(--accent) 15%,transparent),inset 0 1px 0 rgba(255,255,255,.25);cursor:default;user-select:none;right:70px;bottom:24px;will-change:transform,scale;animation:bubIn .55s cubic-bezier(.16,1,.3,1);scale:.97}#chatBubble:active{scale:.92}
 @keyframes bubIn{from{opacity:0;transform:scale(.3) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@keyframes bubPulse{0%,100%{box-shadow:0 8px 32px color-mix(in srgb,var(--accent) 25%,transparent)}50%{box-shadow:0 14px 44px color-mix(in srgb,var(--accent) 35%,transparent)}}
 @media(prefers-reduced-motion:no-preference){#chatBubble{animation:bubIn .55s cubic-bezier(.16,1,.3,1),float 5s ease-in-out 1s infinite,bubPulse 4s ease-in-out 1s infinite}}#chatBubble:hover{scale:1.02;box-shadow:0 8px 28px color-mix(in srgb,var(--accent) 30%,transparent),0 0 0 1px color-mix(in srgb,var(--accent) 18%,transparent),inset 0 1px 0 rgba(255,255,255,.28);transition:scale .4s cubic-bezier(.16,1,.3,1),box-shadow .4s cubic-bezier(.16,1,.3,1)}
 @keyframes bubPulse{0%,100%{box-shadow:0 8px 32px color-mix(in srgb,var(--accent) 25%,transparent),0 0 0 1px color-mix(in srgb,var(--accent) 15%,transparent)}50%{box-shadow:0 12px 44px color-mix(in srgb,var(--accent) 35%,transparent),0 0 0 1.5px color-mix(in srgb,var(--accent) 22%,transparent)}}
 @media(max-width:600px){#chatBubble{right:16px;bottom:140px}}
@@ -1301,7 +1311,7 @@ input:focus, select:focus, textarea:focus {
                     <div class="status-pro-header">
                         <div class="status-pro-main">
                             <div class="status-pro-pulse ready" id="statusDotPro"></div>
-                            <div class="status-pro-text" id="statusTextPro">准备好啦，上传模板就开工</div>
+                            <div class="status-pro-text" id="statusTextPro">准备就绪，等待上传模板</div>
                         </div>
                         <div class="status-pro-metrics">
                             <div class="metric-item">
@@ -1344,7 +1354,7 @@ input:focus, select:focus, textarea:focus {
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <script>
-        // ====================== 新增：移动端检测（核心修改1） ======================
+        // ====================== 移动端检测 ======================
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 0 && /Macintosh/i.test(navigator.userAgent));
 
         // ====================== 有趣的文案库 ======================
@@ -1369,12 +1379,6 @@ input:focus, select:focus, textarea:focus {
                 "给「{name}」的证书加热压膜中…🔥",
                 "「{name}」同学请注意，你的荣誉正在生成！",
                 "正在为「{name}」挑最闪亮的那道金边✨"
-            ],
-            success: [
-                "全部搞定！🎉",
-                "一张不落，全部完成",
-                "全部完成，可下载",
-                "全部生成成功！🎉"
             ]
         };
 
@@ -1387,6 +1391,7 @@ input:focus, select:focus, textarea:focus {
             sel.parentElement.classList.remove('open');
             if(type==='imgType')window._imgType=el.dataset.val;
             if(type==='quality')window._quality=el.dataset.val;
+            saveSettings();
         };
         window._imgType='jpeg';window._quality='1.0';
         document.addEventListener('click',function(e){if(!e.target.closest('.custom-select')){document.querySelectorAll('.custom-select.open').forEach(function(s){s.classList.remove('open')})}});
@@ -1427,7 +1432,7 @@ input:focus, select:focus, textarea:focus {
                 // 绑定拖拽事件
                 this.bindLogDragEvents();
 
-                setTimeout(() => this.log('小帮手就位，随时开工'), 500);
+                setTimeout(() => this.log('琪琪大王偷懒版 Pro Max 已就绪！今天也是元气满满的一天~ ☀️', 'success'), 500);
             },
 
             getTime() {
@@ -1442,15 +1447,16 @@ input:focus, select:focus, textarea:focus {
             },
 
             // 记录日志（2秒内相同消息不重复刷屏）
+            // type: 'success' | 'busy' | 'error' | 省略（默认灰点）
             _lastLog: '', _lastLogTime: 0,
-            log(message) {
+            log(message, type) {
                 var now = Date.now();
                 if (message === this._lastLog && now - this._lastLogTime < 2000) return;
                 this._lastLog = message;
                 this._lastLogTime = now;
 
                 const line = document.createElement('div');
-                line.className = 'log-line';
+                line.className = 'log-line' + (type ? ' ' + type : '');
 
                 const timeSpan = document.createElement('span');
                 timeSpan.className = 'log-timestamp';
@@ -1463,6 +1469,10 @@ input:focus, select:focus, textarea:focus {
                 line.appendChild(msgSpan);
 
                 this.elements.logContent.appendChild(line);
+                // 日志上限：只保留最近 200 条，避免长会话 DOM 无限增长
+                while (this.elements.logContent.children.length > 200) {
+                    this.elements.logContent.removeChild(this.elements.logContent.firstChild);
+                }
 
                 requestAnimationFrame(() => {
                     line.classList.add('show');
@@ -1472,7 +1482,11 @@ input:focus, select:focus, textarea:focus {
             },
 
             updateMaxScroll() {
-                const containerHeight = this.elements.logContainer.clientHeight;
+                // 用可见内容区高度（clientHeight 含 padding，需减去），否则滚动永远差 padding 高度，最后一行被遮
+                const container = this.elements.logContainer;
+                const padTop = parseFloat(getComputedStyle(container).paddingTop) || 0;
+                const padBottom = parseFloat(getComputedStyle(container).paddingBottom) || 0;
+                const containerHeight = container.clientHeight - padTop - padBottom;
                 const contentHeight = this.elements.logContent.scrollHeight;
                 // 内容高度 - 容器高度 = 可以向上滚动的距离 (取负值，因为 translateY 向上是负的)
                 this.maxTranslateY = Math.min(0, containerHeight - contentHeight);
@@ -1502,7 +1516,7 @@ input:focus, select:focus, textarea:focus {
                 document.addEventListener('mousemove', (e) => this.onDrag(e.clientY));
                 document.addEventListener('mouseup', () => this.endDrag());
 
-                // 触摸事件 (手机适配+禁止浏览器页面滚动 核心修改2)
+                // 触摸事件（禁止浏览器页面滚动）
                 container.addEventListener('touchstart', (e) => {
                     if (e.touches.length === 1) {
                         this.startDrag(e.touches[0].clientY);
@@ -1578,7 +1592,7 @@ input:focus, select:focus, textarea:focus {
         };
         const ctx = dom.canvas.getContext("2d");
 
-        // ====================== 全局变量：根据设备自动设置默认值（核心修改1） ======================
+        // ====================== 全局变量 ======================
         let textX = isMobile ? 1825 : 1835;
         let textY = isMobile ? 1310 : 1299;
         let template = null, zip = typeof JSZip !== 'undefined' ? new JSZip() : null;
@@ -1586,7 +1600,7 @@ input:focus, select:focus, textarea:focus {
         let canvasFontSize = 30; // 画布坐标下的字号，不受视口变化影响
         let styleState = { bold: false, italic: false };
 
-        // ====================== 主题管理系统 (顺序已调整) ======================
+        // ====================== 主题管理系统 ======================
         let currentTheme = { color: 'base', mode: 'light' };
 
         function setTheme(color, mode) {
@@ -1628,7 +1642,7 @@ input:focus, select:focus, textarea:focus {
 
             if (!_themeInit) {
                 StatusManager.setState('主题已切换', 'ready');
-                StatusManager.log('主题已切换');
+                StatusManager.log('主题已切换', 'success');
             }
         }
 
@@ -1734,7 +1748,8 @@ input:focus, select:focus, textarea:focus {
                 measureGlyphOffset(dom.fontSelValue, canvasFontSize);
                 refreshText();
             }
-            StatusManager.log('字体已切换：'+dom.fontSelValue);
+            StatusManager.log('字体已切换：'+dom.fontSelValue, 'success');
+            saveSettings();
         }
         function toggleStyle(type) {
             styleState[type] = !styleState[type];
@@ -1742,7 +1757,8 @@ input:focus, select:focus, textarea:focus {
             if (type === 'italic') dom.btnItalic.classList.toggle('active', styleState.italic);
             refreshText();
             var word=type==='bold'?'加粗':'倾斜';
-            StatusManager.log(word+(styleState[type]?'已开启':'已关闭'));
+            StatusManager.log(word+(styleState[type]?'已开启':'已关闭'), 'success');
+            saveSettings();
         }
 
         // ====================== 核心功能函数 ======================
@@ -1766,7 +1782,57 @@ input:focus, select:focus, textarea:focus {
             renderText();
             syncDragIndicator();
             updateCoordUI();
-            StatusManager.log('坐标：'+textX+', '+textY);
+            StatusManager.log('坐标：'+textX+', '+textY, 'success');
+            saveSettings();
+        }
+
+        // ====================== 配置记忆（localStorage） ======================
+        var SETTINGS_KEY = 'certgen_settings';
+        function saveSettings() {
+            try {
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+                    font: dom.fontSelValue,
+                    fontSize: dom.fontSize.value,
+                    color: dom.fontColorValue,
+                    bold: styleState.bold,
+                    italic: styleState.italic,
+                    x: textX, y: textY,
+                    imgType: window._imgType,
+                    quality: window._quality
+                }));
+            } catch(e) {}
+        }
+        function syncSelectLabel(selId, labelId, val) {
+            var opts = document.querySelectorAll('#' + selId + ' .custom-select-opt');
+            for (var i = 0; i < opts.length; i++) {
+                if (opts[i].dataset.val === val) opts[i].classList.add('selected');
+                else opts[i].classList.remove('selected');
+            }
+            var hit = document.querySelector('#' + selId + ' .custom-select-opt[data-val="' + val + '"]');
+            if (hit) document.getElementById(labelId).textContent = hit.textContent;
+        }
+        function loadSettings() {
+            try {
+                var raw = localStorage.getItem(SETTINGS_KEY);
+                if (!raw) return;
+                var s = JSON.parse(raw);
+                if (s.font) {
+                    dom.fontSelValue = s.font;
+                    document.getElementById('fontSelLabel').textContent = s.font;
+                }
+                if (s.fontSize && s.fontSize > 0) dom.fontSize.value = s.fontSize;
+                if (s.color) {
+                    dom.fontColorValue = s.color;
+                    document.getElementById('colorTrigger').style.background = s.color;
+                    document.getElementById('colorHexInput').value = s.color;
+                    document.getElementById('nativeColorPicker').value = s.color;
+                }
+                if (typeof s.bold === 'boolean') { styleState.bold = s.bold; dom.btnBold.classList.toggle('active', s.bold); }
+                if (typeof s.italic === 'boolean') { styleState.italic = s.italic; dom.btnItalic.classList.toggle('active', s.italic); }
+                if (typeof s.x === 'number' && typeof s.y === 'number') { textX = s.x; textY = s.y; }
+                if (s.imgType) { window._imgType = s.imgType; syncSelectLabel('imgTypeSel', 'imgTypeLabel', s.imgType); }
+                if (s.quality) { window._quality = s.quality; syncSelectLabel('qualitySel', 'qualityLabel', s.quality); }
+            } catch(e) {}
         }
 
         // 把用户输入的字号（CSS 视觉 px）换算为画布像素字号
@@ -1889,7 +1955,7 @@ input:focus, select:focus, textarea:focus {
             // 文件大小限制 1MB
             if (file.size > 1048576) {
                 StatusManager.setState('文件超过 1MB，请压缩后重试', 'error');
-                StatusManager.log('文件超过 1MB，压缩一下再试');
+                StatusManager.log('文件超过 1MB，压缩一下再试', 'error');
                 e.target.value = '';
                 return;
             }
@@ -1898,7 +1964,7 @@ input:focus, select:focus, textarea:focus {
                 const ext = file.name.split('.').pop().toLowerCase();
                 if(ext!=='txt' && ext!=='docx' && ext!=='xlsx'){
                     StatusManager.setState('仅支持 TXT/DOCX/XLSX 格式', 'error');
-                    StatusManager.log('仅支持 TXT/DOCX/XLSX 三种格式');
+                    StatusManager.log('仅支持 TXT/DOCX/XLSX 三种格式', 'error');
                     e.target.value = '';
                     return;
                 }
@@ -1920,11 +1986,11 @@ input:focus, select:focus, textarea:focus {
                 }
                 refreshText();
                 var count = dom.nameText.value.trim().split('\n').filter(function(i){return i.trim();}).length;
-                StatusManager.setState('已导入 '+count+' 人', 'success');
-                StatusManager.log('已导入 '+count+' 人');
+                StatusManager.setState('名单导入完成，共 '+count+' 人', 'success');
+                StatusManager.log('名单导入完成，共 '+count+' 人', 'success');
             } catch (err) {
                 StatusManager.setState('文件解析失败，请换格式重试', 'error');
-                StatusManager.log('解析失败，请用 TXT/DOCX/XLSX 格式');
+                StatusManager.log('解析失败，请用 TXT/DOCX/XLSX 格式', 'error');
             }
             finally { e.target.value = ''; }
         });
@@ -1961,20 +2027,21 @@ input:focus, select:focus, textarea:focus {
                     templateCanvas.getContext('2d').drawImage(img, 0, 0);
                     ctx.drawImage(img, 0, 0);
                     dom.canvas.style.display = 'block';
-                    dom.templateStatus.textContent = '✓ 模板已加载';
+                    dom.templateStatus.textContent = '模板加载完成';
                     dom.previewHint.textContent = '分辨率: ' + img.width + ' x ' + img.height;
                     if (textX > img.width || textY > img.height || textX < 0 || textY < 0) {
                         textX = Math.round(img.width / 2);
                         textY = Math.round(img.height * 0.45);
+                        saveSettings();
                     }
                     updateCoordUI();
                     refreshText();
-                    StatusManager.setState('模板已加载', 'success');
-                    StatusManager.log('模板已加载');
+                    StatusManager.setState('模板加载完成', 'success');
+                    StatusManager.log('模板加载完成', 'success');
                 };
                 img.onerror = function() {
                     StatusManager.setState('模板加载失败，请换图片重试', 'error');
-                    StatusManager.log('图片加载失败，请换 PNG/JPG 格式');
+                    StatusManager.log('图片加载失败，请换 PNG/JPG 格式', 'error');
                 };
                 img.src = ev.target.result;
             };
@@ -1989,7 +2056,6 @@ input:focus, select:focus, textarea:focus {
         });
 
 // ====================== 文字拖拽：直接驱动画布坐标（预览与生成同源） ======================
-let dragStartClientX = 0, dragStartClientY = 0;
 
 // 把屏幕坐标换算为画布像素坐标并移动文字
 // rAF 节流：mousemove 高频只记坐标，每帧执行一次（跟手且不超帧）
@@ -2027,8 +2093,6 @@ dom.dragText.addEventListener("mousedown", (e) => {
     e.preventDefault();
     e.stopPropagation();
     isDragging = true;
-    dragStartClientX = e.clientX;
-    dragStartClientY = e.clientY;
     dom.dragText.style.cursor = "grabbing";
     StatusManager.setState('坐标：'+textX+', '+textY, 'busy');
 });
@@ -2039,9 +2103,6 @@ dom.dragText.addEventListener("touchstart", (e) => {
     e.preventDefault();
     e.stopPropagation();
     isDragging = true;
-    const touch = e.touches[0];
-    dragStartClientX = touch.clientX;
-    dragStartClientY = touch.clientY;
     dom.dragText.style.cursor = "grabbing";
     StatusManager.setState('坐标：'+textX+', '+textY, 'busy');
 }, { passive: false });
@@ -2073,25 +2134,28 @@ function endDrag() {
         applyDragMove(p[0], p[1]);
     }
     StatusManager.setState('位置已锁定', 'success');
-    StatusManager.log('位置已锁定');
+    StatusManager.log('位置已锁定', 'success');
+    saveSettings();
 }
 document.addEventListener("mouseup", endDrag);
 document.addEventListener("touchend", endDrag);
 document.addEventListener("touchcancel", endDrag);
+// 窗口失焦时鼠标事件会丢失，主动结束拖拽，避免状态卡死
+window.addEventListener("blur", endDrag);
 
 // ====================== 批量生成 ======================
         async function batchGen() {
             if (isGenerating) return;
             if (!template) { 
                 StatusManager.setState('请先上传模板图片', 'error');
-                StatusManager.log('还没上传模板，请先上传图片');
+                StatusManager.log('还没上传模板，请先上传图片', 'error');
                 return; 
             }
             
             const list = dom.nameText.value.trim().split("\n").filter(i => i.trim());
             if (list.length === 0) { 
                 StatusManager.setState('请先填写名单', 'error');
-                StatusManager.log('名单为空，请先填写');
+                StatusManager.log('名单为空，请先填写', 'error');
                 return; 
             }
 
@@ -2108,17 +2172,18 @@ document.addEventListener("touchcancel", endDrag);
             dom.progressBar.style.width = "0%";
             dom.progressText.style.display = 'none';
 
-            StatusManager.setState('开工！共 '+list.length+' 张 ✨', 'busy');
-            StatusManager.log('开工！'+list.length+' 张制作中');
+            StatusManager.setState('开始生成，共 '+list.length+' 张…', 'busy');
+            StatusManager.log('开始生成，共 '+list.length+' 张…', 'busy');
 
             try {
+                var _t0 = Date.now();
                 zip = new JSZip();
                 const fFamily = dom.fontSelValue;
                 const fSize = canvasFontSize;
                 const fColor = dom.fontColorValue;
                 const it = window._imgType||'jpeg';
                 const q = parseFloat(window._quality||'1.0');
-                const ext = it === "png" ? "png" : it === "webp" ? "webp" : "jpg";
+                const ext = ({ png: "png", webp: "webp" })[it] || "jpg";
 
                 let canvasFontParts = [];
                 if (styleState.italic) canvasFontParts.push('italic');
@@ -2126,6 +2191,7 @@ document.addEventListener("touchcancel", endDrag);
                 canvasFontParts.push(`${fSize}px`);
                 canvasFontParts.push(fFamily);
                 const canvasFont = canvasFontParts.join(' ');
+                const glyphOff = _glyphCenterOffset * fSize;
 
                 const usedNames = {};
                 for (let i = 0; i < list.length; i++) {
@@ -2141,7 +2207,7 @@ document.addEventListener("touchcancel", endDrag);
                     tcx.fillStyle = fColor;
                     tcx.font = canvasFont;
                     // 与预览 renderText 完全同源的渲染参数 → 所见即所得
-                    tcx.fillText(n, textX, textY - _glyphCenterOffset * fSize);
+                    tcx.fillText(n, textX, textY - glyphOff);
 
                     // 过滤文件名非法字符，处理重名
                     let safeName = n.replace(/[\\/:*?"<>|]/g, '_');
@@ -2156,20 +2222,22 @@ document.addEventListener("touchcancel", endDrag);
                     
                     const percent = Math.round(((i + 1) / list.length) * 100);
                     dom.progressBar.style.width = `${percent}%`;
-                    StatusManager.setState('生成中 '+(i+1)+'/'+list.length, 'busy');
-                    if(i%10===0||i===list.length-1)StatusManager.log(getRandomText('generating', n));
+                    StatusManager.setState('正在生成 '+(i+1)+'/'+list.length + '…', 'busy');
+                    if(i%10===0||i===list.length-1)StatusManager.log(getRandomText('generating', n), 'busy');
                     
                     // 每张仅让出主线程（5ms），保证 UI 不冻结且进度可感知；500 张约 2.5 秒
                     await new Promise(r => setTimeout(r, 5));
                 }
                 
                 StatusManager.addGenCount(list.length);
-                var finalMsg = getRandomText('success');
+                var _elapsed = ((Date.now() - _t0) / 1000).toFixed(1);
+                var finalMsg = '用时 ' + _elapsed + ' 秒';
+                var finalLog = '已生成 ' + list.length + ' 张 · 用时 ' + _elapsed + ' 秒';
                 StatusManager.setState(finalMsg, 'success');
-                StatusManager.log(finalMsg);
+                StatusManager.log(finalLog, 'success');
             } catch (e) {
                 StatusManager.setState('生成失败，请重试', 'error');
-                StatusManager.log('出错：'+(e.message||'未知原因')+'，请刷新重试');
+                StatusManager.log('出错：'+(e.message||'未知原因')+'，请刷新重试', 'error');
             } finally {
                 isGenerating = false;
                 dom.genBtn.disabled = false;
@@ -2185,11 +2253,11 @@ document.addEventListener("touchcancel", endDrag);
                 StatusManager.setState('组件未就绪，请刷新页面', 'error');
                 return;
             }
-            var names = Object.keys(zip.files);
-            if (!zip || names.length === 0) {
+            if (!zip || Object.keys(zip.files).length === 0) {
                 StatusManager.setState('请先点击「批量生成」', 'error');
                 return;
             }
+            var names = Object.keys(zip.files);
             dom.downBtn.disabled = true;
             // 只有一张时直接下载单张，不打包 ZIP
             if (names.length === 1) {
@@ -2202,10 +2270,8 @@ document.addEventListener("touchcancel", endDrag);
                         return;
                     }
                     saveAs(singleBlob, singleName);
-                    // 延迟释放 blob URL（过早释放会中断下载）
-                    if (window.URL && URL.revokeObjectURL) setTimeout(function(){ URL.revokeObjectURL(url); }, 10000);
                     StatusManager.setState('已开始下载', 'success');
-                    StatusManager.log('已开始下载');
+                    StatusManager.log('已开始下载', 'success');
                 } catch (e) {
                     StatusManager.setState('下载失败，请重试', 'error');
                 } finally {
@@ -2223,7 +2289,7 @@ document.addEventListener("touchcancel", endDrag);
                 }, function(metadata) {
                     dom.progressContainer.style.visibility = 'visible';
                     dom.progressBar.style.width = metadata.percent.toFixed(0) + '%';
-                    StatusManager.setState('打包中…'+metadata.percent.toFixed(0)+'%', 'busy');
+                    StatusManager.setState('正在打包 '+metadata.percent.toFixed(0)+'%…', 'busy');
                 });
 
                 if (typeof saveAs === 'undefined') {
@@ -2231,9 +2297,11 @@ document.addEventListener("touchcancel", endDrag);
                     dom.downBtn.disabled = false;
                     return;
                 }
-                saveAs(blob, '奖状批量文件.zip');
+                var _d = new Date();
+                var _ds = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
+                saveAs(blob, '奖状_' + _ds + '.zip');
                 StatusManager.setState('已开始下载', 'success');
-                StatusManager.log('已开始下载');
+                StatusManager.log('已开始下载', 'success');
             } catch (e) {
                 StatusManager.setState('打包失败，请重试', 'error');
             } finally {
@@ -2261,16 +2329,13 @@ document.addEventListener("touchcancel", endDrag);
         });
 
         dom.fontSize.addEventListener("input", () => {
+            // refreshText 内部已通过 updateCanvasFontSize 更新 canvasFontSize
             refreshText();
-            // 快照画布坐标字号，锁定用户意图，避免后续视口变化影响下载结果
-            const val = parseInt(dom.fontSize.value, 10);
-            if (template && scaleRatio > 0 && !isNaN(val) && val > 0) {
-                canvasFontSize = Math.round(val / scaleRatio);
-            }
             measureGlyphOffset(dom.fontSelValue, canvasFontSize);
         });
         dom.fontSize.addEventListener("change", () => {
-             StatusManager.log('字号：'+dom.fontSize.value+'px');
+             StatusManager.log('字号：'+dom.fontSize.value+'px', 'success');
+             saveSettings();
         });
 
         // 自定义字体下拉
@@ -2303,16 +2368,16 @@ document.addEventListener("touchcancel", endDrag);
                     var opt = document.createElement('div');
                     opt.className = 'font-select-option';
                     opt.textContent = f[0] + (f[1] ? ' ('+f[1]+')' : '');
-                    opt.dataset.value = f[0];
-                    opt.onclick = function(e) { e.stopPropagation(); selectFont(f[0]); };
+                    // 传字体族名（f[1]）用于渲染，显示名（f[0]）仅展示
+                    opt.onclick = function(e) { e.stopPropagation(); selectFont(f[0], f[1] || f[0]); };
                     list.appendChild(opt);
                 });
             });
         }
-        function selectFont(name) {
-            document.getElementById('fontSelLabel').textContent = name;
+        function selectFont(displayName, fontFamily) {
+            document.getElementById('fontSelLabel').textContent = displayName;
             document.getElementById('fontSelWrapper').classList.remove('open');
-            onFontChange(name);
+            onFontChange(fontFamily);
         }
         function toggleFontDropdown() {
             var wrap = document.getElementById('fontSelWrapper');
@@ -2350,7 +2415,8 @@ document.addEventListener("touchcancel", endDrag);
             document.getElementById('colorHexInput').value = hex;
             document.getElementById('nativeColorPicker').value = hex;
             refreshText();
-            StatusManager.log('颜色已更换');
+            StatusManager.log('颜色已更换', 'success');
+            saveSettings();
         }
         function toggleColorPicker() {
             document.getElementById('colorPickerDrop').classList.toggle('open');
@@ -2371,13 +2437,6 @@ document.addEventListener("touchcancel", endDrag);
         buildColorPicker();
 
 
-        // 更新 onFontChange 接受参数
-        var _origOnFontChange = onFontChange;
-        onFontChange = function(name) {
-            if (name) dom.fontSelValue = name;
-            _origOnFontChange();
-        };
-        
         // 颜色变更已由自定义取色器 setColor() 处理，包含 refreshText() 和日志
 
         var _resizeTimer;window.addEventListener("resize",function(){clearTimeout(_resizeTimer);_resizeTimer=setTimeout(refreshText,100)});
@@ -2386,6 +2445,7 @@ document.addEventListener("touchcancel", endDrag);
         (function init() {
             StatusManager.init();
             dom.fontSize.value = isMobile ? 10 : 30;
+            loadSettings(); // 恢复上次的样式/坐标/导出配置
             canvasFontSize = parseInt(dom.fontSize.value, 10);
             measureGlyphOffset(dom.fontSelValue, canvasFontSize);
             updateCoordUI();
@@ -2454,10 +2514,20 @@ document.addEventListener("touchcancel", endDrag);
 
 
 <script>
+// 厂商配置表：模型前缀 → 厂商（url/名称/标识三合一）。必须放在最前面，
+// 否则下面的 _updateApiStatus 会先调用 _vendorOf 读到未初始化的 _VENDORS（TypeError 中断整个脚本）
+var _VENDORS=[
+{key:'glm',name:'智谱',url:'https://open.bigmodel.cn/api/paas/v4/chat/completions',test:function(m){return m.indexOf('glm')===0}},
+{key:'deepseek',name:'DeepSeek',url:'https://api.deepseek.com/v1/chat/completions',test:function(m){return m.indexOf('deepseek')===0}},
+{key:'openai',name:'OpenAI',url:'https://api.openai.com/v1/chat/completions',test:function(m){return m.indexOf('gpt')===0||m.indexOf('o')===0}},
+{key:'qwen',name:'通义千问',url:'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',test:function(m){return m.indexOf('qwen')===0||m.indexOf('qwq')===0}},
+{key:'gemini',name:'Gemini',url:'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',test:function(m){return m.indexOf('gemini')===0}},
+{key:'groq',name:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',test:function(m){return m.indexOf('groq')===0||m.indexOf('llama')===0||m.indexOf('mixtral')===0||m.indexOf('gemma')===0}}
+];
 // 默认 API（部署后自动获取，不写死）
 var DEFAULT_AVAIL=false,DEFAULT_MODEL='glm-4-flash-250414';
 if(location.protocol!=='file:'){
-fetch('/api/config').then(function(r){return r.json()}).then(function(d){if(d.available){DEFAULT_AVAIL=true;DEFAULT_MODEL=d.model||'glm-4-flash-250414';var K0=localStorage.getItem('kkdw_key');if(!K0){K='__default__';U='/api/chat';M=DEFAULT_MODEL;_prevK=K;_prevU=U;_prevM=M;localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M);_updateApiStatus();document.getElementById('modelLabel').textContent='GLM-5.1'}}}).catch(function(){})
+fetch('/api/config').then(function(r){return r.json()}).then(function(d){if(d.available){DEFAULT_AVAIL=true;DEFAULT_MODEL=d.model||'glm-4-flash-250414';var K0=localStorage.getItem('kkdw_key');if(!K0){K='__default__';U='/api/chat';M=DEFAULT_MODEL;_prevK=K;_prevU=U;_prevM=M;localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M);_updateApiStatus();document.getElementById('modelLabel').textContent=DEFAULT_MODEL}}}).catch(function(){})
 }
 var K='',U='',M='';
 try{K=localStorage.getItem('kkdw_key')||''}catch(e){}
@@ -2467,7 +2537,7 @@ var s=document.getElementById('chatApiSetup');var st=document.getElementById('ch
 if(K){if(s)s.style.display='none';if(st){st.style.display='block';_updateApiStatus()}}
 else{if(s)s.style.display='none';if(st){st.style.display='block';var sb=document.getElementById('chatApiStatusBtn');if(sb)sb.textContent='⚙️ 点击填写 API Key'}}
 function _ts(t){var d=(Date.now()-t)/1e3;if(d<60)return'';if(d<3600)return Math.floor(d/60)+'分钟前';if(d<86400)return Math.floor(d/3600)+'小时前';if(d<604800)return Math.floor(d/86400)+'天前';var n=new Date(t);return(n.getMonth()+1)+'月'+n.getDate()+'日 '+(n.getHours()<10?'0':'')+n.getHours()+':'+(n.getMinutes()<10?'0':'')+n.getMinutes()}
-function updateTimestamps(){var els=document.querySelectorAll('#chatMessages .chat-time');var now=Date.now();els.forEach(function(el){var ts=parseInt(el.dataset.ts,10);if(!ts){el.style.display='none';return}var d=(now-ts)/1e3;if(d<60){el.style.display='none';el.textContent=''}else{el.style.display='';el.textContent=_ts(ts)}})}
+function updateTimestamps(){var els=document.querySelectorAll('#chatMessages .chat-time');var now=Date.now();els.forEach(function(el){var ts=parseInt(el.dataset.ts,10);if(!ts){el.style.display='none';return}var txt=(now-ts)/1e3<60?'':_ts(ts);if(el.textContent!==txt||el.style.display==='none'){el.textContent=txt;el.style.display=txt?'':'none'}})}
 var g=document.getElementById('chatGreeting');if(g){var gs=g.querySelector('span');if(gs)gs.textContent='琪琪大王我来啦~ 需要帮忙吗？';var gt=g.querySelector('.chat-time');if(gt){gt.dataset.ts=Date.now();gt.style.display='none';gt.textContent=''}};updateTimestamps()
 var sbBtn=document.getElementById('chatApiStatusBtn');if(sbBtn){sbBtn.onclick=function(){var st=document.getElementById('chatApiStatus');var se=document.getElementById('chatApiSetup');var pp=document.getElementById('chatPanel');if(st)st.style.display='none';if(se){se.style.display='block';document.getElementById('modelRow').style.display='none';document.getElementById('vendorRow').style.display='none';var ai=document.getElementById('apiKeyInput');if(ai){ai.value='';_pickedVendor='';_prevK=K;_prevU=U;_prevM=M}}if(pp){pp.style.maxHeight='';pp.style.minHeight=''}}}
 function am(r,c){var m=document.getElementById('chatMessages');var w=document.createElement('div');w.className='chat-msg '+r;var s=document.createElement('span');s.textContent=c;w.appendChild(s);var t=document.createElement('div');t.className='chat-time';t.dataset.ts=Date.now();w.appendChild(t);m.appendChild(w);m.scrollTop=m.scrollHeight;var pp=document.getElementById('chatPanel');if(pp&&pp.classList.contains('open'))pp.style.top=Math.max(12,(innerHeight-pp.offsetHeight)/2)+'px';updateTimestamps()}
@@ -2484,9 +2554,8 @@ else{b.style.display='none';p.classList.add('open');var ap=document.getElementBy
 window.kkdw_send=async function(){
 var i=document.getElementById('chatInput');var m=i.value.trim();if(!m)return;if(!K){am('error','还没填 API Key，点下面绑定~');return}
 am('user',m);i.value='';if(_micOn)_micRestart();
-var _ctx='';try{var _nl=document.getElementById('nameText');if(_nl&&_nl.value.trim()){var _ns=_nl.value.trim().split('\n').filter(function(x){return x.trim()});if(_ns.length)_ctx='\n\n[当前名单，共'+_ns.length+'人]\n'+_ns.join('\n')}}catch(e){}try{var _ts=document.getElementById('templateStatus');if(_ts&&_ts.textContent.indexOf('已加载')>=0)_ctx+='\n[已上传模板]'}catch(e){}var _dkw=['颜色','字体','尺寸','设置','排版','配色','好看','建议','设计','大点','小点','加粗','斜体','格式','质量','像素','画质','调','改','换'];var _ad=false;for(var _i=0;_i<_dkw.length;_i++){if(m.indexOf(_dkw[_i])>=0){_ad=true;break}}if(_ad){try{var _ix=document.getElementById('inputX'),_iy=document.getElementById('inputY'),_fs=document.getElementById('fontSize'),_fl=document.getElementById('fontSelLabel'),_ch=document.getElementById('colorHexInput'),_bb=document.getElementById('btnBold'),_bi=document.getElementById('btnItalic'),_it=document.getElementById('imgTypeLabel'),_ql=document.getElementById('qualityLabel'),_dx=document.getElementById('dispX'),_dy=document.getElementById('dispY'),_se=[];if(_ix&&_iy)_se.push('尺寸: '+_ix.value+'×'+_iy.value);if(_dx&&_dy)_se.push('像素: '+_dx.textContent+'×'+_dy.textContent);if(_fs)_se.push('字号: '+_fs.value);if(_fl)_se.push('字体: '+_fl.textContent.trim());if(_ch)_se.push('颜色: '+_ch.value);if(_bb)_se.push('加粗: '+(_bb.classList.contains('active')?'是':'否'));if(_bi)_se.push('斜体: '+(_bi.classList.contains('active')?'是':'否'));if(_it)_se.push('格式: '+_it.textContent.trim());if(_ql)_se.push('质量: '+_ql.textContent.trim());if(_se.length)_ctx+='\n\n[当前设置]\n'+_se.join('\n')}catch(e){}}
-m=m+_ctx;var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='嗯…让我想想哈🤔';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
-try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你服务的用户叫琪琪大王，平时叫他主人，需要喊名字的时候叫琪琪大人。琪琪大人的男朋友叫吉吉小王。这是一个奖状生成器里内置的ai聊天功能，你能看到用户当前输入的名单和奖状设计设置尺寸、字体、颜色之类的，但这个用的很少，基本你的任务是陪伴聊天开心。'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em='请求失败';if(r.status===401)em='API Key 无效，检查一下是否正确';if(r.status===403)em='Key 没有权限，检查下账户额度';if(r.status===404)em='模型不可用，换个模型使用';if(r.status===429)em='请求过于频繁，稍后再试';if(r.status===502||r.status===503)em='代理服务暂时不可用';ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='未收到回复，请重试';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
+var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='嗯…让我想想哈🤔';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
+try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是奖状生成器内置的ai聊天助手。你默认要称呼用户为「琪琪大王」。你的任务是陪琪琪聊天、根据琪琪的询问回答琪琪的问题，回复简洁自然'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em=_httpErrMsg(r.status);ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='未收到回复，请重试';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
 mc.scrollTop=mc.scrollHeight;var pp=document.getElementById('chatPanel');if(pp&&pp.classList.contains('open'))pp.style.top=Math.max(12,(innerHeight-pp.offsetHeight)/2)+'px';updateTimestamps()};
 
 // Save key
@@ -2498,6 +2567,7 @@ var mn=M||'glm-4-flash-250414';
 var tag=K==='__default__'?' (默认)':'';sb.textContent='⚙️ '+_vendorName()+' | '+mn+tag+' · 更换';
 }
 var _prevK,_prevU,_prevM;
+function _httpErrMsg(s){if(s===401)return'(401) API Key 无效';if(s===402)return'(402) API 余额不足';if(s===403)return'(403) Key 没有权限';if(s===404)return'(404) 模型不可用';if(s===429)return'(429) 请求频繁';if(s===502||s===503)return'(502/503) 代理不可用';return'请求失败 ('+s+')'}
 function _revertDefault(){
 var rk=typeof _prevK!=='undefined'&&_prevK?_prevK:'__default__';
 var ru=typeof _prevU!=='undefined'?_prevU:'/api/chat';
@@ -2506,17 +2576,10 @@ K=rk;U=ru;M=rm;
 try{localStorage.setItem('kkdw_key',rk);localStorage.setItem('kkdw_url',ru);localStorage.setItem('kkdw_model',rm)}catch(e){}
 document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';
 _updateApiStatus();document.getElementById('chatPanel').style.maxHeight='';document.getElementById('chatPanel').style.minHeight=''}
-function _modelUrl(m){
-if(m.indexOf('glm')===0)return'https://open.bigmodel.cn/api/paas/v4/chat/completions';
-if(m.indexOf('deepseek')===0)return'https://api.deepseek.com/v1/chat/completions';
-if(m.indexOf('gpt')===0||m.indexOf('o')===0)return'https://api.openai.com/v1/chat/completions';
-if(m.indexOf('qwen')===0||m.indexOf('qwq')===0)return'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
-	if(m.indexOf('gemini')===0)return'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
-	if(m.indexOf('groq')===0||m.indexOf('llama')===0||m.indexOf('mixtral')===0||m.indexOf('gemma')===0)return'https://api.groq.com/openai/v1/chat/completions';
-return'https://open.bigmodel.cn/api/paas/v4/chat/completions';
-}
-function _vendorName(){if(!M)return'';if(M.indexOf('glm')===0)return'智谱';if(M.indexOf('deepseek')===0)return'DeepSeek';if(M.indexOf('gpt')===0||M.indexOf('o')===0)return'OpenAI';if(M.indexOf('qwen')===0||M.indexOf('qwq')===0)return'通义千问';if(M.indexOf('gemini')===0)return'Gemini';if(M.indexOf('groq')===0||M.indexOf('llama')===0||M.indexOf('mixtral')===0||M.indexOf('gemma')===0)return'Groq';return''}
-function _vendorFromModel(m){if(m.indexOf('glm')===0)return'glm';if(m.indexOf('deepseek')===0)return'deepseek';if(m.indexOf('gpt')===0||m.indexOf('o')===0)return'openai';if(m.indexOf('qwen')===0||m.indexOf('qwq')===0)return'qwen';if(m.indexOf('gemini')===0)return'gemini';if(m.indexOf('groq')===0||m.indexOf('llama')===0||m.indexOf('mixtral')===0||m.indexOf('gemma')===0)return'groq';return'glm';}
+function _vendorOf(m){if(!_VENDORS)return null;for(var i=0;i<_VENDORS.length;i++){if(_VENDORS[i].test(m))return _VENDORS[i]}return null}
+function _modelUrl(m){var v=_vendorOf(m);return v?v.url:_VENDORS[0].url}
+function _vendorName(){if(!M)return'';var v=_vendorOf(M);return v?v.name:''}
+function _vendorFromModel(m){var v=_vendorOf(m);return v?v.key:'glm'}
 var _pickedVendor='';
 window.kkdw_detectModel=function(){
 var k=document.getElementById('apiKeyInput').value.trim();
@@ -2678,7 +2741,6 @@ gd['通用模型']='通用对话与基础任务';
 gd['主力模型']='主力模型，性能与成本平衡';
 	gd['轻量极速模型']='轻量极速，高效推理';
 	gd['长上下文模型']='处理长篇文档和超长上下文';
-gd['长文本模型']='处理长篇文档和超长上下文';
 var gid='';
 for(var i=0;i<_allModels.length;i++){
 if(_allModels[i].d!==vendor)continue;
@@ -2704,8 +2766,8 @@ window.kkdw_saveKey=async function(){
 		document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';
 		document.getElementById('chatPanel').style.maxHeight='';document.getElementById('chatPanel').style.minHeight='';
 		var _ac=new AbortController();var _tid=setTimeout(function(){_ac.abort()},8000);am('assistant','测试 Key 中…');var r=await fetch(tu,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:tm,messages:[{role:'user',content:'hi'}],max_tokens:5}),signal:_ac.signal});clearTimeout(_tid);
-		if(r.ok){K=k;if(k==='__default__'){U='/api/chat'}else{U=tu};M=tm;try{localStorage.setItem('kkdw_key',k);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',tm)}catch(e){}_updateApiStatus();am('assistant','Key 已保存~ 可以开始聊天啦')}
-		else{var em='请求失败 ('+r.status+')';if(r.status===401)em='(401) API Key 无效';if(r.status===402)em='(402) API 余额不足';if(r.status===403)em='(403) Key 没有权限';if(r.status===404)em='(404) 模型不可用';if(r.status===429)em='(429) 请求频繁';if(r.status===502||r.status===503)em='(502/503) 代理不可用';am('assistant',em);if(typeof _revertDefault==='function')_revertDefault()}
+		if(r.ok){K=k;if(k==='__default__'){U='/api/chat'}else{U=tu};M=tm;try{localStorage.setItem('kkdw_key',k);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',tm)}catch(e){}_prevK=K;_prevU=U;_prevM=M;_updateApiStatus();am('assistant','Key 已保存~ 可以开始聊天啦')}
+		else{var em=_httpErrMsg(r.status);am('assistant',em);if(typeof _revertDefault==='function')_revertDefault()}
 	}catch(e){document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';document.getElementById('chatPanel').style.maxHeight='';document.getElementById('chatPanel').style.minHeight='';var em='网络异常';if(e.message.indexOf('Failed to fetch')>=0||e.message.indexOf('NetworkError')>=0){if(k==='__default__')em='网络连接失败，检查代理';else em='(CORS) 所选平台不支持浏览器直连'}else if(e.name.indexOf('Abort')>=0)em='(408) 请求超时';am('assistant',em+'，已回退');if(typeof _revertDefault==='function')_revertDefault()}
 }
 
