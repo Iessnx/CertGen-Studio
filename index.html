@@ -551,6 +551,16 @@
             animation: progressShimmer 1.8s linear infinite;
         }
         @keyframes progressShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .progress-text {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            transition: color .3s ease;
+        }
+        .progress-text.active { animation: pulse-text 1.5s ease-in-out infinite; }
+        @keyframes pulse-text { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
+
         /* ====================== 优化后的状态栏 ====================== */
         .status-bar-pro {
             display: flex;
@@ -872,7 +882,6 @@
 #chatInputRow{display:flex;padding:7px 10px;border-top:1px solid color-mix(in srgb,var(--accent) 8%,var(--border-color));gap:5px;flex-shrink:0;background:color-mix(in srgb,var(--bg-primary) 10%,transparent);border-radius:0 0 28px 28px}
 #chatInputRow input{flex:1;padding:6px 12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--border-color) 80%,transparent);background:color-mix(in srgb,var(--bg-primary) 55%,transparent);color:var(--text-primary);font-size:11px;outline:none;transition:border-color .2s}#chatInputRow input::placeholder{color:var(--text-secondary);-webkit-text-fill-color:var(--text-secondary);opacity:.8}#chatInputRow input:focus{border-color:var(--accent)}
 #chatInputRow button{width:26px;height:26px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;line-height:1;transition:transform .35s cubic-bezier(.16,1,.3,1),background .2s cubic-bezier(.4,0,.2,1),box-shadow .2s cubic-bezier(.4,0,.2,1)}#chatInputRow button:hover{background:var(--accent-hover);transform:scale(1.12);box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 40%,transparent)}#chatInputRow button:active{transform:scale(.85)}#chatInputRow button.mic-btn{background:var(--text-muted);margin-right:0;padding-bottom:1px;font-size:12px}#chatInputRow button.mic-btn.recording{background:var(--danger);animation:pulse-rec .8s infinite}@keyframes pulse-rec{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--danger) 40%,transparent)}50%{box-shadow:0 0 0 5px transparent}}
-#chatSendBtn:disabled,#chatSendBtn:disabled:hover{opacity:.45;transform:none;box-shadow:none;cursor:not-allowed}
 #chatApiSetup{padding:7px 10px;border-top:1px solid color-mix(in srgb,var(--border-color) 60%,transparent);border-bottom:1px solid color-mix(in srgb,var(--border-color) 60%,transparent);background:color-mix(in srgb,var(--bg-surface-solid) 45%,transparent);border-radius:0 0 28px 28px;transition:background-color var(--transition-base)}
 #chatApiSetup.show{animation:dropIn .25s cubic-bezier(.25,.1,.25,1)}
 #chatApiSetup input{flex:1;padding:5px 10px;border-radius:14px;border:1px solid var(--border-color);background:color-mix(in srgb,var(--bg-primary) 55%,transparent);color:var(--text-primary);font-size:10px;outline:none;transition:border-color var(--transition-fast),box-shadow var(--transition-fast),transform .2s ease}#chatApiSetup input::placeholder{color:var(--text-secondary);-webkit-text-fill-color:var(--text-secondary);opacity:.8}
@@ -1294,6 +1303,7 @@ input:focus, select:focus, textarea:focus {
                 <!-- 高精度进度条 -->
                 <div class="progress-container" id="progressContainer">
                     <div class="progress-bar" id="progressBar"></div>
+                    <div class="progress-text" id="progressText"></div>
                 </div>
 
                 <!-- 新智能状态栏 -->
@@ -1577,7 +1587,8 @@ input:focus, select:focus, textarea:focus {
             btnBold: document.getElementById("btnBold"),
             btnItalic: document.getElementById("btnItalic"),
             progressContainer: document.getElementById("progressContainer"),
-            progressBar: document.getElementById("progressBar")
+            progressBar: document.getElementById("progressBar"),
+            progressText: document.getElementById("progressText")
         };
         const ctx = dom.canvas.getContext("2d");
 
@@ -1693,7 +1704,6 @@ input:focus, select:focus, textarea:focus {
                 if (!moveInterval) { moveTick(); moveInterval = setInterval(moveTick, MOVE_DELAY); }
             }
 
-            var _ae=document.activeElement;if(_ae&&(_ae.tagName==='INPUT'||_ae.tagName==='TEXTAREA'||_ae.tagName==='SELECT'))return;
             if ((e.ctrlKey || e.metaKey) && key.toLowerCase() === 'b') { e.preventDefault(); toggleStyle('bold'); }
             if ((e.ctrlKey || e.metaKey) && key.toLowerCase() === 'i') { e.preventDefault(); toggleStyle('italic'); }
         }
@@ -1729,15 +1739,10 @@ input:focus, select:focus, textarea:focus {
 
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('keyup', handleKeyUp);
-        // 窗口失焦时 keyup 会丢失，主动清理方向键状态，避免文字持续移动
-        window.addEventListener('blur', function(){ for (var _k in keysPressed) keysPressed[_k] = false; if (moveInterval) { clearInterval(moveInterval); moveInterval = null; } });
 
         // ====================== 样式切换 ======================
         function onFontChange(name) {
             if (name) dom.fontSelValue = name;
-            if (name && document.fonts && document.fonts.check) {
-                try { if (!document.fonts.check('16px ' + (name.indexOf(' ') > -1 ? '"'+name+'"' : name))) StatusManager.log('当前设备可能未安装「'+name+'」，将回退为默认字体', 'error'); } catch(e) {}
-            }
             if (template) {
                 updateCanvasFontSize();
                 measureGlyphOffset(dom.fontSelValue, canvasFontSize);
@@ -1813,7 +1818,7 @@ input:focus, select:focus, textarea:focus {
                 var s = JSON.parse(raw);
                 if (s.font) {
                     dom.fontSelValue = s.font;
-                    document.getElementById('fontSelLabel').textContent = _fontDisplayName(s.font);
+                    document.getElementById('fontSelLabel').textContent = s.font;
                 }
                 if (s.fontSize && s.fontSize > 0) dom.fontSize.value = s.fontSize;
                 if (s.color) {
@@ -1968,9 +1973,7 @@ input:focus, select:focus, textarea:focus {
                 else if(ext==='docx') rawText = (await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()})).value.trim();
                 else if(ext==='xlsx'){
                     const wb=XLSX.read(await file.arrayBuffer());
-                    var _cells=[];
-                    for(var _si=0;_si<wb.SheetNames.length;_si++){_cells=_cells.concat(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[_si]],{header:1}).flat())}
-                    rawText=[...new Set(_cells.filter(Boolean))].join('\n');
+                    rawText=[...new Set(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1}).flat().filter(Boolean))].join('\n');
                 }
                 // 智能拆分：按换行、逗号、顿号、中文逗号、空格拆分，过滤空值
                 var items = rawText.split(/[\n\r,，、]|\s{2,}/).filter(function(i){return i.trim();});
@@ -1987,7 +1990,7 @@ input:focus, select:focus, textarea:focus {
                 StatusManager.log('名单导入完成，共 '+count+' 人', 'success');
             } catch (err) {
                 StatusManager.setState('文件解析失败，请换格式重试', 'error');
-                StatusManager.log('解析失败：'+(err.message||'未知原因')+'，请用 TXT/DOCX/XLSX 格式', 'error');
+                StatusManager.log('解析失败，请用 TXT/DOCX/XLSX 格式', 'error');
             }
             finally { e.target.value = ''; }
         });
@@ -2011,42 +2014,30 @@ input:focus, select:focus, textarea:focus {
             reader.onload = function(ev) {
                 var img = new Image();
                 img.onload = function() {
-                    try {
-                        // 硬上限：超过浏览器 canvas 容量的图会直接抛异常（手机尤甚），提前拒绝
-                        if (img.width * img.height > 40000000) {
-                            StatusManager.setState('图片过大（'+img.width+'x'+img.height+'），请压缩到 4000 万像素以内再上传', 'error');
-                            StatusManager.log('模板过大：'+img.width+'x'+img.height+'，请压缩后再上传', 'error');
-                            return;
-                        }
-                        template = img;
-                        // 超大模板会占用大量内存（画布 ×2 + 图片），提前提示
-                        if (img.width * img.height > 16000000) {
-                            StatusManager.log('模板较大（'+img.width+'x'+img.height+'），生成时可能偏慢~');
-                        }
-                        dom.canvas.width = img.width; dom.canvas.height = img.height;
-                        // 离屏缓存模板，供 renderText 全量重绘
-                        templateCanvas = document.createElement('canvas');
-                        templateCanvas.width = img.width;
-                        templateCanvas.height = img.height;
-                        templateCanvas.getContext('2d').drawImage(img, 0, 0);
-                        ctx.drawImage(img, 0, 0);
-                        dom.canvas.style.display = 'block';
-                        dom.templateStatus.textContent = '模板加载完成';
-                        dom.previewHint.textContent = '分辨率: ' + img.width + ' x ' + img.height;
-                        if (textX > img.width || textY > img.height || textX < 0 || textY < 0) {
-                            textX = Math.round(img.width / 2);
-                            textY = Math.round(img.height * 0.45);
-                            saveSettings();
-                        }
-                        updateCoordUI();
-                        refreshText();
-                        StatusManager.setState('模板加载完成', 'success');
-                        StatusManager.log('模板加载完成', 'success');
-                    } catch (e) {
-                        // canvas 创建/绘制异常（内存不足、超尺寸）时给出明确错误，不再卡在加载中
-                        StatusManager.setState('模板加载失败，请换图片重试', 'error');
-                        StatusManager.log('模板加载出错：'+(e.message||'图片过大或格式不支持'), 'error');
+                    template = img;
+                    // 超大模板会占用大量内存（画布 ×2 + 图片），提前提示
+                    if (img.width * img.height > 16000000) {
+                        StatusManager.log('模板较大（'+img.width+'x'+img.height+'），生成时可能偏慢~');
                     }
+                    dom.canvas.width = img.width; dom.canvas.height = img.height;
+                    // 离屏缓存模板，供 renderText 全量重绘
+                    templateCanvas = document.createElement('canvas');
+                    templateCanvas.width = img.width;
+                    templateCanvas.height = img.height;
+                    templateCanvas.getContext('2d').drawImage(img, 0, 0);
+                    ctx.drawImage(img, 0, 0);
+                    dom.canvas.style.display = 'block';
+                    dom.templateStatus.textContent = '模板加载完成';
+                    dom.previewHint.textContent = '分辨率: ' + img.width + ' x ' + img.height;
+                    if (textX > img.width || textY > img.height || textX < 0 || textY < 0) {
+                        textX = Math.round(img.width / 2);
+                        textY = Math.round(img.height * 0.45);
+                        saveSettings();
+                    }
+                    updateCoordUI();
+                    refreshText();
+                    StatusManager.setState('模板加载完成', 'success');
+                    StatusManager.log('模板加载完成', 'success');
                 };
                 img.onerror = function() {
                     StatusManager.setState('模板加载失败，请换图片重试', 'error');
@@ -2189,6 +2180,7 @@ window.addEventListener("blur", endDrag);
             dom.genIcon.innerHTML = '<div class="spinner"></div>';
             dom.progressContainer.style.visibility = 'visible';
             dom.progressBar.style.width = "0%";
+            dom.progressText.style.display = 'none';
 
             StatusManager.setState('开始生成，共 '+list.length+' 张…', 'busy');
             StatusManager.log('开始生成，共 '+list.length+' 张…', 'busy');
@@ -2211,7 +2203,7 @@ window.addEventListener("blur", endDrag);
                 const canvasFont = canvasFontParts.join(' ');
                 const glyphOff = _glyphCenterOffset * fSize;
 
-                const usedNames = new Set();
+                const usedNames = {};
                 for (let i = 0; i < list.length; i++) {
                     const n = list[i].trim();
                     const tc = document.createElement("canvas");
@@ -2219,7 +2211,6 @@ window.addEventListener("blur", endDrag);
                     tc.height = dom.canvas.height;
                     const tcx = tc.getContext("2d");
 
-                    if (it === 'jpeg') { tcx.fillStyle = '#ffffff'; tcx.fillRect(0, 0, tc.width, tc.height); }
                     tcx.drawImage(template, 0, 0);
                     tcx.textAlign = "center";
                     tcx.textBaseline = "middle";
@@ -2228,12 +2219,14 @@ window.addEventListener("blur", endDrag);
                     // 与预览 renderText 完全同源的渲染参数 → 所见即所得
                     tcx.fillText(n, textX, textY - glyphOff);
 
-                    // 过滤文件名非法字符，处理重名（Set + 自增后缀，避免与名单里字面的 _N 撞名）
+                    // 过滤文件名非法字符，处理重名
                     let safeName = n.replace(/[\\/:*?"<>|]/g, '_');
-                    const _baseName = safeName;
-                    let _dupN = 1;
-                    while (usedNames.has(safeName)) { safeName = _baseName + '_' + (_dupN++); }
-                    usedNames.add(safeName);
+                    if (usedNames[safeName] !== undefined) {
+                        usedNames[safeName]++;
+                        safeName = `${safeName}_${usedNames[safeName]}`;
+                    } else {
+                        usedNames[safeName] = 0;
+                    }
                     const b64 = tc.toDataURL(`image/${it}`, q).split(",")[1];
                     zip.file(`${safeName}.${ext}`, b64, { base64: true });
                     
@@ -2291,7 +2284,6 @@ window.addEventListener("blur", endDrag);
                     StatusManager.log('已开始下载', 'success');
                 } catch (e) {
                     StatusManager.setState('下载失败，请重试', 'error');
-                    StatusManager.log('下载出错：'+(e.message||'未知原因'), 'error');
                 } finally {
                     dom.downBtn.disabled = false;
                     dom.progressContainer.style.visibility = 'hidden';
@@ -2322,7 +2314,6 @@ window.addEventListener("blur", endDrag);
                 StatusManager.log('已开始下载', 'success');
             } catch (e) {
                 StatusManager.setState('打包失败，请重试', 'error');
-                StatusManager.log('打包出错：'+(e.message||'未知原因'), 'error');
             } finally {
                 dom.downBtn.disabled = false;
                 dom.progressContainer.style.visibility = 'hidden';
@@ -2375,7 +2366,6 @@ window.addEventListener("blur", endDrag);
                 ['Courier New','Courier New'],['Verdana','Verdana'],['Trebuchet MS','Trebuchet MS']
             ]}
         ];
-        function _fontDisplayName(fam){for(var _gi=0;_gi<fontData.length;_gi++){var _grp=fontData[_gi];for(var _fi=0;_fi<_grp.f.length;_fi++){if(_grp.f[_fi][1]===fam)return _grp.f[_fi][0]}}return fam}
         function buildFontDropdown() {
             var list = document.getElementById('fontSelList');
             list.innerHTML = '';
@@ -2464,7 +2454,7 @@ window.addEventListener("blur", endDrag);
         var _themeInit = true;
         (function init() {
             StatusManager.init();
-            dom.fontSize.value = 30;
+            dom.fontSize.value = isMobile ? 10 : 30;
             loadSettings(); // 恢复上次的样式/坐标/导出配置
             canvasFontSize = parseInt(dom.fontSize.value, 10);
             measureGlyphOffset(dom.fontSelValue, canvasFontSize);
@@ -2497,7 +2487,7 @@ window.addEventListener("blur", endDrag);
 <div id="chatInputRow">
 <input type="text" id="chatInput" placeholder="想聊什么就跟我说~" onkeydown="if(event.key==='Enter')kkdw_send()">
 <button class="mic-btn" id="micBtn" onclick="kkdw_toggleMic()" title="语音输入">♪</button>
-<button id="chatSendBtn" onclick="kkdw_send()" aria-label="发送消息">▲</button>
+<button onclick="kkdw_send()" aria-label="发送消息">▲</button>
 </div>
 <div id="chatApiSetup">
 <div class="api-desc" style="font-size:10px;color:var(--text-primary);margin-bottom:4px">🔑 粘贴 Key，自动识别平台和模型，选好点确定~</div>
@@ -2558,28 +2548,25 @@ if(K){if(s)s.style.display='none';if(st){st.style.display='block';_updateApiStat
 else{if(s)s.style.display='none';if(st){st.style.display='block';var sb=document.getElementById('chatApiStatusBtn');if(sb)sb.textContent='⚙️ 点击填写 API Key'}}
 function _ts(t){var d=(Date.now()-t)/1e3;if(d<60)return'';if(d<3600)return Math.floor(d/60)+'分钟前';if(d<86400)return Math.floor(d/3600)+'小时前';if(d<604800)return Math.floor(d/86400)+'天前';var n=new Date(t);return(n.getMonth()+1)+'月'+n.getDate()+'日 '+(n.getHours()<10?'0':'')+n.getHours()+':'+(n.getMinutes()<10?'0':'')+n.getMinutes()}
 function updateTimestamps(){var els=document.querySelectorAll('#chatMessages .chat-time');var now=Date.now();els.forEach(function(el){var ts=parseInt(el.dataset.ts,10);if(!ts){el.style.display='none';return}var txt=(now-ts)/1e3<60?'':_ts(ts);if(el.textContent!==txt||el.style.display==='none'){el.textContent=txt;el.style.display=txt?'':'none'}})}
-var g=document.getElementById('chatGreeting');if(g){var gs=g.querySelector('span');if(gs)gs.textContent='琪琪大王我来啦~ 需要帮忙吗？';var gt=g.querySelector('.chat-time');if(gt){gt.style.display='none';gt.textContent=''}};updateTimestamps()
+var g=document.getElementById('chatGreeting');if(g){var gs=g.querySelector('span');if(gs)gs.textContent='琪琪大王我来啦~ 需要帮忙吗？';var gt=g.querySelector('.chat-time');if(gt){gt.dataset.ts=Date.now();gt.style.display='none';gt.textContent=''}};updateTimestamps()
 var sbBtn=document.getElementById('chatApiStatusBtn');if(sbBtn){sbBtn.onclick=function(){var st=document.getElementById('chatApiStatus');var se=document.getElementById('chatApiSetup');var pp=document.getElementById('chatPanel');if(st)st.style.display='none';if(se){se.style.display='block';document.getElementById('modelRow').style.display='none';document.getElementById('vendorRow').style.display='none';var ai=document.getElementById('apiKeyInput');if(ai){ai.value='';_pickedVendor='';_prevK=K;_prevU=U;_prevM=M}}if(pp){pp.style.maxHeight='';pp.style.minHeight=''}}}
-function am(r,c){var m=document.getElementById('chatMessages');var w=document.createElement('div');w.className='chat-msg '+r;var s=document.createElement('span');s.textContent=c;w.appendChild(s);var t=document.createElement('div');t.className='chat-time';t.dataset.ts=Date.now();w.appendChild(t);m.appendChild(w);m.scrollTop=m.scrollHeight;updateTimestamps()}
+function am(r,c){var m=document.getElementById('chatMessages');var w=document.createElement('div');w.className='chat-msg '+r;var s=document.createElement('span');s.textContent=c;w.appendChild(s);var t=document.createElement('div');t.className='chat-time';t.dataset.ts=Date.now();w.appendChild(t);m.appendChild(w);m.scrollTop=m.scrollHeight;var pp=document.getElementById('chatPanel');if(pp&&pp.classList.contains('open'))pp.style.top=Math.max(12,(innerHeight-pp.offsetHeight)/2)+'px';updateTimestamps()}
 setInterval(updateTimestamps,10000);
 
 // Panel toggle
 window.kkdw_toggle=function(){
 var b=document.getElementById('chatBubble');var p=document.getElementById('chatPanel');
 if(p.classList.contains('open')){p.classList.remove('open');b.style.display='flex'}
-else{b.style.display='none';p.classList.add('open');var _gg=document.getElementById('chatGreeting');if(_gg){var _gct=_gg.querySelector('.chat-time');if(_gct&&!_gct.dataset.ts)_gct.dataset.ts=Date.now()}var ap=document.getElementById('chatApiSetup');var ast=document.getElementById('chatApiStatus');if(ap.style.display!=='none'){ap.style.display='none';ast.style.display='block';_updateApiStatus()}var _pw2=p.offsetWidth;var _ph2=p.offsetHeight;var _ml=Math.max(12,(innerWidth-_pw2)/2);var _mt=Math.max(12,(innerHeight-_ph2)/2);p.style.left=_ml+'px';p.style.top=_mt+'px';p.style.right='';p.style.bottom='';if(innerWidth>600)document.getElementById('chatInput').focus()}
+else{b.style.display='none';p.classList.add('open');var ap=document.getElementById('chatApiSetup');var ast=document.getElementById('chatApiStatus');if(ap.style.display!=='none'){ap.style.display='none';ast.style.display='block';_updateApiStatus()}var _pw2=p.offsetWidth;var _ph2=p.offsetHeight;var _ml=Math.max(12,(innerWidth-_pw2)/2);var _mt=Math.max(12,(innerHeight-_ph2)/2);p.style.left=_ml+'px';p.style.top=_mt+'px';p.style.right='';p.style.bottom='';if(innerWidth>600)document.getElementById('chatInput').focus()}
 };
 
 // Send
-var _chatPending=false;
 window.kkdw_send=async function(){
-if(_chatPending)return;
 var i=document.getElementById('chatInput');var m=i.value.trim();if(!m)return;if(!K){am('error','还没填 API Key，点下面绑定~');return}
-_chatPending=true;var _sb=document.getElementById('chatSendBtn');if(_sb)_sb.disabled=true;
 am('user',m);i.value='';if(_micOn)_micRestart();
 var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='嗯…让我想想哈🤔';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
-var _ac2=new AbortController();var _t2=setTimeout(function(){_ac2.abort()},30000);try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是奖状生成器内置的ai聊天助手。你默认要称呼用户为「琪琪大王」。你的任务是陪琪琪聊天、根据琪琪的询问回答琪琪的问题，回复简洁自然'},{role:'user',content:m}],max_tokens:500}),signal:_ac2.signal});clearTimeout(_t2);if(!r.ok){var _em=null;try{var _eb=await r.json();if(_eb&&_eb.error&&_eb.error.message)_em=_cleanServerMsg(_eb.error.message)}catch(_e3){}var em=_em||_httpErrMsg(r.status);if(typeof _revertDefault==='function')_revertDefault();ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='未收到回复，请重试';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){clearTimeout(_t2);var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('JSON')>=0||msg.indexOf('Unexpected token')>=0)msg='服务器响应格式异常，可能被网络代理拦截';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
-mc.scrollTop=mc.scrollHeight;updateTimestamps();_chatPending=false;if(_sb)_sb.disabled=false};
+try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+K.replace(/[^\x00-\x7F]/g,'')},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是奖状生成器内置的ai聊天助手。你默认要称呼用户为「琪琪大王」。你的任务是陪琪琪聊天、根据琪琪的询问回答琪琪的问题，回复简洁自然'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em=_httpErrMsg(r.status);ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='未收到回复，请重试';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg='网络连接失败，检查代理是否正常';else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
+mc.scrollTop=mc.scrollHeight;var pp=document.getElementById('chatPanel');if(pp&&pp.classList.contains('open'))pp.style.top=Math.max(12,(innerHeight-pp.offsetHeight)/2)+'px';updateTimestamps()};
 
 // Save key
 function _updateApiStatus(){
@@ -2590,9 +2577,7 @@ var mn=M||'glm-4-flash-250414';
 var tag=K==='__default__'?' (默认)':'';sb.textContent='⚙️ '+_vendorName()+' | '+mn+tag+' · 更换';
 }
 var _prevK,_prevU,_prevM;
-function _httpErrMsg(s){if(s===400)return'(400) 请求参数错误';if(s===401)return'(401) API Key 无效';if(s===402)return'(402) API 余额不足';if(s===403)return'(403) Key 没有权限';if(s===404)return'(404) 模型不可用';if(s===408)return'(408) 请求超时';if(s===413)return'(413) 请求内容过大';if(s===429)return'(429) 请求频繁';if(s===500)return'(500) 上游服务器错误';if(s===502||s===503)return'(502/503) 代理不可用';if(s===504)return'(504) 代理超时';return'请求失败 ('+s+')'}
-// 服务端原始错误里属于鉴权类的（英文原文很晦涩），转成规范状态码文案；其他真实错误（余额不足、模型不存在等）保留原文
-function _cleanServerMsg(m){if(!m)return'';var s=m.toLowerCase();if((s.indexOf('invalid')>=0&&s.indexOf('api key')>=0)||s.indexOf('authentication fails')>=0||s.indexOf('unauthorized')>=0||s.indexOf('invalid_api_key')>=0||s.indexOf('access denied')>=0)return'';return m}
+function _httpErrMsg(s){if(s===401)return'(401) API Key 无效';if(s===402)return'(402) API 余额不足';if(s===403)return'(403) Key 没有权限';if(s===404)return'(404) 模型不可用';if(s===429)return'(429) 请求频繁';if(s===502||s===503)return'(502/503) 代理不可用';return'请求失败 ('+s+')'}
 function _revertDefault(){
 var rk=typeof _prevK!=='undefined'&&_prevK?_prevK:'__default__';
 var ru=typeof _prevU!=='undefined'?_prevU:'/api/chat';
@@ -2792,8 +2777,8 @@ window.kkdw_saveKey=async function(){
 		document.getElementById('chatPanel').style.maxHeight='';document.getElementById('chatPanel').style.minHeight='';
 		var _ac=new AbortController();var _tid=setTimeout(function(){_ac.abort()},8000);am('assistant','测试 Key 中…');var r=await fetch(tu,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:tm,messages:[{role:'user',content:'hi'}],max_tokens:5}),signal:_ac.signal});clearTimeout(_tid);
 		if(r.ok){K=k;if(k==='__default__'){U='/api/chat'}else{U=tu};M=tm;try{localStorage.setItem('kkdw_key',k);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',tm)}catch(e){}_prevK=K;_prevU=U;_prevM=M;_updateApiStatus();am('assistant','Key 已保存~ 可以开始聊天啦')}
-		else{var em=_httpErrMsg(r.status);try{var _eb=await r.json();if(_eb&&_eb.error&&_eb.error.message)em=_cleanServerMsg(_eb.error.message)}catch(_e3){}am('assistant',em);if(typeof _revertDefault==='function')_revertDefault()}
-	}catch(e){document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';document.getElementById('chatPanel').style.maxHeight='';document.getElementById('chatPanel').style.minHeight='';var em='网络异常';if(e.message.indexOf('Failed to fetch')>=0||e.message.indexOf('NetworkError')>=0){if(k==='__default__')em='网络连接失败，检查代理';else{var _vv=_vendorOf(tm);if(_vv&&(_vv.key==='glm'||_vv.key==='gemini'||_vv.key==='groq'))em='网络连接失败，请检查网络或代理设置';else if(_vv)em='(CORS) '+_vv.name+' 不支持浏览器直连，建议部署后使用默认代理';else em='网络连接失败，请检查网络'}}else if(e.name.indexOf('Abort')>=0)em='(408) 请求超时';am('assistant',em+'，已回退');if(typeof _revertDefault==='function')_revertDefault()}
+		else{var em=_httpErrMsg(r.status);am('assistant',em);if(typeof _revertDefault==='function')_revertDefault()}
+	}catch(e){document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';document.getElementById('chatPanel').style.maxHeight='';document.getElementById('chatPanel').style.minHeight='';var em='网络异常';if(e.message.indexOf('Failed to fetch')>=0||e.message.indexOf('NetworkError')>=0){if(k==='__default__')em='网络连接失败，检查代理';else em='(CORS) 所选平台不支持浏览器直连'}else if(e.name.indexOf('Abort')>=0)em='(408) 请求超时';am('assistant',em+'，已回退');if(typeof _revertDefault==='function')_revertDefault()}
 }
 
 // Voice to text
