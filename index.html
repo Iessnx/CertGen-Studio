@@ -3073,7 +3073,11 @@ var _VENDORS=[
 {key:'groq',name:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',test:function(m){return /^(groq|meta-llama|llama|mixtral|gemma)/.test(m)}}
 ];
 // 默认 API（部署后自动获取，不写死）
-var DEFAULT_AVAIL=false,DEFAULT_MODEL='glm-4-flash-250414';
+// 各平台各自的"默认模型"：后端只说了有默认 Key、没给模型名时，按已知平台取对应默认，
+// 平台也判断不出来就留空（状态栏显示「站点默认接口」，不编造模型名）
+var _VENDOR_DEFAULT_MODEL={glm:'glm-4-flash-250414',deepseek:'deepseek-flash',openai:'gpt-4o',qwen:'qwen-turbo',gemini:'gemini-2.0-flash',groq:'llama-3.3-70b-versatile'};
+var CHAT_TIMEOUT=30000;   // 聊天请求超时（毫秒）：后端无响应时到点自动中断，避免永远卡在“发送中”
+var DEFAULT_AVAIL=false,DEFAULT_MODEL='';
 var K='',U='',M='';
 try{K=localStorage.getItem('kkdw_key')||''}catch(e){}
 if(K){try{U=localStorage.getItem('kkdw_url')||''}catch(e){}try{M=localStorage.getItem('kkdw_model')||''}catch(e){}}_prevK=K;_prevU=U;_prevM=M;
@@ -3096,11 +3100,13 @@ function _purgeFakeDefault(){
 if(location.protocol!=='file:'){
 fetch('/api/config').then(function(r){return r.json()}).then(function(d){
   if(!d.available){_purgeFakeDefault();return}
-  DEFAULT_AVAIL=true;DEFAULT_MODEL=d.model||'glm-4-flash-250414';
+  DEFAULT_AVAIL=true;
   // 先认出本地保存的 Key 属于哪个平台：优先看模型名，其次看接口地址
   var _vk='';
   if(M){var _v=_vendorOf(M);if(_v)_vk=_v.key}
   if(!_vk&&U){for(var _i=0;_i<_VENDORS.length;_i++){if(U.indexOf(_VENDORS[_i].url.split('/')[2])>=0){_vk=_VENDORS[_i].key;break}}}
+  // 模型名：后端给了就用后端的；没给就按"已知平台"取该平台的默认模型；平台也认不出就留空
+  DEFAULT_MODEL=d.model||_VENDOR_DEFAULT_MODEL[_vk]||'';
   // 可浏览器直连的平台（DeepSeek / 通义千问）→ 沿用本地配置
   // 其余情况（智谱/OpenAI/Groq 这类需后端的、或根本没配置）→ 用站点后端默认
   var _canDirect=(_vk==='deepseek'||_vk==='qwen');
@@ -3108,7 +3114,7 @@ fetch('/api/config').then(function(r){return r.json()}).then(function(d){
   K='__default__';U='/api/chat';M=DEFAULT_MODEL;_prevK=K;_prevU=U;_prevM=M;
   try{localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M)}catch(e){}
   _updateApiStatus();
-  var _ml=document.getElementById('modelLabel');if(_ml)_ml.textContent=DEFAULT_MODEL;
+  var _ml=document.getElementById('modelLabel');if(_ml)_ml.textContent=DEFAULT_MODEL||'站点默认接口';
 }).catch(function(){_purgeFakeDefault()})
 }else{
 _purgeFakeDefault();   // file:// 打开时不可能有站点默认接口，残留的默认一律清掉
@@ -3143,7 +3149,8 @@ if(!U){am('error','配置不完整（缺少接口地址），点下面 ⚙️ �
 _sending=true;
 am('user',m);i.value='';if(_micOn)_micRestart();
 var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='嗯…让我想想哈🤔';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
-try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_cleanKey(K)},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是奖状生成器内置的ai聊天助手。你默认要称呼用户为「琪琪大王」。你的任务是陪琪琪聊天、根据琪琪的询问回答琪琪的问题，回复简洁自然'},{role:'user',content:m}],max_tokens:500})});if(!r.ok){var em=_httpErrMsg(r.status);ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='未收到回复，请重试';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){var msg=e.message;if(msg.indexOf('AbortError')>=0)msg='请求超时，服务器响应太慢';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg=(location.protocol==='file:'?'本地打开用不了站点的默认接口，请点下面 ⚙️ 填自己的 Key':'默认接口 /api/chat 没响应，检查后端或代理');else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
+var _ac=null,_tid=0;try{_ac=new AbortController();_tid=setTimeout(function(){try{_ac.abort()}catch(e){}},CHAT_TIMEOUT)}catch(e){}
+try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_cleanKey(K)},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是奖状生成器内置的ai聊天助手。你默认要称呼用户为「琪琪大王」。你的任务是陪琪琪聊天、根据琪琪的询问回答琪琪的问题，回复简洁自然'},{role:'user',content:m}],max_tokens:500}),signal:_ac?_ac.signal:undefined});clearTimeout(_tid);if(!r.ok){var em=_httpErrMsg(r.status);ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='未收到回复，请重试';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){clearTimeout(_tid);var msg=e.message||'';if((e.name==='AbortError')||msg.indexOf('AbortError')>=0)msg='请求超时（'+(CHAT_TIMEOUT/1000)+' 秒无响应），请重试或换个模型';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg=(location.protocol==='file:'?'本地打开用不了站点的默认接口，请点下面 ⚙️ 填自己的 Key':'默认接口 /api/chat 没响应，检查后端或代理');else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
 _sending=false;mc.scrollTop=mc.scrollHeight;var pp=document.getElementById('chatPanel');if(pp&&pp.classList.contains('open'))pp.style.top=Math.max(12,(innerHeight-pp.offsetHeight)/2)+'px';updateTimestamps()};
 
 // Save key
@@ -3159,10 +3166,11 @@ var sb=document.getElementById('chatApiStatusBtn');
 if(!sb)return;
 if(!K){sb.textContent='⚙️ 点击填写 API Key';return;}
 var mn=M||DEFAULT_MODEL;
-var tag=K==='__default__'?' (默认)':'';
-// 认得出平台就显示「平台 | 模型」，认不出就只显示模型名（不再硬写“自定义”）
 var vn=_vendorName();
-sb.textContent='⚙️ '+(vn?vn+' | ':'')+mn+tag+' · 更换';
+var name,tag;
+if(mn){name=(vn?vn+' | ':'')+mn;tag=K==='__default__'?' (默认)':''}
+else{name='默认 API（厂商、模型未指定）';tag=''}   // 只有默认 API、厂商和模型都没确定
+sb.textContent='⚙️ '+name+tag+' · 更换';
 }
 var _prevK,_prevU,_prevM;
 // Key 清洗：粘贴时常见的全角空格/中文标点/换行会导致鉴权失败，测试与发送必须用同一套规则
@@ -3385,7 +3393,11 @@ window.kkdw_saveKey=async function(){
 		var _tm=(_sel&&_sel.dataset.val)||M||DEFAULT_MODEL;
 		var _tu=_modelUrl(_tm);
 		if(K){
-			M=_tm;U=_tu;_prevK=K;_prevU=U;_prevM=M;
+			// 走后端默认时：接口地址必须保持 /api/chat，不能被"按模型猜出来的平台地址"覆盖
+			// （否则会用 Bearer __default__ 去打平台接口，必然失败）
+			if(K==='__default__'){if(_tm)M=_tm;U='/api/chat'}
+			else{M=_tm;U=_tu}
+			_prevK=K;_prevU=U;_prevM=M;
 			try{localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M)}catch(e){}
 		}
 		document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';_updateApiStatus();return}
