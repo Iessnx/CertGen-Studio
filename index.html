@@ -1270,7 +1270,7 @@ input:focus, select:focus, textarea:focus {
                     </div>
                     
                     <div class="tool-segment" style="flex: 1;">
-                         <input type="number" id="fontSize" value="27" min="1" class="no-border-input" style="width: 100%; text-align: center; font-weight: 600;">
+                         <input type="number" id="fontSize" value="28" min="1" class="no-border-input" style="width: 100%; text-align: center; font-weight: 600;">
                     </div>
 
                     <div class="color-input-wrapper" id="colorPickerWrap">
@@ -1597,7 +1597,6 @@ input:focus, select:focus, textarea:focus {
 
     <script>
         // ====================== 移动端检测 ======================
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 0 && /Macintosh/i.test(navigator.userAgent));
 
         // ====================== 有趣的文案库 ======================
         const FunTexts = {
@@ -1835,14 +1834,22 @@ input:focus, select:focus, textarea:focus {
         const ctx = dom.canvas.getContext("2d");
 
         // ====================== 全局变量 ======================
-        let textX = 1860;       // 默认 X（电脑/手机一致）
-        let textY = 1296;       // 默认 Y（电脑/手机一致）
+        let textX = 1882;       // 默认 X（电脑/手机一致）
+        let textY = 1292;       // 默认 Y（电脑/手机一致）
         let template = null, zip = new MiniZip();
         let isDragging = false, scaleRatio = 1, isGenerating = false;
-        let canvasFontSize = 27; // 画布坐标下的字号，不受视口变化影响
+        let canvasFontSize = 28; // 画布坐标下的字号，不受视口变化影响
         var FONT_REF_W = 900;    // 字号输入框的换算基准宽度（标准预览宽）
+        // 预览画布分辨率上限：只在触屏小屏启用。手机双指放大时，浏览器会按缩放倍数重新栅格化
+        // 整块预览画布；画布若等于原图尺寸（如 4000×3000），放大几倍就会爆内存导致白屏/卡死。
+        var PREVIEW_MAX = 1280;
+        let previewScale = 1;    // 预览画布尺寸 ÷ 原图尺寸（1 = 不缩放）
+        function _useScaledPreview() {
+            var touch = (navigator.maxTouchPoints || 0) > 0;
+            var small = Math.min(window.innerWidth || 9999, window.innerHeight || 9999) < 820;
+            return touch && (small || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || ''));
+        }
         let styleState = { bold: false, italic: false };
-        var _fontSizeTouched = false;   // 用户是否手动调过字号（用于存档标记）
         var _canvasFontRestored = false; // 是否从存档里恢复过画布字号（只在初始化时用）
 
         // ====================== 主题管理系统 ======================
@@ -2032,14 +2039,13 @@ input:focus, select:focus, textarea:focus {
         }
 
         // ====================== 配置记忆（localStorage） ======================
-        var SETTINGS_KEY = 'certgen_settings_v5';   // v5：默认字号改为 27，旧存档不再覆盖
+        var SETTINGS_KEY = 'certgen_settings_v7';   // v7：默认坐标改为 1882/1292，旧存档不再覆盖
         function saveSettings() {
             try {
                 localStorage.setItem(SETTINGS_KEY, JSON.stringify({
                     font: dom.fontSelValue,
                     fontName: (document.getElementById('fontSelLabel') || {}).textContent || '',
                     fontSize: dom.fontSize.value,
-                    fontSizeCustom: _fontSizeTouched,
                     canvasFontSize: canvasFontSize,
                     color: dom.fontColorValue,
                     bold: styleState.bold,
@@ -2069,7 +2075,6 @@ input:focus, select:focus, textarea:focus {
                     document.getElementById('fontSelLabel').textContent = s.fontName || s.font;  // 标签用显示名（中文）
                 }
                 if (s.fontSize && s.fontSize > 0) dom.fontSize.value = s.fontSize;
-                if (typeof s.fontSizeCustom === 'boolean') _fontSizeTouched = s.fontSizeCustom;
                 // 画布字号存下来：刷新/换窗口大小后仍是同一个大小，不再随浏览器缩放变化
                 if (typeof s.canvasFontSize === 'number' && s.canvasFontSize > 0) { canvasFontSize = s.canvasFontSize; _canvasFontRestored = true; }
                 if (s.color) {
@@ -2102,8 +2107,10 @@ input:focus, select:focus, textarea:focus {
             // 与预览宽、窗口大小、浏览器缩放全都无关 → 电脑/手机生成结果完全一致。
             // 输入框里的数字含义：在 FONT_REF_W 宽的标准预览下看起来多大的字号。
             var val = parseInt(dom.fontSize.value, 10);
-            if (!isNaN(val) && val > 0 && dom.canvas.width > 0) {
-                canvasFontSize = Math.max(1, Math.round(val / FONT_REF_W * dom.canvas.width));
+            // 字号按「原图宽度」换算（不是预览画布宽度），保证生成结果与预览画布缩放无关
+            var _iw = (template && template.width) ? template.width : 0;
+            if (!isNaN(val) && val > 0 && _iw > 0) {
+                canvasFontSize = Math.max(1, Math.round(val / FONT_REF_W * _iw));
             }
         }
 
@@ -2148,17 +2155,20 @@ input:focus, select:focus, textarea:focus {
             ctx.clearRect(0, 0, dom.canvas.width, dom.canvas.height);
             ctx.drawImage(templateCanvas || template, 0, 0);
             if (!t) return;
+            // 预览画布可能是原图的缩略版：字号、坐标、字形偏移统一乘 previewScale
+            var _ps = previewScale || 1;
+            var _fSize = canvasFontSize * _ps;
             var f = [];
             if (styleState.italic) f.push('italic');
             if (styleState.bold) f.push('bold');
-            f.push(canvasFontSize + 'px');
+            f.push(_fSize + 'px');
             f.push(dom.fontSelValue);
             ctx.font = f.join(' ');
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = dom.fontColorValue;
-            var glyphOff = _glyphCenterOffset * canvasFontSize;
-            ctx.fillText(t, textX, textY - glyphOff);
+            var glyphOff = _glyphCenterOffset * _fSize;
+            ctx.fillText(t, textX * _ps, textY * _ps - glyphOff);
         }
 
         // 刷新预览：更新画布字号 → 重绘文字 → 同步拖拽指示器与坐标
@@ -2180,6 +2190,7 @@ input:focus, select:focus, textarea:focus {
                 return;
             }
             dom.dragText.textContent = '';
+            if (_gestureActive) return;   // 双指缩放中：暂停重绘，松手后补一次
             updateScaleRatio();   // 窗口/全屏/缩放变化后同步缩放比，否则拖拽热区会错位
             renderText();
             syncDragIndicator();
@@ -2203,10 +2214,11 @@ input:focus, select:focus, textarea:focus {
             f.push(dom.fontSelValue);
             ctx.font = f.join(' ');
             var w = ctx.measureText(t).width;
-            var boxW = (w + canvasFontSize * 0.3) * scaleRatio;
-            var boxH = canvasFontSize * 1.35 * scaleRatio;
-            dom.dragText.style.left = (actualL + textX * scaleRatio) + "px";
-            dom.dragText.style.top = (actualT + textY * scaleRatio) + "px";
+            var _ps = previewScale || 1;
+            var boxW = (w * _ps + canvasFontSize * _ps * 0.3) * scaleRatio;
+            var boxH = canvasFontSize * _ps * 1.35 * scaleRatio;
+            dom.dragText.style.left = (actualL + textX * _ps * scaleRatio) + "px";
+            dom.dragText.style.top = (actualT + textY * _ps * scaleRatio) + "px";
             dom.dragText.style.width = boxW + "px";
             dom.dragText.style.height = boxH + "px";
             dom.dragText.style.transform = "translate(-50%, -50%)";
@@ -2490,13 +2502,17 @@ input:focus, select:focus, textarea:focus {
                     if (img.width * img.height > 16000000) {
                         StatusManager.log('模板较大（'+img.width+'x'+img.height+'），生成时可能偏慢~');
                     }
-                    dom.canvas.width = img.width; dom.canvas.height = img.height;
-                    // 离屏缓存模板，供 renderText 全量重绘
+                    // 手机端把预览画布缩到最长边 ≤ PREVIEW_MAX（生成仍用原图分辨率，不受影响）
+                    // 注意：不要先设成原图尺寸再缩，否则会白分配一块超大画布（手机端正是要省这个内存）
+                    previewScale = _useScaledPreview() ? Math.min(1, PREVIEW_MAX / Math.max(img.width, img.height)) : 1;
+                    dom.canvas.width = Math.max(1, Math.round(img.width * previewScale));
+                    dom.canvas.height = Math.max(1, Math.round(img.height * previewScale));
+                    // 离屏缓存模板底图（与预览同尺寸），供 renderText 全量重绘
                     templateCanvas = document.createElement('canvas');
-                    templateCanvas.width = img.width;
-                    templateCanvas.height = img.height;
-                    templateCanvas.getContext('2d').drawImage(img, 0, 0);
-                    ctx.drawImage(img, 0, 0);
+                    templateCanvas.width = dom.canvas.width;
+                    templateCanvas.height = dom.canvas.height;
+                    templateCanvas.getContext('2d').drawImage(img, 0, 0, templateCanvas.width, templateCanvas.height);
+                    ctx.drawImage(templateCanvas, 0, 0);   // 先铺底图（尺寸与预览画布一致）
                     dom.canvas.style.display = 'block';
                     dom.templateStatus.textContent = '模板加载完成';
                     dom.previewHint.textContent = '分辨率: ' + img.width + ' x ' + img.height;
@@ -2552,17 +2568,21 @@ function dragMoveTo(clientX, clientY) {
 function startDragOffset(clientX, clientY) {
     var cr = dom.canvas.getBoundingClientRect();
     scaleRatio = Math.min(cr.width / dom.canvas.width, cr.height / dom.canvas.height);
-    // 偏移统一用画布像素（鼠标画布坐标 - 文字中心画布坐标）
-    _dragOffX = (clientX - cr.left) / scaleRatio - textX;
-    _dragOffY = (clientY - cr.top) / scaleRatio - textY;
+    var _ps = previewScale || 1;
+    // 偏移统一用原图坐标（鼠标位置先换算到预览画布，再换算回原图）
+    _dragOffX = (clientX - cr.left) / scaleRatio / _ps - textX;
+    _dragOffY = (clientY - cr.top) / scaleRatio / _ps - textY;
 }
 function applyDragMove(clientX, clientY) {
     var cr = dom.canvas.getBoundingClientRect();
     scaleRatio = Math.min(cr.width / dom.canvas.width, cr.height / dom.canvas.height);
-    var x = Math.round((clientX - cr.left) / scaleRatio - _dragOffX);
-    var y = Math.round((clientY - cr.top) / scaleRatio - _dragOffY);
-    x = Math.max(0, Math.min(dom.canvas.width, x));
-    y = Math.max(0, Math.min(dom.canvas.height, y));
+    var _ps = previewScale || 1;
+    var x = Math.round((clientX - cr.left) / scaleRatio / _ps - _dragOffX);
+    var y = Math.round((clientY - cr.top) / scaleRatio / _ps - _dragOffY);
+    var _iw = (template && template.width) || dom.canvas.width;
+    var _ih = (template && template.height) || dom.canvas.height;
+    x = Math.max(0, Math.min(_iw, x));
+    y = Math.max(0, Math.min(_ih, y));
     textX = x; textY = y;
     updateCoordUI();
     renderText();
@@ -2580,6 +2600,24 @@ dom.dragText.addEventListener("mousedown", (e) => {
     dom.dragText.style.cursor = "grabbing";
     StatusManager.setState('坐标：'+textX+', '+textY, 'busy');
 });
+
+// 双指缩放（捏合）期间暂停重绘：iOS/安卓在此期间会连续触发 resize，
+// 每次重绘都要画整张模板，等于自己给自己加卡。松手后补一次即可。
+var _gestureActive = false;
+document.addEventListener('touchstart', function (e) {
+    var n = (e.touches && e.touches.length) || 0;
+    if (n >= 2) _gestureActive = true;
+    else if (n === 1) _gestureActive = false;   // 保险：万一 touchend 丢了，单指触摸也能恢复重绘
+}, { passive: true });
+document.addEventListener('touchend', function (e) {
+    if (e.touches && e.touches.length < 2 && _gestureActive) {
+        _gestureActive = false;
+        setTimeout(function () { try { refreshText(); } catch (err) {} }, 60);
+    }
+}, { passive: true });
+document.addEventListener('touchcancel', function () {
+    if (_gestureActive) { _gestureActive = false; setTimeout(function () { try { refreshText(); } catch (err) {} }, 60); }
+}, { passive: true });
 
 // 触摸开始
 dom.dragText.addEventListener("touchstart", (e) => {
@@ -2688,8 +2726,9 @@ window.addEventListener("blur", endDrag);
                 for (let i = 0; i < list.length; i++) {
                     const n = list[i].trim();
                     const tc = document.createElement("canvas");
-                    tc.width = dom.canvas.width;
-                    tc.height = dom.canvas.height;
+                    // 生成用原图分辨率（与预览画布是否缩放无关）
+                    tc.width = (template && template.width) || dom.canvas.width;
+                    tc.height = (template && template.height) || dom.canvas.height;
                     const tcx = tc.getContext("2d");
 
                     tcx.drawImage(template, 0, 0);
@@ -2889,9 +2928,8 @@ window.addEventListener("blur", endDrag);
         });
 
         dom.fontSize.addEventListener("input", () => {
-            _fontSizeTouched = true;   // 手调过 → 以后不再自动换算默认字号
-            // 只有用户主动改字号时才按当前预览比例换算一次；
-            // 窗口缩放/全屏不再重算，保证生成图里的字号和位置不受浏览器缩放影响
+            // 只有用户主动改字号时才重新换算（按画布宽度算，与预览比例无关）；
+            // 窗口缩放/全屏不重算，保证生成图里的字号和位置不受浏览器缩放影响
             updateCanvasFontSize();
             refreshText();
             measureGlyphOffset(dom.fontSelValue, canvasFontSize);
@@ -3008,10 +3046,10 @@ window.addEventListener("blur", endDrag);
         var _themeInit = true;
         (function init() {
             StatusManager.init();
-            dom.fontSize.value = 27;   // 方案 B：电脑/手机统一 27（换算只跟画布宽有关）
+            dom.fontSize.value = 28;   // 方案 B：电脑/手机统一 28（换算只跟画布宽有关）
             loadSettings(); // 恢复上次的样式/坐标/导出配置
             // 存档里恢复过画布字号就不用再按当前窗口换算（否则刷新会受浏览器缩放影响）
-            if (!_canvasFontRestored) canvasFontSize = parseInt(dom.fontSize.value, 10) || 27;
+            if (!_canvasFontRestored) canvasFontSize = parseInt(dom.fontSize.value, 10) || 28;
             measureGlyphOffset(dom.fontSelValue, canvasFontSize);
             updateCoordUI();
             updatePreviewNav();
