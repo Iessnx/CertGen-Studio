@@ -3160,8 +3160,9 @@ if(!sb)return;
 if(!K){sb.textContent='⚙️ 点击填写 API Key';return;}
 var mn=M||DEFAULT_MODEL;
 var tag=K==='__default__'?' (默认)':'';
-var vn=_vendorName()||'自定义';
-sb.textContent='⚙️ '+vn+' | '+mn+tag+' · 更换';
+// 认得出平台就显示「平台 | 模型」，认不出就只显示模型名（不再硬写“自定义”）
+var vn=_vendorName();
+sb.textContent='⚙️ '+(vn?vn+' | ':'')+mn+tag+' · 更换';
 }
 var _prevK,_prevU,_prevM;
 // Key 清洗：粘贴时常见的全角空格/中文标点/换行会导致鉴权失败，测试与发送必须用同一套规则
@@ -3181,7 +3182,7 @@ try{
 }catch(e){}
 document.getElementById('chatApiSetup').style.display='none';document.getElementById('chatApiStatus').style.display='block';
 _updateApiStatus();document.getElementById('chatPanel').style.maxHeight='';document.getElementById('chatPanel').style.minHeight=''}
-function _vendorOf(m){if(!_VENDORS)return null;for(var i=0;i<_VENDORS.length;i++){if(_VENDORS[i].test(m))return _VENDORS[i]}return null}
+function _vendorOf(m){if(!_VENDORS)return null;var _s=String(m==null?'':m).toLowerCase();for(var i=0;i<_VENDORS.length;i++){if(_VENDORS[i].test(_s))return _VENDORS[i]}return null}
 // 未知型号不要退到智谱接口，否则会拿别人的 Key 去打错的服务；返回空让发送前拦截
 function _modelUrl(m){var v=_vendorOf(m);return v?v.url:''
 }
