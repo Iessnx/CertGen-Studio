@@ -893,7 +893,7 @@
 /* ---------- 小帮手 API 面板：统一纵向节奏 ---------- */
 #chatApiSetup{display:flex;flex-direction:column;gap:6px}
 /* 说明区：单行小字，紧贴 Key 输入框（左对齐、超宽省略，不折行） */
-#chatApiSetup .api-desc{font-size:8.5px;line-height:1.6;color:var(--text-secondary);opacity:.9;margin-top:4px;padding-left:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#chatApiSetup .api-desc{font-size:8px;line-height:1.6;color:var(--text-secondary);opacity:.9;margin-top:4px;padding-left:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #chatApiSetup .api-tag{font-weight:600;margin-right:3px}
 #chatApiSetup .api-tag.warn{margin-left:10px}
 #chatApiSetup .api-key-row{display:flex;gap:6px;align-items:stretch}
@@ -905,7 +905,7 @@
 #chatApiSetup .custom-select-trigger{font-size:10px;padding:4px 8px}
 /* 手机端把面板再压紧（放在上面这些规则之后，才能覆盖它们） */
 @media (max-width: 600px) {
-    #chatApiSetup .api-desc { font-size: 8px; }
+    #chatApiSetup .api-desc { font-size: 7.5px; }
     #chatApiSetup .api-sel-label { flex-basis: 26px; font-size: 10px; }
     #chatApiSetup .custom-select-trigger { font-size: 8px; padding: 2px 5px; border-radius: 12px; }
 }
@@ -3094,11 +3094,27 @@ function _purgeFakeDefault(){
   try{_updateApiStatus()}catch(e){}
 }
 if(location.protocol!=='file:'){
-fetch('/api/config').then(function(r){return r.json()}).then(function(d){if(d.available){DEFAULT_AVAIL=true;DEFAULT_MODEL=d.model||'glm-4-flash-250414';var K0=localStorage.getItem('kkdw_key');if(!K0){K='__default__';U='/api/chat';M=DEFAULT_MODEL;_prevK=K;_prevU=U;_prevM=M;try{localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M)}catch(e){}_updateApiStatus();document.getElementById('modelLabel').textContent=DEFAULT_MODEL}}else{_purgeFakeDefault()}}).catch(function(){_purgeFakeDefault()})
+fetch('/api/config').then(function(r){return r.json()}).then(function(d){
+  if(!d.available){_purgeFakeDefault();return}
+  DEFAULT_AVAIL=true;DEFAULT_MODEL=d.model||'glm-4-flash-250414';
+  // 先认出本地保存的 Key 属于哪个平台：优先看模型名，其次看接口地址
+  var _vk='';
+  if(M){var _v=_vendorOf(M);if(_v)_vk=_v.key}
+  if(!_vk&&U){for(var _i=0;_i<_VENDORS.length;_i++){if(U.indexOf(_VENDORS[_i].url.split('/')[2])>=0){_vk=_VENDORS[_i].key;break}}}
+  // 可浏览器直连的平台（DeepSeek / 通义千问）→ 沿用本地配置
+  // 其余情况（智谱/OpenAI/Groq 这类需后端的、或根本没配置）→ 用站点后端默认
+  var _canDirect=(_vk==='deepseek'||_vk==='qwen');
+  if(K&&K!=='__default__'&&_canDirect){_updateApiStatus();return}
+  K='__default__';U='/api/chat';M=DEFAULT_MODEL;_prevK=K;_prevU=U;_prevM=M;
+  try{localStorage.setItem('kkdw_key',K);localStorage.setItem('kkdw_url',U);localStorage.setItem('kkdw_model',M)}catch(e){}
+  _updateApiStatus();
+  var _ml=document.getElementById('modelLabel');if(_ml)_ml.textContent=DEFAULT_MODEL;
+}).catch(function(){_purgeFakeDefault()})
 }else{
 _purgeFakeDefault();   // file:// 打开时不可能有站点默认接口，残留的默认一律清掉
 }
-if(K){try{_showVendor(_vendorFromModel(M))}catch(e){}}
+// 走后端默认时，前端不提供平台/模型切换（模型由后端决定，切换只会发出后端不认识的型号）
+if(K&&K!=='__default__'){try{_showVendor(_vendorFromModel(M))}catch(e){}}
 var s=document.getElementById('chatApiSetup');var st=document.getElementById('chatApiStatus');
 if(K){if(s)s.style.display='none';if(st){st.style.display='block';_updateApiStatus()}}
 else{if(s)s.style.display='none';if(st){st.style.display='block';var sb=document.getElementById('chatApiStatusBtn');if(sb)sb.textContent='⚙️ 点击填写 API Key'}}
@@ -3134,10 +3150,9 @@ _sending=false;mc.scrollTop=mc.scrollHeight;var pp=document.getElementById('chat
 function _updateDirectTip(){
 var el=document.getElementById('apiDirectTip');
 if(!el)return;
-var usingBackend=DEFAULT_AVAIL||(U&&U.charAt(0)==='/');
-el.innerHTML=usingBackend
-? '<span class="api-tag">已启用：</span>经服务端转发，全部平台可用'
-: '<span class="api-tag">可直连：</span>DeepSeek、通义千问<span class="api-tag warn">需后端：</span>智谱、OpenAI、Groq';
+// 一直显示：无论当前是走后端还是自己填 Key，都需要知道哪些平台支持直连
+el.style.display='';
+el.innerHTML='<span class="api-tag">可直连：</span>DeepSeek、通义千问<span class="api-tag warn">需后端：</span>智谱、OpenAI、Groq';
 }
 function _updateApiStatus(){
 var sb=document.getElementById('chatApiStatusBtn');
