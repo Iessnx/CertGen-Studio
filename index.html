@@ -551,15 +551,6 @@
             animation: progressShimmer 1.8s linear infinite;
         }
         @keyframes progressShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .progress-text {
-            text-align: center;
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 600;
-            transition: color .3s ease;
-        }
-        .progress-text.active { animation: pulse-text 1.5s ease-in-out infinite; }
-        @keyframes pulse-text { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
 
         /* ====================== 优化后的状态栏 ====================== */
         .status-bar-pro {
@@ -1209,11 +1200,11 @@ input:focus, select:focus, textarea:focus {
                     <span class="hint" style="font-weight: 600;">界面风格</span>
                     <div style="display: flex; align-items: center; gap: 8px;">
                       <div class="theme-switcher">
-                        <button class="theme-btn active" data-theme="base" data-mode="light" title="经典白" onclick="setTheme('base', 'light')"></button>
-                        <button class="theme-btn" data-theme="pink" data-mode="light" title="樱花粉" onclick="setTheme('pink', 'light')"></button>
-                        <button class="theme-btn" data-theme="green" data-mode="light" title="薄荷绿" onclick="setTheme('green', 'light')"></button>
-                        <button class="theme-btn" data-theme="yellow" data-mode="light" title="阳光黄" onclick="setTheme('yellow', 'light')"></button>
-                        <button class="theme-btn" data-theme="purple" data-mode="light" title="薰衣草紫" onclick="setTheme('purple', 'light')"></button>
+                        <button class="theme-btn active" data-theme="base" data-mode="light" title="经典白" onclick="setTheme('base')"></button>
+                        <button class="theme-btn" data-theme="pink" data-mode="light" title="樱花粉" onclick="setTheme('pink')"></button>
+                        <button class="theme-btn" data-theme="green" data-mode="light" title="薄荷绿" onclick="setTheme('green')"></button>
+                        <button class="theme-btn" data-theme="yellow" data-mode="light" title="阳光黄" onclick="setTheme('yellow')"></button>
+                        <button class="theme-btn" data-theme="purple" data-mode="light" title="薰衣草紫" onclick="setTheme('purple')"></button>
                       </div>
                       <button class="theme-mode-btn" id="themeModeBtn" title="切换深色/浅色" onclick="toggleMode()">🌙</button>
                     </div>
@@ -1350,7 +1341,6 @@ input:focus, select:focus, textarea:focus {
                 <!-- 高精度进度条 -->
                 <div class="progress-container" id="progressContainer">
                     <div class="progress-bar" id="progressBar"></div>
-                    <div class="progress-text" id="progressText"></div>
                 </div>
 
                 <!-- 新智能状态栏 -->
@@ -1599,30 +1589,6 @@ input:focus, select:focus, textarea:focus {
         // ====================== 移动端检测 ======================
 
         // ====================== 有趣的文案库 ======================
-        const FunTexts = {
-            loading: [
-                "正在给打印机灌墨水…",
-                "在铺画布、调色盘…",
-                "正在唤醒渲染小精灵…",
-                "小帮手在热身，马上就好~",
-                "纸已经备好，就差名字啦…",
-                "正在抛光金边…✨",
-                "加载中，好事多磨嘛！",
-                "墨水还没干，稍等一秒钟~"
-            ],
-            generating: [
-                "正在为「{name}」手写专属奖状…✍️",
-                "「{name}」的奖状新鲜出炉啦！",
-                "啪！给「{name}」盖上荣誉印章！",
-                "「{name}」的奖状刚从打印机里蹦出来！",
-                "正在给「{name}」烫金镶边…",
-                "「{name}」的名字写得超好看！",
-                "给「{name}」的证书加热压膜中…🔥",
-                "「{name}」同学请注意，你的荣誉正在生成！",
-                "正在为「{name}」挑最闪亮的那道金边✨"
-            ]
-        };
-
         window.selOpt=function(type,el){
             document.querySelectorAll('.custom-select.open').forEach(function(s){if(s!==el.parentElement.parentElement)s.classList.remove('open')});
             var sel=el.parentElement;
@@ -1636,13 +1602,6 @@ input:focus, select:focus, textarea:focus {
         };
         window._imgType='jpeg';window._quality='1.0';
         document.addEventListener('click',function(e){if(!e.target.closest('.custom-select')){document.querySelectorAll('.custom-select.open').forEach(function(s){s.classList.remove('open')})}});
-
-        function getRandomText(type, name = "") {
-            const arr = FunTexts[type];
-            if (!arr) return '';
-            let text = arr[Math.floor(Math.random() * arr.length)];
-            return text.replace("{name}", name);
-        }
 
         // ====================== 智能状态栏管理器 (增加拖拽逻辑+禁止浏览器滚动) ======================
         const StatusManager = {
@@ -1687,11 +1646,29 @@ input:focus, select:focus, textarea:focus {
                 this.elements.dot.className = 'status-pro-pulse ' + type;
             },
 
-            // 记录日志（2秒内相同消息不重复刷屏）
+            // 记录日志（同一句话 2 秒内不重复；只有数字在变的"进度型"提示直接改最后一行）
             // type: 'success' | 'busy' | 'error' | 省略（默认灰点）
             _lastLog: '', _lastLogTime: 0,
+            _lastLine: null,      // 最后一行 DOM，进度型提示复用它
+            _lastKey: '',         // 去掉数字后的文案，用来判断"是不是同一类提示"
+            _lastTime: 0,
             log(message, type) {
                 var now = Date.now();
+                var key = String(message).replace(/\d+/g, '#');
+                var last = this._lastLine;
+                // 连着点 ‹› 翻名字时，文案只有页码在变：改最后一行就行，
+                // 不然一次连点能刷出十几行「翻到第 n/m 张」。
+                if (key === this._lastKey && now - this._lastTime < 3000 &&
+                    last && last.parentNode === this.elements.logContent && last.children.length > 1) {
+                    last.children[1].textContent = message;
+                    last.className = 'log-line show' + (type ? ' ' + type : '');
+                    this._lastLog = message;
+                    this._lastLogTime = now;
+                    this._lastTime = now;
+                    this.updateMaxScroll();
+                    this.autoScrollToBottom();
+                    return;
+                }
                 if (message === this._lastLog && now - this._lastLogTime < 2000) return;
                 this._lastLog = message;
                 this._lastLogTime = now;
@@ -1710,6 +1687,9 @@ input:focus, select:focus, textarea:focus {
                 line.appendChild(msgSpan);
 
                 this.elements.logContent.appendChild(line);
+                this._lastLine = line;
+                this._lastKey = key;
+                this._lastTime = now;
                 // 日志上限：只保留最近 200 条，避免长会话 DOM 无限增长
                 while (this.elements.logContent.children.length > 200) {
                     this.elements.logContent.removeChild(this.elements.logContent.firstChild);
@@ -1828,8 +1808,7 @@ input:focus, select:focus, textarea:focus {
             btnBold: document.getElementById("btnBold"),
             btnItalic: document.getElementById("btnItalic"),
             progressContainer: document.getElementById("progressContainer"),
-            progressBar: document.getElementById("progressBar"),
-            progressText: document.getElementById("progressText")
+            progressBar: document.getElementById("progressBar")
         };
         const ctx = dom.canvas.getContext("2d");
 
@@ -1855,7 +1834,9 @@ input:focus, select:focus, textarea:focus {
         // ====================== 主题管理系统 ======================
         let currentTheme = { color: 'base', mode: 'light' };
 
+        // mode 省略时沿用当前模式：点色块只换颜色，不会从深色突然跳回浅色
         function setTheme(color, mode) {
+            if (mode !== 'light' && mode !== 'dark') mode = (currentTheme && currentTheme.mode) || 'light';
             currentTheme = { color, mode };
 
             // base 用 light/dark，彩色主题用 light-{color} / dark-{color}
@@ -2187,6 +2168,7 @@ input:focus, select:focus, textarea:focus {
                 dom.dragText.style.color = dom.fontColorValue;
                 dom.dragText.style.fontWeight = styleState.bold ? 'bold' : 'normal';
                 dom.dragText.style.fontStyle = styleState.italic ? 'italic' : 'normal';
+                applyPreviewPos();   // 拖过的位置要跟着窗口变化重算
                 return;
             }
             dom.dragText.textContent = '';
@@ -2402,7 +2384,9 @@ input:focus, select:focus, textarea:focus {
             previewIndex = Math.min(list.length - 1, Math.max(0, previewIndex + delta));
             updatePreviewNav();
             refreshText();
-            StatusManager.setState('预览第 ' + (previewIndex + 1) + '/' + list.length + ' 个：' + list[previewIndex], 'busy');
+            // 标题栏不写「预览第 x/y 个：某某」了：那段太长，且右上角本来就有 1/5 的页码；
+            // 翻到第几个改在日志区说，连点时只更新最后一行（见 StatusManager.log）
+            StatusManager.log('翻到第 ' + (previewIndex + 1) + '/' + list.length + ' 张', 'success');
         }
 
         // ====================== 文件处理 ======================
@@ -2410,8 +2394,8 @@ input:focus, select:focus, textarea:focus {
             const file = e.target.files[0]; if (!file) return;
             // 文件大小限制 1MB
             if (file.size > 1048576) {
-                StatusManager.setState('文件超过 1MB，请压缩后重试', 'error');
-                StatusManager.log('文件超过 1MB，压缩一下再试', 'error');
+                StatusManager.setState('文件超过 1MB，请压缩后再试', 'error');
+                StatusManager.log('文件超过 1MB，请压缩后再试', 'error');
                 e.target.value = '';
                 return;
             }
@@ -2420,7 +2404,7 @@ input:focus, select:focus, textarea:focus {
                 const ext = file.name.split('.').pop().toLowerCase();
                 if(ext!=='txt' && ext!=='docx' && ext!=='xlsx'){
                     StatusManager.setState('仅支持 TXT/DOCX/XLSX 格式', 'error');
-                    StatusManager.log('仅支持 TXT/DOCX/XLSX 三种格式', 'error');
+                    StatusManager.log('仅支持 TXT/DOCX/XLSX 格式', 'error');
                     e.target.value = '';
                     return;
                 }
@@ -2431,8 +2415,8 @@ input:focus, select:focus, textarea:focus {
                         StatusManager.setState('正在加载 DOCX 解析组件…', 'busy');
                         try { await loadScriptOnce('https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js','mammoth'); }
                         catch(_e1){
-                            StatusManager.setState('DOCX 解析组件加载失败（需要联网），请另存为 TXT 再导入', 'error');
-                            StatusManager.log('DOCX 解析组件加载失败，请改用 TXT 或联网后重试', 'error');
+                            StatusManager.setState('DOCX 解析组件加载失败，需要联网', 'error');
+                            StatusManager.log('DOCX 解析组件加载失败，请联网后重试', 'error');
                             e.target.value = '';
                             return;
                         }
@@ -2444,8 +2428,8 @@ input:focus, select:focus, textarea:focus {
                         StatusManager.setState('正在加载 XLSX 解析组件…', 'busy');
                         try { await loadScriptOnce('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js','XLSX'); }
                         catch(_e2){
-                            StatusManager.setState('XLSX 解析组件加载失败（需要联网），请另存为 TXT 再导入', 'error');
-                            StatusManager.log('XLSX 解析组件加载失败，请改用 TXT 或联网后重试', 'error');
+                            StatusManager.setState('XLSX 解析组件加载失败，需要联网', 'error');
+                            StatusManager.log('XLSX 解析组件加载失败，请联网后重试', 'error');
                             e.target.value = '';
                             return;
                         }
@@ -2458,7 +2442,7 @@ input:focus, select:focus, textarea:focus {
                 // 兜底：文件里一个名字都没解析出来时，不要清空用户已经填好的名单
                 if (!info.names.length) {
                     StatusManager.setState('文件里没识别到名字，原有名单已保留', 'error');
-                    StatusManager.log('导入的文件里没识别到名字，请检查内容是否为空或格式异常', 'error');
+                    StatusManager.log('没有识别到名字，请检查文件内容是否为空', 'error');
                     return;
                 }
                 dom.nameText.value = info.names.join('\n');
@@ -2469,11 +2453,11 @@ input:focus, select:focus, textarea:focus {
                 var count = info.names.length;
                 StatusManager.setState('名单导入完成，共 '+count+' 人', 'success');
                 StatusManager.log('名单导入完成，共 '+count+' 人', 'success');
-                if (info.dupes) StatusManager.log('其中有 ' + info.dupes + ' 个重名', 'busy');
+                if (info.dupes) StatusManager.log('有 ' + info.dupes + ' 个重名，会各生成一张', 'busy');
                 if (info.truncated) StatusManager.log('名单超过 ' + NAME_LIMIT + ' 个，只保留前 ' + NAME_LIMIT + ' 个', 'error');
             } catch (err) {
                 StatusManager.setState('文件解析失败，请换格式重试', 'error');
-                StatusManager.log('解析失败，请用 TXT/DOCX/XLSX 格式', 'error');
+                StatusManager.log('解析失败，请改用 TXT/DOCX/XLSX 格式', 'error');
             }
             finally { e.target.value = ''; }
         });
@@ -2488,11 +2472,12 @@ input:focus, select:focus, textarea:focus {
         dropZone.addEventListener('drop', function(e) {
             e.preventDefault(); e.stopPropagation();
             var file = e.dataTransfer.files[0];
-            if (!file || !file.type.match(/image\//)) { StatusManager.log('请拖入模板图片'); return; }
+            if (!file || !file.type.match(/image\//)) { StatusManager.log('请拖入一张模板图片'); return; }
             loadTemplateImage(file);
         });
         function loadTemplateImage(file) {
-            StatusManager.setState(getRandomText('loading'), 'busy');
+            StatusManager.setState('正在读取模板…', 'busy');
+            StatusManager.log('正在读取模板…', 'busy');
             var reader = new FileReader();
             reader.onload = function(ev) {
                 var img = new Image();
@@ -2500,7 +2485,7 @@ input:focus, select:focus, textarea:focus {
                     template = img;
                     // 超大模板会占用大量内存（画布 ×2 + 图片），提前提示
                     if (img.width * img.height > 16000000) {
-                        StatusManager.log('模板较大（'+img.width+'x'+img.height+'），生成时可能偏慢~');
+                        StatusManager.log('模板较大（'+img.width+'×'+img.height+'），生成可能需要较长时间');
                     }
                     // 手机端把预览画布缩到最长边 ≤ PREVIEW_MAX（生成仍用原图分辨率，不受影响）
                     // 注意：不要先设成原图尺寸再缩，否则会白分配一块超大画布（手机端正是要省这个内存）
@@ -2516,6 +2501,13 @@ input:focus, select:focus, textarea:focus {
                     dom.canvas.style.display = 'block';
                     dom.templateStatus.textContent = '模板加载完成';
                     dom.previewHint.textContent = '分辨率: ' + img.width + ' x ' + img.height;
+                    // 没上传模板时拖动过文字：按同一比例换算成这块模板上的像素坐标
+                    if (_previewPos) {
+                        textX = Math.round(_previewPos.fx * img.width);
+                        textY = Math.round(_previewPos.fy * img.height);
+                        _previewPos = null;
+                        saveSettings();
+                    }
                     if (textX > img.width || textY > img.height || textX < 0 || textY < 0) {
                         textX = Math.round(img.width / 2);
                         textY = Math.round(img.height * 0.45);
@@ -2527,14 +2519,20 @@ input:focus, select:focus, textarea:focus {
                     updateCanvasFontSize();
                     updateCoordUI();
                     refreshText();
-                    StatusManager.setState('模板加载完成', 'success');
-                    StatusManager.log('模板加载完成', 'success');
+                    StatusManager.setState('模板已就位：' + img.width + '×' + img.height, 'success');
+                    StatusManager.log('模板已就位：' + img.width + '×' + img.height, 'success');
                 };
                 img.onerror = function() {
-                    StatusManager.setState('模板加载失败，请换图片重试', 'error');
-                    StatusManager.log('图片加载失败，请换 PNG/JPG 格式', 'error');
+                    StatusManager.setState('模板读取失败，请换一张图片', 'error');
+                    StatusManager.log('图片格式不受支持，请换 PNG 或 JPG', 'error');
                 };
                 img.src = ev.target.result;
+            };
+            reader.onerror = function() {
+                // FileReader 失败（文件被移走、权限不足、磁盘错误）：以前缺这个回调，
+                // 标题会一直停在「正在给打印机灌墨水…」，看起来像卡死
+                StatusManager.setState('模板读取失败，请换一张图片', 'error');
+                StatusManager.log('模板读取失败，文件可能已被移动', 'error');
             };
             reader.readAsDataURL(file);
         }
@@ -2552,6 +2550,56 @@ input:focus, select:focus, textarea:focus {
 // rAF 节流：mousemove 高频只记坐标，每帧执行一次（跟手且不超帧）
 var _dragPending = null, _dragRaf = 0;
 var _dragOffX = 0, _dragOffY = 0; // 鼠标按住点与文字中心的偏移（相对拖动，点字哪里就相对哪里）
+
+// 还没上传模板时：文字只是预览框里的一段 DOM 文案，没有画布坐标可写。
+// 所以这里单独记「文字中心在预览框里的相对位置」（0~1），拖动直接生效；
+// 之后一上传模板，就按同一比例换算成画布像素，拖过的位置不会白拖。
+var _previewPos = null;
+var _dragMode = "";             // "canvas" | "preview"
+var _pvOffX = 0, _pvOffY = 0;
+function previewInnerBox() {
+    var wr = dom.previewBox.getBoundingClientRect();
+    var cs = getComputedStyle(dom.previewBox);
+    var pl = parseFloat(cs.paddingLeft) || 0, pt = parseFloat(cs.paddingTop) || 0;
+    var pr = parseFloat(cs.paddingRight) || 0, pb = parseFloat(cs.paddingBottom) || 0;
+    return {
+        left: wr.left, top: wr.top, pl: pl, pt: pt,
+        w: Math.max(1, wr.width - pl - pr),
+        h: Math.max(1, wr.height - pt - pb)
+    };
+}
+function applyPreviewPos() {
+    if (!_previewPos) {
+        dom.dragText.style.left = "";
+        dom.dragText.style.top = "";
+        return;
+    }
+    var b = previewInnerBox();
+    dom.dragText.style.left = (b.pl + _previewPos.fx * b.w) + "px";
+    dom.dragText.style.top = (b.pt + _previewPos.fy * b.h) + "px";
+}
+function startPreviewDrag(clientX, clientY) {
+    var b = previewInnerBox();
+    // 第一次拖时元素还停在 flex 居中算出来的位置（不一定正好是 0.5/0.5），
+    // 先用它真实的中心反推一次相对位置，否则一按下去文字会先跳一下。
+    if (!_previewPos) {
+        var r = dom.dragText.getBoundingClientRect();
+        _previewPos = {
+            fx: Math.min(1, Math.max(0, (r.left + r.width / 2 - b.left - b.pl) / b.w)),
+            fy: Math.min(1, Math.max(0, (r.top + r.height / 2 - b.top - b.pt) / b.h))
+        };
+    }
+    var cx = _previewPos.fx, cy = _previewPos.fy;
+    _pvOffX = (clientX - b.left) - (b.pl + cx * b.w);
+    _pvOffY = (clientY - b.top) - (b.pt + cy * b.h);
+}
+function movePreviewDrag(clientX, clientY) {
+    var b = previewInnerBox();
+    var fx = ((clientX - b.left) - _pvOffX - b.pl) / b.w;
+    var fy = ((clientY - b.top) - _pvOffY - b.pt) / b.h;
+    _previewPos = { fx: Math.min(1, Math.max(0, fx)), fy: Math.min(1, Math.max(0, fy)) };
+    applyPreviewPos();
+}
 function dragMoveTo(clientX, clientY) {
     _dragPending = [clientX, clientY];
     if (!_dragRaf) {
@@ -2592,12 +2640,20 @@ function applyDragMove(clientX, clientY) {
 
 // 鼠标按下
 dom.dragText.addEventListener("mousedown", (e) => {
-    if (!template) return;
+    // 没上传模板时也能拖：这时画布还没出现，拖的是预览框里那段文案本身
+    if (!template && !currentPreviewName()) return;
     e.preventDefault();
     e.stopPropagation();
     isDragging = true;
-    startDragOffset(e.clientX, e.clientY);
     dom.dragText.style.cursor = "grabbing";
+    if (!template) {
+        _dragMode = "preview";
+        startPreviewDrag(e.clientX, e.clientY);
+        StatusManager.setState('拖动文字中…', 'busy');
+        return;
+    }
+    _dragMode = "canvas";
+    startDragOffset(e.clientX, e.clientY);
     StatusManager.setState('坐标：'+textX+', '+textY, 'busy');
 });
 
@@ -2621,27 +2677,39 @@ document.addEventListener('touchcancel', function () {
 
 // 触摸开始
 dom.dragText.addEventListener("touchstart", (e) => {
-    if (!template || e.touches.length !== 1) return;
+    if (e.touches.length !== 1) return;
+    if (!template && !currentPreviewName()) return;
     e.preventDefault();
     e.stopPropagation();
     isDragging = true;
-    startDragOffset(e.touches[0].clientX, e.touches[0].clientY);
     dom.dragText.style.cursor = "grabbing";
+    if (!template) {
+        _dragMode = "preview";
+        startPreviewDrag(e.touches[0].clientX, e.touches[0].clientY);
+        StatusManager.setState('拖动文字中…', 'busy');
+        return;
+    }
+    _dragMode = "canvas";
+    startDragOffset(e.touches[0].clientX, e.touches[0].clientY);
     StatusManager.setState('坐标：'+textX+', '+textY, 'busy');
 }, { passive: false });
 
 // 鼠标移动
 document.addEventListener("mousemove", (e) => {
-    if (!isDragging || !template) return;
+    if (!isDragging) return;
+    if (_dragMode === "preview") { movePreviewDrag(e.clientX, e.clientY); return; }
+    if (!template) return;
     dragMoveTo(e.clientX, e.clientY);
 });
 
 // 触摸移动
 document.addEventListener("touchmove", (e) => {
-    if (!isDragging || !template || e.touches.length !== 1) return;
+    if (!isDragging || e.touches.length !== 1) return;
     e.preventDefault();
     e.stopPropagation();
     const touch = e.touches[0];
+    if (_dragMode === "preview") { movePreviewDrag(touch.clientX, touch.clientY); return; }
+    if (!template) return;
     dragMoveTo(touch.clientX, touch.clientY);
 }, { passive: false });
 
@@ -2650,14 +2718,22 @@ function endDrag() {
     if (!isDragging) return;
     isDragging = false;
     dom.dragText.style.cursor = "grab";
+    // 没模板时的拖动：位置已经记在 _previewPos 里，等上传模板时按比例换算
+    if (_dragMode === "preview") {
+        _dragMode = "";
+        StatusManager.setState('位置已记下，上传模板后按这里放', 'success');
+        StatusManager.log('位置已记下，上传模板后按这里放', 'success');
+        return;
+    }
+    _dragMode = "";
     // 若 rAF 节流中还有未执行的移动，立即落盘，保证最终位置准确
     if (_dragPending) {
         var p = _dragPending;
         _dragPending = null;
         applyDragMove(p[0], p[1]);
     }
-    StatusManager.setState('位置已锁定', 'success');
-    StatusManager.log('位置已锁定', 'success');
+    StatusManager.setState('位置已更新：'+textX+', '+textY, 'success');
+    StatusManager.log('位置已更新：'+textX+', '+textY, 'success');
     saveSettings();
 }
 document.addEventListener("mouseup", endDrag);
@@ -2671,15 +2747,15 @@ window.addEventListener("blur", endDrag);
             if (isGenerating) return;
             if (!template) { 
                 StatusManager.setState('请先上传模板图片', 'error');
-                StatusManager.log('还没上传模板，请先上传图片', 'error');
+                StatusManager.log('请先上传模板图片', 'error');
                 return; 
             }
             
             // 与粘贴/导入/预览完全同一套解析规则，手打的逗号、顿号也能正确拆开
             const _parsed = parseNames(dom.nameText.value);
             const list = _parsed.names;
-            if (_parsed.truncated) StatusManager.log('名单超过 ' + NAME_LIMIT + ' 个，只生成前 ' + NAME_LIMIT + ' 个', 'error');
-            if (_parsed.dupes) StatusManager.log('名单里有 ' + _parsed.dupes + ' 个重名，会各自生成一张', 'busy');
+            if (_parsed.truncated) StatusManager.log('名单超过 ' + NAME_LIMIT + ' 个，只保留前 ' + NAME_LIMIT + ' 个', 'warning');
+            if (_parsed.dupes) StatusManager.log('名单里有 ' + _parsed.dupes + ' 个重名，会各生成一张', 'busy');
             if (list.length === 0) { 
                 StatusManager.setState('请先填写名单', 'error');
                 StatusManager.log('名单为空，请先填写', 'error');
@@ -2688,7 +2764,7 @@ window.addEventListener("blur", endDrag);
 
             if (typeof MiniZip === 'undefined') {
                 StatusManager.setState('打包组件加载异常，请刷新页面', 'error');
-                StatusManager.log('打包组件加载异常，请刷新页面重试', 'error');
+                StatusManager.log('打包组件加载异常，请刷新页面', 'error');
                 return;
             }
 
@@ -2699,10 +2775,9 @@ window.addEventListener("blur", endDrag);
             dom.genIcon.innerHTML = '<div class="spinner"></div>';
             dom.progressContainer.style.visibility = 'visible';
             dom.progressBar.style.width = "0%";
-            dom.progressText.style.display = 'none';
 
-            StatusManager.setState('开始生成，共 '+list.length+' 张…', 'busy');
-            StatusManager.log('开始生成，共 '+list.length+' 张…', 'busy');
+            StatusManager.setState('开始生成，共 '+list.length+' 张', 'busy');
+            StatusManager.log('开始生成，共 '+list.length+' 张', 'busy');
 
             try {
                 var _t0 = Date.now();
@@ -2764,8 +2839,7 @@ window.addEventListener("blur", endDrag);
                     
                     const percent = Math.round(((i + 1) / list.length) * 100);
                     dom.progressBar.style.width = `${percent}%`;
-                    StatusManager.setState('正在生成 '+(i+1)+'/'+list.length + '…', 'busy');
-                    if(i%10===0||i===list.length-1)StatusManager.log(getRandomText('generating', n), 'busy');
+                    // 进度只走进度条：日志区与标题都不逐张刷新，避免同一件事说很多遍
                     
                     // 每张仅让出主线程（5ms），保证 UI 不冻结且进度可感知；500 张约 2.5 秒
                     await new Promise(r => setTimeout(r, 5));
@@ -2773,8 +2847,8 @@ window.addEventListener("blur", endDrag);
                 
                 StatusManager.addGenCount(list.length);
                 var _elapsed = ((Date.now() - _t0) / 1000).toFixed(1);
-                var finalMsg = '用时 ' + _elapsed + ' 秒';
-                var finalLog = '已生成 ' + list.length + ' 张 · 用时 ' + _elapsed + ' 秒';
+                var finalMsg = '生成完成，共 ' + list.length + ' 张，用时 ' + _elapsed + ' 秒';
+                var finalLog = finalMsg;
                 StatusManager.setState(finalMsg, 'success');
                 StatusManager.log(finalLog, 'success');
             } catch (e) {
@@ -2814,8 +2888,8 @@ window.addEventListener("blur", endDrag);
         async function downloadZip() {
             // 生成过程中禁止下载：按钮此时是禁用态，这里再兜一层，避免误触拿到"半套"图片
             if (isGenerating) {
-                StatusManager.setState('还在生成中，生成结束才能下载～', 'busy');
-                StatusManager.log('正在生成，等进度走完再下载～', 'busy');
+                StatusManager.setState('正在生成，请等生成结束后再下载', 'busy');
+                StatusManager.log('正在生成，请等生成结束后再下载', 'busy');
                 return;
             }
             if (typeof MiniZip === 'undefined') {
@@ -2834,7 +2908,7 @@ window.addEventListener("blur", endDrag);
                     var singleName = names[0];
                     var singleBlob = await zip.file(singleName).async('blob');
                     if (!downloadBlob(singleBlob, singleName)) {
-                        StatusManager.setState('下载失败，请换浏览器重试', 'error');
+                        StatusManager.setState('下载失败，请重试', 'error');
                         dom.downBtn.disabled = false;
                         return;
                     }
@@ -2849,6 +2923,7 @@ window.addEventListener("blur", endDrag);
                 return;
             }
             StatusManager.setState('正在打包 '+names.length+' 张…', 'busy');
+            StatusManager.log('正在打包 '+names.length+' 张…', 'busy');
             // 关键：打包前先把进度条静默归零并显示。否则它会停在上次生成留下的 100%，
             // 而打包回调又给出更小的百分比，配合 .5s 的宽度过渡，看起来就是「冲高→回退→再涨」
             setProgress(0, true);
@@ -2865,13 +2940,12 @@ window.addEventListener("blur", endDrag);
                     if (p < _dlPct) p = _dlPct;
                     _dlPct = p;
                     setProgress(p);
-                    StatusManager.setState('正在打包 '+p+'%…', 'busy');
                 });
 
                 var _d = new Date();
                 var _ds = _d.getFullYear() + '-' + String(_d.getMonth() + 1).padStart(2, '0') + '-' + String(_d.getDate()).padStart(2, '0');
                 if (!downloadBlob(blob, '奖状_' + _ds + '.zip')) {
-                    StatusManager.setState('下载失败，请换浏览器重试', 'error');
+                    StatusManager.setState('下载失败，请重试', 'error');
                     dom.downBtn.disabled = false;
                     return;
                 }
@@ -2924,7 +2998,7 @@ window.addEventListener("blur", endDrag);
             var info = parseNames(dom.nameText.value);
             updatePreviewNav();
             refreshText();
-            StatusManager.log('粘贴识别到 ' + items.length + ' 个名字，当前共 ' + info.names.length + ' 个', 'success');
+            StatusManager.log('已粘贴 ' + items.length + ' 个名字，当前共 ' + info.names.length + ' 个', 'success');
         });
 
         dom.fontSize.addEventListener("input", () => {
@@ -2935,7 +3009,7 @@ window.addEventListener("blur", endDrag);
             measureGlyphOffset(dom.fontSelValue, canvasFontSize);
         });
         dom.fontSize.addEventListener("change", () => {
-             StatusManager.log('字号：'+dom.fontSize.value+'px', 'success');
+             StatusManager.log('字号已设为 '+dom.fontSize.value+' px', 'success');
              saveSettings();
         });
 
@@ -3200,11 +3274,11 @@ var _sending=false;
 window.kkdw_send=async function(){
 var i=document.getElementById('chatInput');var m=i.value.trim();if(!m)return;
 if(_sending)return;
-if(!K){am('error','还没填 API Key，点下面绑定~');return}
-if(!U){am('error','配置不完整（缺少接口地址），点下面 ⚙️ 重新填写 Key~');return}
+if(!K){am('error','尚未填写 API Key，请点击下方绑定');return}
+if(!U){am('error','配置不完整（缺少接口地址），请点击下方重新填写');return}
 _sending=true;
 am('user',m);i.value='';if(_micOn)_micRestart();
-var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='嗯…让我想想哈🤔';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
+var t=document.createElement('div');t.className='chat-msg assistant';var ts=document.createElement('span');ts.textContent='正在思考…';t.appendChild(ts);var mc=document.getElementById('chatMessages');mc.appendChild(t);mc.scrollTop=mc.scrollHeight;
 var _ac=null,_tid=0;try{_ac=new AbortController();_tid=setTimeout(function(){try{_ac.abort()}catch(e){}},CHAT_TIMEOUT)}catch(e){}
 try{var r=await fetch(U,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_cleanKey(K)},body:JSON.stringify({model:M,messages:[{role:'system',content:'你是奖状生成器内置的ai聊天助手。你默认要称呼用户为「琪琪大王」。你的任务是陪琪琪聊天、根据琪琪的询问回答琪琪的问题，回复简洁自然'},{role:'user',content:m}],max_tokens:500}),signal:_ac?_ac.signal:undefined});clearTimeout(_tid);if(!r.ok){var em=_httpErrMsg(r.status);ts.textContent=em;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var d=await r.json();if(d.error){var em2=d.error.message||'未知错误';if(em2.indexOf('Insufficient')>=0)em2='API 余额不足，请检查账户';ts.textContent=em2;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}else{var _ch=d.choices&&d.choices[0];var rep='';if(_ch&&_ch.message)rep=_ch.message.content||_ch.message.text||'';if(!rep&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)rep=d.candidates[0].content.parts.map(function(p){return p.text||''}).join('');if(!rep&&d.result)rep=typeof d.result==='string'?d.result:'';if(!rep&&d.response)rep=typeof d.response==='string'?d.response:'';if(!rep&&d.output)rep=typeof d.output==='string'?d.output:'';if(!rep){rep='未收到回复，请重试';t.className='chat-msg error';if(typeof _revertDefault==='function')_revertDefault()}else{_prevK=K;_prevU=U;_prevM=M}ts.textContent=rep;var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm)}}}catch(e){clearTimeout(_tid);var msg=e.message||'';if((e.name==='AbortError')||msg.indexOf('AbortError')>=0)msg='请求超时（'+(CHAT_TIMEOUT/1000)+' 秒无响应），请重试或换个模型';else if(msg.indexOf('Failed to fetch')>=0||msg.indexOf('NetworkError')>=0){if(K==='__default__')msg=(location.protocol==='file:'?'本地打开用不了站点的默认接口，请点下面 ⚙️ 填自己的 Key':'默认接口 /api/chat 没响应，检查后端或代理');else msg='网络异常或此 API 平台不支持浏览器直连，建议切换其他平台或模型使用'}ts.textContent=msg;t.className='chat-msg error';var tm=document.createElement('div');tm.className='chat-time';tm.dataset.ts=Date.now();t.appendChild(tm);if(typeof _revertDefault==='function')_revertDefault()}
 _sending=false;mc.scrollTop=mc.scrollHeight;var pp=document.getElementById('chatPanel');if(pp&&pp.classList.contains('open'))pp.style.top=Math.max(12,(innerHeight-pp.offsetHeight)/2)+'px';updateTimestamps()};
@@ -3438,7 +3512,7 @@ d.onclick=function(){selOptUI(this)};
 drop.appendChild(d)}
 if(drop.children.length>0){var _found=false;for(var fi=0;fi<drop.children.length;fi++){if(drop.children[fi].className==='custom-select-opt'){if(!_found&&drop.children[fi].dataset.val===M){drop.children[fi].classList.add('selected');var fs=drop.children[fi].firstChild;if(fs)document.getElementById('modelLabel').textContent=fs.textContent;_found=true;break}}}if(!_found){for(var fi=0;fi<drop.children.length;fi++){if(drop.children[fi].className==='custom-select-opt'){drop.children[fi].classList.add('selected');var fs=drop.children[fi].firstChild;document.getElementById('modelLabel').textContent=fs?fs.textContent:'';break}}}mrow.style.display='flex'}
 }
-function _dragScroll(e){var t=e.target.closest('.custom-select-drop');if(!t||t.id!=='modelDrop')return;var sy=t.scrollTop,cy=e.clientY;function mv(e2){t.scrollTop=sy+(cy-e2.clientY)}function up(e2){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);if(t.scrollTop!==sy&&e2.target.closest('.custom-select-opt')){e2.preventDefault();var op=e2.target.closest('.custom-select-opt');op.style.pointerEvents='none';setTimeout(function(){op.style.pointerEvents=''},200)}}document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up)}
+function _dragScroll(e){var tg=e.target;if(!tg||typeof tg.closest!=='function')return;var t=tg.closest('.custom-select-drop');if(!t||t.id!=='modelDrop')return;var sy=t.scrollTop,cy=e.clientY;function mv(e2){t.scrollTop=sy+(cy-e2.clientY)}function up(e2){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);var ut=e2&&e2.target;if(t.scrollTop!==sy&&ut&&typeof ut.closest==='function'&&ut.closest('.custom-select-opt')){e2.preventDefault();var op=ut.closest('.custom-select-opt');op.style.pointerEvents='none';setTimeout(function(){op.style.pointerEvents=''},200)}}document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up)}
 document.addEventListener('mousedown',_dragScroll);
 window.kkdw_saveKey=async function(){
 	var k=_cleanKey(document.getElementById('apiKeyInput').value);
