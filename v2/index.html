@@ -1596,11 +1596,11 @@ input:focus, select:focus, textarea:focus {
                 <div class="coord-display">
                     <div class="coord-item">
                         <span>X 轴</span>
-                        <strong id="dispX">1835</strong>
+                        <strong id="dispX">1882</strong>
                     </div>
                     <div class="coord-item">
                         <span>Y 轴</span>
-                        <strong id="dispY">1313</strong>
+                        <strong id="dispY">1287</strong>
                     </div>
                 </div>
                 <div class="input-inline" style="margin-top: 12px;">
@@ -2212,7 +2212,7 @@ input:focus, select:focus, textarea:focus {
                     ? String(message == null ? '' : message).replace(/\s+/g, ' ').trim()
                     : this.clip(message);
                 var now = Date.now();
-                // 同一类"进度型"提示（只有数字在变，如「正在生成 3/500」「正在打包 42%」「坐标：1878, 1292」）
+                // 同一类"进度型"提示（只有数字在变，如「正在生成 3/500」「正在打包 42%」「坐标：1882, 1287」）
                 // 只更新最后一行的时间与文案，不再往下堆——否则一次批量生成能刷出几百行。
                 var key = String(message).replace(/\d+/g, '#');
                 var last = this._lastLine;
@@ -2403,8 +2403,8 @@ input:focus, select:focus, textarea:focus {
         const ctx = dom.canvas.getContext("2d");
 
         // ====================== 全局变量 ======================
-        let textX = 1878;       // 默认 X（电脑/手机一致）
-        let textY = 1292;       // 默认 Y（电脑/手机一致）
+        let textX = 1882;       // 默认 X（电脑/手机一致）
+        let textY = 1287;       // 默认 Y（电脑/手机一致）
         let template = null, zip = new MiniZip();
         let isDragging = false, isGenerating = false;
         let canvasFontSize = 28; // 画布坐标下的字号，不受视口变化影响
@@ -2684,7 +2684,7 @@ input:focus, select:focus, textarea:focus {
         }
 
         // ====================== 配置记忆（localStorage） ======================
-        var SETTINGS_KEY = 'certgen_settings_v8';   // v8：默认坐标改为 1878/1292
+        var SETTINGS_KEY = 'certgen_settings_v8';   // v8：默认坐标 1882/1287
         var LEGACY_SETTINGS_KEY = 'certgen_settings_v7';   // 旧存档只迁移样式，坐标一律用新默认值
         function saveSettings() {
             try {
