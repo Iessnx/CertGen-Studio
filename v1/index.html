@@ -1288,11 +1288,11 @@ input:focus, select:focus, textarea:focus {
                 <div class="coord-display">
                     <div class="coord-item">
                         <span>X 轴</span>
-                        <strong id="dispX">1835</strong>
+                        <strong id="dispX">1882</strong>
                     </div>
                     <div class="coord-item">
                         <span>Y 轴</span>
-                        <strong id="dispY">1313</strong>
+                        <strong id="dispY">1287</strong>
                     </div>
                 </div>
                 <div class="input-inline" style="margin-top: 12px;">
@@ -1814,7 +1814,7 @@ input:focus, select:focus, textarea:focus {
 
         // ====================== 全局变量 ======================
         let textX = 1882;       // 默认 X（电脑/手机一致）
-        let textY = 1292;       // 默认 Y（电脑/手机一致）
+        let textY = 1287;       // 默认 Y（电脑/手机一致）
         let template = null, zip = new MiniZip();
         let isDragging = false, scaleRatio = 1, isGenerating = false;
         let canvasFontSize = 28; // 画布坐标下的字号，不受视口变化影响
@@ -2020,7 +2020,7 @@ input:focus, select:focus, textarea:focus {
         }
 
         // ====================== 配置记忆（localStorage） ======================
-        var SETTINGS_KEY = 'certgen_settings_v7';   // v7：默认坐标改为 1882/1292，旧存档不再覆盖
+        var SETTINGS_KEY = 'certgen_settings_v7';   // v7：默认坐标 1882/1287，旧存档不再覆盖
         function saveSettings() {
             try {
                 localStorage.setItem(SETTINGS_KEY, JSON.stringify({
